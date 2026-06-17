@@ -1,0 +1,20 @@
+{
+  "HomePage": {
+    "logoMain": "mecanografía",
+    "soundLabel": "Sonido",
+    "metricWpm": "WPM",
+    "metricAccuracy": "Precisión",
+    "metricTime": "Tiempo",
+    "focusMessage": "Haz clic aquí para enfocar y comenzar a escribir",
+    "completedTitle": "¡Completado con éxito!",
+    "completedBody": "Tu velocidad final fue de ",
+    "completedBodyMiddle": " WPM con una precisión de ",
+    "completedBodyEnd": "%.",
+    "restartBtn": "Intentar de Nuevo",
+    "keyboardLabel": "Teclado Interactivo",
+    "nextPhraseBtn": "Siguiente Frase ->",
+    "footerText": "Presiona las teclas físicas para ver la simulación en pantalla. Las teclas responden en 3D con sonido mecánico.",
+    "soundOnTitle": "Desactivar sonido de teclado",
+    "soundOffTitle": "Activar sonido de teclado"
+  }
+}

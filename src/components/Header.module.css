@@ -1,0 +1,81 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--foreground);
+}
+
+.logoText {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--foreground);
+}
+
+.logoSubtext {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btnGroup {
+  display: flex;
+  background: #1c1c1c;
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  overflow: hidden;
+  padding: 2px;
+}
+
+.controlBtn {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.controlBtn:hover {
+  color: var(--foreground);
+}
+
+.activeBtn {
+  background: #2e2e2e !important;
+  color: var(--foreground) !important;
+}
+
+.soundOn {
+  border: 1px solid #4b5563;
+  color: var(--foreground);
+  background: #1c1c1c;
+}
+
+.soundOn:hover {
+  background: #262626;
+}
+
+.soundOff {
+  border: 1px solid var(--panel-border);
+  color: #4b5563;
+  background: transparent;
+}

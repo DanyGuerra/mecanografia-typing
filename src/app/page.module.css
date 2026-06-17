@@ -1,142 +1,132 @@
-.page {
-  --background: #fafafa;
-  --foreground: #fff;
-
-  --text-primary: #000;
-  --text-secondary: #666;
-
-  --button-primary-hover: #383838;
-  --button-secondary-hover: #f2f2f2;
-  --button-secondary-border: #ebebeb;
-
+.mainContainer {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-geist-sans);
-  background-color: var(--background);
-}
-
-.main {
-  display: flex;
-  flex: 1;
+  min-height: 100vh;
   width: 100%;
-  max-width: 800px;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  background-color: var(--foreground);
-  padding: 120px 60px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  gap: 32px;
 }
 
-.intro {
+.btnGroup {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  gap: 24px;
+  background: #1c1c1c;
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  overflow: hidden;
+  padding: 2px;
 }
 
-.intro h1 {
-  max-width: 320px;
-  font-size: 40px;
+.controlBtn {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  padding: 6px 12px;
+  font-size: 12.5px;
   font-weight: 600;
-  line-height: 48px;
-  letter-spacing: -2.4px;
-  text-wrap: balance;
-  color: var(--text-primary);
-}
-
-.intro p {
-  max-width: 440px;
-  font-size: 18px;
-  line-height: 32px;
-  text-wrap: balance;
-  color: var(--text-secondary);
-}
-
-.intro a {
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.ctas {
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
   display: flex;
-  flex-direction: row;
-  width: 100%;
-  max-width: 440px;
-  gap: 16px;
-  font-size: 14px;
+  align-items: center;
+  gap: 6px;
 }
 
-.ctas a {
+.controlBtn:hover {
+  color: var(--foreground);
+}
+
+.activeBtn {
+  background: #2e2e2e !important;
+  color: var(--foreground) !important;
+}
+
+.typingSection {
+  position: relative;
+  cursor: pointer;
+  width: 100%;
+}
+
+.focusOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 24px;
+  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(2px);
+  border-radius: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 128px;
-  border: 1px solid transparent;
-  transition: 0.2s;
-  cursor: pointer;
-  width: fit-content;
-  font-weight: 500;
+  z-index: 10;
+  border: 1px solid var(--panel-border);
+  animation: fadeIn 0.15s ease-out;
 }
 
-a.primary {
-  background: var(--text-primary);
-  color: var(--background);
+.focusMsg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #9ca3af;
+  font-weight: 500;
+  font-size: 14.5px;
+  text-align: center;
+  padding: 20px;
+}
+
+.focusIcon {
+  color: #6b7280;
+}
+
+.keyboardSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.keyboardLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #4b5563;
+  letter-spacing: 0.5px;
+}
+
+.keyboardLabelLeft {
+  display: flex;
+  align-items: center;
   gap: 8px;
 }
 
-a.secondary {
-  border-color: var(--button-secondary-border);
+.miniBtn {
+  padding: 2px 6px !important;
+  font-size: 9.5px !important;
+  border-radius: 3px !important;
 }
 
-/* Enable hover only on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-  a.primary:hover {
-    background: var(--button-primary-hover);
-    border-color: transparent;
-  }
-
-  a.secondary:hover {
-    background: var(--button-secondary-hover);
-    border-color: transparent;
-  }
+.resetTextLink {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.12s ease;
 }
 
-@media (max-width: 600px) {
-  .main {
-    padding: 48px 24px;
-  }
-
-  .intro {
-    gap: 16px;
-  }
-
-  .intro h1 {
-    font-size: 32px;
-    line-height: 40px;
-    letter-spacing: -1.92px;
-  }
+.resetTextLink:hover {
+  color: var(--foreground);
 }
 
-@media (prefers-color-scheme: dark) {
-  .logo {
-    filter: invert();
-  }
-
-  .page {
-    --background: #000;
-    --foreground: #000;
-
-    --text-primary: #ededed;
-    --text-secondary: #999;
-
-    --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
-    --button-secondary-border: #1a1a1a;
-  }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

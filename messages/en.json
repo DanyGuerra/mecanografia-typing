@@ -1,0 +1,20 @@
+{
+  "HomePage": {
+    "logoMain": "mecanografía",
+    "soundLabel": "Sound",
+    "metricWpm": "WPM",
+    "metricAccuracy": "Accuracy",
+    "metricTime": "Time",
+    "focusMessage": "Click here to focus and start typing",
+    "completedTitle": "Completed successfully!",
+    "completedBody": "Your final speed was ",
+    "completedBodyMiddle": " WPM with an accuracy of ",
+    "completedBodyEnd": "%.",
+    "restartBtn": "Try Again",
+    "keyboardLabel": "Interactive Keyboard",
+    "nextPhraseBtn": "Next Phrase ->",
+    "footerText": "Press physical keys to see the simulator on screen. The keys respond in 3D with mechanical sound.",
+    "soundOnTitle": "Disable keyboard sound",
+    "soundOffTitle": "Enable keyboard sound"
+  }
+}

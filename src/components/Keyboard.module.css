@@ -1,0 +1,24 @@
+.keyboardContainer {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+  background: #161616;
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.keyboardFrame {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+}
+
+.keyboardRow {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  justify-content: space-between;
+}

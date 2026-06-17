@@ -1,0 +1,65 @@
+.completedOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 24px;
+  background: rgba(18, 18, 18, 0.95);
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.completedMsg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 30px;
+  color: var(--foreground);
+}
+
+.completedMsg h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 4px;
+}
+
+.completedMsg p {
+  color: #9ca3af;
+  font-size: 15px;
+}
+
+.completedMsg strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.restartBtn {
+  background: var(--foreground);
+  border: none;
+  color: var(--background);
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.restartBtn:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
