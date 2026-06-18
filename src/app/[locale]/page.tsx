@@ -35,7 +35,7 @@ export default function Home({ params }: PageProps) {
   const router = useRouter();
   const { locale } = use(params);
   const t = useTranslations('HomePage');
-  
+
   const appLanguage = (locale === 'en' || locale === 'es') ? locale : 'es';
   const [keyboardLanguage, setKeyboardLanguage] = useState<'es' | 'en'>(appLanguage);
   const [phraseIndex, setPhraseIndex] = useState(0);
@@ -44,13 +44,14 @@ export default function Home({ params }: PageProps) {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  
+
   const [startTime, setStartTime] = useState<number | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [wpm, setWpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
   const [isCompleted, setIsCompleted] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [capsLockActive, setCapsLockActive] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('theme');
@@ -132,7 +133,7 @@ export default function Home({ params }: PageProps) {
         const now = Date.now();
         const elapsedSecs = Math.round((now - startTime) / 1000);
         setElapsedTime(elapsedSecs);
-        
+
         const timeDiffMinutes = (now - startTime) / 60000;
         if (timeDiffMinutes > 0) {
           let correctChars = 0;
@@ -225,6 +226,9 @@ export default function Home({ params }: PageProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       setPressedKeys((prev) => ({ ...prev, [e.code]: true }));
+      
+      // Update CapsLock state reliably from the OS
+      setCapsLockActive(e.getModifierState('CapsLock'));
 
       if (!isFocused) return;
 
@@ -232,15 +236,12 @@ export default function Home({ params }: PageProps) {
         e.preventDefault();
       }
 
-      if (e.code === 'CapsLock') {
-        return;
-      }
-
       handleKeyPress(e.key, e.code);
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
       setPressedKeys((prev) => ({ ...prev, [e.code]: false }));
+      setCapsLockActive(e.getModifierState('CapsLock'));
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -299,7 +300,7 @@ export default function Home({ params }: PageProps) {
 
       <section className="relative cursor-pointer w-full" onClick={forceFocus}>
         <TypingArea text={currentPhrase} userInput={userInput} hasError={hasError} />
-        
+
         {!isFocused && (
           <div className="absolute inset-0 pb-6 bg-background/85 backdrop-blur-[2px] rounded-xl flex justify-center items-center z-10 border border-border animate-fade-in">
             <div className="flex flex-col items-center gap-2.5 text-muted-foreground text-sm font-medium text-center p-5">
@@ -334,34 +335,51 @@ export default function Home({ params }: PageProps) {
       <section className="flex flex-col gap-2.5">
         <div className="flex justify-between items-center px-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">
           <div className="flex items-center gap-2">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/60">
+              <rect x="2" y="4" width="20" height="16" rx="2" ry="2" />
+              <path d="M6 8h.01" />
+              <path d="M10 8h.01" />
+              <path d="M14 8h.01" />
+              <path d="M18 8h.01" />
+              <path d="M6 12h.01" />
+              <path d="M18 12h.01" />
+              <path d="M7 16h10" />
+              <path d="M10 12h4" />
+            </svg>
             <span>{t('keyboardLabel')}</span>
-            <div className="flex bg-muted border border-border rounded-md p-0.5 h-6">
-              <Button 
+            <div className="flex bg-muted border border-border rounded-lg p-0.5 h-6 gap-0.5 shadow-sm">
+              <Button
                 variant={keyboardLanguage === 'es' ? 'secondary' : 'ghost'}
                 size="xs"
-                className="text-[9px] font-bold h-5 px-1.5 rounded-sm"
+                className="text-[9px] font-bold h-5 px-2 rounded-md transition-all duration-200"
                 onClick={() => handleKeyboardLanguageChange('es')}
               >
                 ES
               </Button>
-              <Button 
+              <Button
                 variant={keyboardLanguage === 'en' ? 'secondary' : 'ghost'}
                 size="xs"
-                className="text-[9px] font-bold h-5 px-1.5 rounded-sm"
+                className="text-[9px] font-bold h-5 px-2 rounded-md transition-all duration-200"
                 onClick={() => handleKeyboardLanguageChange('en')}
               >
                 EN
               </Button>
             </div>
           </div>
-          <button 
-            className="bg-transparent border-none text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground cursor-pointer transition-colors duration-150" 
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-[10px] font-bold uppercase tracking-wider h-6 rounded-md px-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 gap-1.5 transition-all duration-200 group/btn"
             onClick={() => changePhrase('random')}
           >
-            {t('nextPhraseBtn')}
-          </button>
+            <span>{t('nextPhraseBtn').replace('->', '').trim()}</span>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-200 group-hover/btn:translate-x-0.5 opacity-80">
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </Button>
         </div>
-        <Keyboard language={keyboardLanguage} pressedKeys={pressedKeys} />
+        <Keyboard language={keyboardLanguage} pressedKeys={pressedKeys} capsLockActive={capsLockActive} />
       </section>
 
       <Footer text={t('footerText')} />

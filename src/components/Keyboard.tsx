@@ -14,6 +14,7 @@ interface KeyConfig {
 interface KeyboardProps {
   language: 'es' | 'en';
   pressedKeys: Record<string, boolean>;
+  capsLockActive?: boolean;
 }
 
 const englishLayout: KeyConfig[][] = [
@@ -79,11 +80,13 @@ const englishLayout: KeyConfig[][] = [
     { code: 'ShiftRight', label: 'Shift', widthUnit: 2.8, flexGrow: 2.8 },
   ],
   [
-    { code: 'ControlLeft', label: 'Ctrl', widthUnit: 1.5, flexGrow: 1.5 },
-    { code: 'AltLeft', label: 'Alt', widthUnit: 1.5, flexGrow: 1.5 },
-    { code: 'Space', label: ' ', widthUnit: 6.5, flexGrow: 7.0 },
-    { code: 'AltRight', label: 'Alt', widthUnit: 1.5, flexGrow: 1.5 },
-    { code: 'ControlRight', label: 'Ctrl', widthUnit: 1.5, flexGrow: 1.5 },
+    { code: 'ControlLeft', label: 'Ctrl ⌃', widthUnit: 1.5, flexGrow: 1.5 },
+    { code: 'MetaLeft', label: 'Cmd ⌘', widthUnit: 1.5, flexGrow: 1.5 },
+    { code: 'AltLeft', label: 'Alt ⌥', widthUnit: 1.5, flexGrow: 1.5 },
+    { code: 'Space', label: ' ', widthUnit: 6.0, flexGrow: 6.0 },
+    { code: 'AltRight', label: 'Alt ⌥', widthUnit: 1.5, flexGrow: 1.5 },
+    { code: 'MetaRight', label: 'Cmd ⌘', widthUnit: 1.5, flexGrow: 1.5 },
+    { code: 'ControlRight', label: 'Ctrl ⌃', widthUnit: 1.5, flexGrow: 1.5 },
   ],
 ];
 
@@ -151,33 +154,49 @@ const spanishLayout: KeyConfig[][] = [
     { code: 'ShiftRight', label: 'Shift', widthUnit: 2.8, flexGrow: 2.8 },
   ],
   [
-    { code: 'ControlLeft', label: 'Ctrl', widthUnit: 1.5, flexGrow: 1.5 },
-    { code: 'AltLeft', label: 'Alt', widthUnit: 1.5, flexGrow: 1.5 },
-    { code: 'Space', label: ' ', widthUnit: 6.5, flexGrow: 7.0 },
-    { code: 'AltRight', label: 'AltGr', widthUnit: 1.5, flexGrow: 1.5 },
-    { code: 'ControlRight', label: 'Ctrl', widthUnit: 1.5, flexGrow: 1.5 },
+    { code: 'ControlLeft', label: 'Ctrl ⌃', widthUnit: 1.5, flexGrow: 1.5 },
+    { code: 'MetaLeft', label: 'Cmd ⌘', widthUnit: 1.5, flexGrow: 1.5 },
+    { code: 'AltLeft', label: 'Alt ⌥', widthUnit: 1.5, flexGrow: 1.5 },
+    { code: 'Space', label: ' ', widthUnit: 6.0, flexGrow: 6.0 },
+    { code: 'AltRight', label: 'AltGr ⌥', widthUnit: 1.5, flexGrow: 1.5 },
+    { code: 'MetaRight', label: 'Cmd ⌘', widthUnit: 1.5, flexGrow: 1.5 },
+    { code: 'ControlRight', label: 'Ctrl ⌃', widthUnit: 1.5, flexGrow: 1.5 },
   ],
 ];
 
-export default function Keyboard({ language, pressedKeys }: KeyboardProps) {
+export default function Keyboard({ language, pressedKeys, capsLockActive }: KeyboardProps) {
   const layout = language === 'es' ? spanishLayout : englishLayout;
+  const isShiftActive = !!pressedKeys['ShiftLeft'] || !!pressedKeys['ShiftRight'];
 
   return (
     <div className="w-full p-4 bg-muted/20 border border-border rounded-xl shadow-sm">
       <div className="flex flex-col gap-[5px] w-full">
         {layout.map((row, rowIndex) => (
           <div key={rowIndex} className="flex gap-1 w-full justify-between">
-            {row.map((key) => (
-              <Key
-                key={key.code}
-                code={key.code}
-                label={key.label}
-                shiftLabel={key.shiftLabel}
-                widthUnit={key.widthUnit}
-                flexGrow={key.flexGrow}
-                isPressed={!!pressedKeys[key.code]}
-              />
-            ))}
+            {row.map((key) => {
+              const isLetter = key.label.length === 1 && key.label.toLowerCase() !== key.label.toUpperCase();
+              let displayLabel = key.label;
+              let displayShiftLabel = key.shiftLabel;
+
+              if (isLetter) {
+                const isUpperCase = (capsLockActive && !isShiftActive) || (!capsLockActive && isShiftActive);
+                displayLabel = isUpperCase ? key.label.toUpperCase() : key.label.toLowerCase();
+                displayShiftLabel = undefined;
+              }
+
+              return (
+                <Key
+                  key={key.code}
+                  code={key.code}
+                  label={displayLabel}
+                  shiftLabel={displayShiftLabel}
+                  widthUnit={key.widthUnit}
+                  flexGrow={key.flexGrow}
+                  isPressed={key.code === 'CapsLock' ? !!capsLockActive : !!pressedKeys[key.code]}
+                  isCapsLockActive={capsLockActive && key.code === 'CapsLock'}
+                />
+              );
+            })}
           </div>
         ))}
       </div>

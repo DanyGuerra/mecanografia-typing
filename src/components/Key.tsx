@@ -9,6 +9,7 @@ interface KeyProps {
   isPressed: boolean;
   flexGrow?: number;
   widthUnit?: number;
+  isCapsLockActive?: boolean;
 }
 
 export default function Key({
@@ -18,6 +19,7 @@ export default function Key({
   isPressed,
   flexGrow = 1,
   widthUnit = 1,
+  isCapsLockActive = false,
 }: KeyProps) {
   const baseWidth = 60;
   const padding = 2;
@@ -30,7 +32,7 @@ export default function Key({
   const pressOffsetY = isPressed ? shadowHeight : 0;
   const capHeight = keyHeight - shadowHeight;
 
-  const isSpecialKey = widthUnit > 1.2 || ['ShiftLeft', 'ShiftRight', 'Enter', 'Space', 'Backspace', 'Tab', 'CapsLock'].includes(code);
+  const isSpecialKey = ['ShiftLeft', 'ShiftRight', 'Enter', 'Space', 'Backspace', 'Tab', 'CapsLock', 'MetaLeft', 'MetaRight', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'ContextMenu'].includes(code);
 
   const normalFill = 'var(--key-normal-fill)';
   const normalBorder = 'var(--key-normal-stroke)';
@@ -43,6 +45,8 @@ export default function Key({
   const baseShadowFill = isPressed 
     ? 'var(--key-shadow-pressed)' 
     : (isSpecialKey ? 'var(--key-shadow-special)' : 'var(--key-shadow-normal)');
+
+  const hasHomingBar = ['KeyF', 'KeyJ'].includes(code);
 
   return (
     <div
@@ -68,54 +72,82 @@ export default function Key({
           fill={baseShadowFill}
         />
 
-        <rect
-          x={padding}
-          y={padding + pressOffsetY}
-          width={keyWidth}
-          height={capHeight}
-          rx={4}
-          ry={4}
-          fill={isPressed ? pressedFill : (isSpecialKey ? specialFill : normalFill)}
-          stroke={isPressed ? pressedBorder : (isSpecialKey ? specialBorder : normalBorder)}
-          strokeWidth={1}
+        <g
           style={{
-            transition: 'transform 0.05s ease-out, fill 0.05s ease-out',
+            transform: `translateY(${pressOffsetY}px)`,
+            transition: 'transform 0.06s cubic-bezier(0.2, 0.8, 0.2, 1)',
           }}
-        />
+        >
+          <rect
+            x={padding}
+            y={padding}
+            width={keyWidth}
+            height={capHeight}
+            rx={4}
+            ry={4}
+            fill={isPressed ? pressedFill : (isSpecialKey ? specialFill : normalFill)}
+            stroke={isPressed ? pressedBorder : (isSpecialKey ? specialBorder : normalBorder)}
+            strokeWidth={1}
+          />
 
-        {shiftLabel && !isSpecialKey ? (
-          <>
+          {hasHomingBar && (
+            <line
+              x1={padding + (keyWidth / 2) - 5}
+              y1={padding + (capHeight / 2) + 12}
+              x2={padding + (keyWidth / 2) + 5}
+              y2={padding + (capHeight / 2) + 12}
+              stroke={isPressed ? 'var(--key-pressed-text)' : 'var(--key-normal-text)'}
+              strokeWidth={2.5}
+              strokeLinecap="round"
+              opacity={0.8}
+            />
+          )}
+
+          {isCapsLockActive && (
+            <circle
+              cx={padding + 12}
+              cy={padding + 12}
+              r={2.5}
+              fill="#10b981"
+              className="animate-pulse"
+            />
+          )}
+
+          {shiftLabel && !isSpecialKey ? (
+            <>
+              <text
+                x={padding + (keyWidth / 2)}
+                y={padding + 16}
+                className={`font-sans text-[13px] font-semibold fill-[var(--key-special-text)] pointer-events-none transition-colors duration-75 ${isPressed ? '!fill-[var(--key-pressed-text)]' : ''}`}
+                textAnchor="middle"
+                dominantBaseline="middle"
+              >
+                {shiftLabel}
+              </text>
+              <text
+                x={padding + (keyWidth / 2)}
+                y={padding + capHeight - 14}
+                className={`font-sans text-[18px] font-bold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-75 ${isPressed ? '!fill-[var(--key-pressed-text)]' : ''}`}
+                textAnchor="middle"
+                dominantBaseline="middle"
+              >
+                {label}
+              </text>
+            </>
+          ) : (
             <text
-              x={padding + 8}
-              y={padding + pressOffsetY + 15}
-              className={`font-sans text-[10px] font-medium fill-[var(--key-special-text)] pointer-events-none transition-colors duration-75 ${isPressed ? '!fill-[var(--key-pressed-text)]' : ''}`}
-              dominantBaseline="middle"
-            >
-              {shiftLabel}
-            </text>
-            <text
-              x={padding + keyWidth - 8}
-              y={padding + pressOffsetY + capHeight - 13}
-              className={`font-sans text-[14px] font-semibold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-75 ${isPressed ? '!fill-[var(--key-pressed-text)]' : ''}`}
-              textAnchor="end"
+              x={padding + (keyWidth / 2)}
+              y={padding + (capHeight / 2) + 2}
+              className={`font-sans text-[22px] font-bold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-75 ${
+                isSpecialKey ? '!text-[13px] !font-bold !fill-[var(--key-special-text)] tracking-widest uppercase' : ''
+              } ${isPressed ? '!fill-[var(--key-pressed-text)]' : ''}`}
+              textAnchor="middle"
               dominantBaseline="middle"
             >
               {label}
             </text>
-          </>
-        ) : (
-          <text
-            x={padding + (keyWidth / 2)}
-            y={padding + pressOffsetY + (capHeight / 2) + 1.5}
-            className={`font-sans text-[16px] font-semibold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-75 ${
-              isSpecialKey ? 'text-[11.5px] font-medium fill-[var(--key-special-text)] tracking-wider' : ''
-            } ${isPressed ? '!fill-[var(--key-pressed-text)]' : ''}`}
-            textAnchor="middle"
-            dominantBaseline="middle"
-          >
-            {label}
-          </text>
-        )}
+          )}
+        </g>
       </svg>
     </div>
   );
