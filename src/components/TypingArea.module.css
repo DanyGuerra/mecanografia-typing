@@ -1,7 +1,7 @@
 .typingArea {
   width: 100%;
   max-width: 900px;
-  background: #161616;
+  background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 12px;
   padding: 24px;

@@ -3,13 +3,81 @@
 :root {
   --background: #121212;
   --foreground: #e5e7eb;
-  --panel-bg: #1a1a1a;
+  --panel-bg: #161616;
   --panel-border: #2a2a2a;
   --accent-color: #f3f4f6;
   --text-dim: #555555;
   --text-correct: #ffffff;
   --text-wrong: #ca4754;
+  
+  --btn-group-bg: #1c1c1c;
+  --btn-active-bg: #2e2e2e;
+  --btn-text-inactive: #6b7280;
+  
+  --key-normal-fill: #222222;
+  --key-normal-stroke: #2e2e2e;
+  --key-normal-text: #9ca3af;
+  
+  --key-special-fill: #1c1c1c;
+  --key-special-stroke: #262626;
+  --key-special-text: #4b5563;
+  
+  --key-pressed-fill: #e5e7eb;
+  --key-pressed-stroke: #ffffff;
+  --key-pressed-text: #121212;
+  
+  --key-shadow-normal: #0e0e0e;
+  --key-shadow-special: #0a0a0a;
+  --key-shadow-pressed: #a3a3a3;
+  
   --key-shadow: rgba(0, 0, 0, 0.4);
+  --keyboard-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  
+  --overlay-bg: rgba(18, 18, 18, 0.85);
+  --overlay-completed-bg: rgba(18, 18, 18, 0.95);
+  
+  --scrollbar-thumb: rgba(255, 255, 255, 0.08);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="light"] {
+  --background: #fafafa;
+  --foreground: #222222;
+  --panel-bg: #f5f5f4;
+  --panel-border: #e7e5e4;
+  --accent-color: #1c1917;
+  --text-dim: #a8a29e;
+  --text-correct: #1c1917;
+  --text-wrong: #ca4754;
+  
+  --btn-group-bg: #e7e5e4;
+  --btn-active-bg: #d6d3d1;
+  --btn-text-inactive: #78716c;
+  
+  --key-normal-fill: #e7e5e4;
+  --key-normal-stroke: #d6d3d1;
+  --key-normal-text: #4b5563;
+  
+  --key-special-fill: #f5f5f4;
+  --key-special-stroke: #e7e5e4;
+  --key-special-text: #78716c;
+  
+  --key-pressed-fill: #1c1917;
+  --key-pressed-stroke: #0c0a09;
+  --key-pressed-text: #fafafa;
+  
+  --key-shadow-normal: #d6d3d1;
+  --key-shadow-special: #e7e5e4;
+  --key-shadow-pressed: #78716c;
+  
+  --key-shadow: rgba(0, 0, 0, 0.08);
+  --keyboard-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  
+  --overlay-bg: rgba(250, 250, 250, 0.85);
+  --overlay-completed-bg: rgba(250, 250, 250, 0.95);
+  
+  --scrollbar-thumb: rgba(0, 0, 0, 0.08);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.15);
 }
 
 * {
@@ -65,9 +133,9 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--scrollbar-thumb);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--scrollbar-thumb-hover);
 }

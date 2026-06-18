@@ -5,7 +5,7 @@
 }
 
 .metricCard {
-  background: #161616;
+  background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 8px;
   padding: 14px;
@@ -21,7 +21,7 @@
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  color: #4b5563;
+  color: var(--text-dim);
   letter-spacing: 1px;
   margin-bottom: 2px;
 }

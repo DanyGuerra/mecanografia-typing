@@ -33,17 +33,17 @@ export default function Key({
 
   const isSpecialKey = widthUnit > 1.2 || ['ShiftLeft', 'ShiftRight', 'Enter', 'Space', 'Backspace', 'Tab', 'CapsLock'].includes(code);
 
-  const normalFill = '#222222';
-  const normalBorder = '#2e2e2e';
-  const specialFill = '#1c1c1c';
-  const specialBorder = '#262626';
+  const normalFill = 'var(--key-normal-fill)';
+  const normalBorder = 'var(--key-normal-stroke)';
+  const specialFill = 'var(--key-special-fill)';
+  const specialBorder = 'var(--key-special-stroke)';
   
-  const pressedFill = '#e5e7eb';
-  const pressedBorder = '#ffffff';
+  const pressedFill = 'var(--key-pressed-fill)';
+  const pressedBorder = 'var(--key-pressed-stroke)';
 
   const baseShadowFill = isPressed 
-    ? '#a3a3a3' 
-    : (isSpecialKey ? '#0a0a0a' : '#0e0e0e');
+    ? 'var(--key-shadow-pressed)' 
+    : (isSpecialKey ? 'var(--key-shadow-special)' : 'var(--key-shadow-normal)');
 
   return (
     <div

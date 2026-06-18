@@ -15,6 +15,9 @@
     "nextPhraseBtn": "Next Phrase ->",
     "footerText": "Press physical keys to see the simulator on screen. The keys respond in 3D with mechanical sound.",
     "soundOnTitle": "Disable keyboard sound",
-    "soundOffTitle": "Enable keyboard sound"
+    "soundOffTitle": "Enable keyboard sound",
+    "themeLabel": "Theme",
+    "themeLightTitle": "Switch to light theme",
+    "themeDarkTitle": "Switch to dark theme"
   }
 }

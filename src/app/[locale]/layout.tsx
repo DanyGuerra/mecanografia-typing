@@ -24,6 +24,15 @@ export default async function RootLayout({
   
   return (
     <html lang={locale || 'es'}>
+      <head>
+        <script dangerouslySetInnerHTML={{__html: `
+          (function() {
+            var saved = localStorage.getItem('theme');
+            var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+          })()
+        `}} />
+      </head>
       <body>
         <NextIntlClientProvider messages={messages}>
           {children}

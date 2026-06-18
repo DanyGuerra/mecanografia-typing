@@ -15,6 +15,9 @@
     "nextPhraseBtn": "Siguiente Frase ->",
     "footerText": "Presiona las teclas físicas para ver la simulación en pantalla. Las teclas responden en 3D con sonido mecánico.",
     "soundOnTitle": "Desactivar sonido de teclado",
-    "soundOffTitle": "Activar sonido de teclado"
+    "soundOffTitle": "Activar sonido de teclado",
+    "themeLabel": "Tema",
+    "themeLightTitle": "Cambiar a tema claro",
+    "themeDarkTitle": "Cambiar a tema oscuro"
   }
 }

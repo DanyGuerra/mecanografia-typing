@@ -3,10 +3,10 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 16px;
-  background: #161616;
+  background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--keyboard-box-shadow);
 }
 
 .keyboardFrame {

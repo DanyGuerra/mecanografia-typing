@@ -50,6 +50,32 @@ export default function Home({ params }: PageProps) {
   const [wpm, setWpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const activeTheme = (saved === 'light' || saved === 'dark') ? saved : systemTheme;
+    document.documentElement.setAttribute('data-theme', activeTheme);
+    setTimeout(() => {
+      setTheme(activeTheme);
+    }, 0);
+  }, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('keyboardLanguage');
+    const targetLang = (saved === 'es' || saved === 'en') ? saved : appLanguage;
+    setTimeout(() => {
+      setKeyboardLanguage(targetLang);
+    }, 0);
+  }, [appLanguage]);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    localStorage.setItem('theme', nextTheme);
+    document.documentElement.setAttribute('data-theme', nextTheme);
+  };
 
   const keystrokesCount = useRef(0);
   const correctKeystrokesCount = useRef(0);
@@ -84,12 +110,12 @@ export default function Home({ params }: PageProps) {
   const handleAppLanguageChange = (lang: 'es' | 'en') => {
     handleReset();
     setPhraseIndex(0);
-    setKeyboardLanguage(lang);
     router.push(`/${lang}`);
   };
 
   const handleKeyboardLanguageChange = (lang: 'es' | 'en') => {
     setKeyboardLanguage(lang);
+    localStorage.setItem('keyboardLanguage', lang);
   };
 
   useEffect(() => {
@@ -247,6 +273,11 @@ export default function Home({ params }: PageProps) {
         soundLabel={t('soundLabel')}
         soundOnTitle={t('soundOnTitle')}
         soundOffTitle={t('soundOffTitle')}
+        theme={theme}
+        onThemeToggle={toggleTheme}
+        themeLabel={t('themeLabel')}
+        themeLightTitle={t('themeLightTitle')}
+        themeDarkTitle={t('themeDarkTitle')}
       />
 
       <Dashboard
