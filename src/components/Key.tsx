@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import styles from './Key.module.css';
 
 interface KeyProps {
   label: string;
@@ -23,7 +22,7 @@ export default function Key({
   const baseWidth = 60;
   const padding = 2;
   const nominalWidth = Math.round(baseWidth * widthUnit);
-  const nominalHeight = 52;
+  const nominalHeight = 58;
   const keyWidth = nominalWidth - padding * 2;
   const keyHeight = nominalHeight - padding * 2;
 
@@ -47,7 +46,7 @@ export default function Key({
 
   return (
     <div
-      className={styles.keyContainer}
+      className="flex h-[58px] relative select-none"
       style={{
         flexGrow: flexGrow,
         flexBasis: `${nominalWidth}px`,
@@ -56,7 +55,7 @@ export default function Key({
     >
       <svg
         viewBox={`0 0 ${nominalWidth} ${nominalHeight}`}
-        className={`${styles.keySvg} ${isPressed ? styles.pressed : ''}`}
+        className={`w-full h-full overflow-visible ${isPressed ? '' : 'drop-shadow-[0_1.5px_1.5px_var(--key-shadow)]'}`}
         preserveAspectRatio="none"
       >
         <rect
@@ -88,16 +87,16 @@ export default function Key({
           <>
             <text
               x={padding + 8}
-              y={padding + pressOffsetY + 14}
-              className={`${styles.shiftLabelText} ${isPressed ? styles.pressedLabelTextDark : ''}`}
+              y={padding + pressOffsetY + 15}
+              className={`font-sans text-[10px] font-medium fill-[var(--key-special-text)] pointer-events-none transition-colors duration-75 ${isPressed ? '!fill-[var(--key-pressed-text)]' : ''}`}
               dominantBaseline="middle"
             >
               {shiftLabel}
             </text>
             <text
               x={padding + keyWidth - 8}
-              y={padding + pressOffsetY + capHeight - 11}
-              className={`${styles.mainLabelTextWithShift} ${isPressed ? styles.pressedLabelTextDark : ''}`}
+              y={padding + pressOffsetY + capHeight - 13}
+              className={`font-sans text-[14px] font-semibold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-75 ${isPressed ? '!fill-[var(--key-pressed-text)]' : ''}`}
               textAnchor="end"
               dominantBaseline="middle"
             >
@@ -108,11 +107,9 @@ export default function Key({
           <text
             x={padding + (keyWidth / 2)}
             y={padding + pressOffsetY + (capHeight / 2) + 1.5}
-            className={`
-              ${styles.labelText} 
-              ${isSpecialKey ? styles.specialLabelText : ''} 
-              ${isPressed ? styles.pressedLabelText : ''}
-            `}
+            className={`font-sans text-[16px] font-semibold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-75 ${
+              isSpecialKey ? 'text-[11.5px] font-medium fill-[var(--key-special-text)] tracking-wider' : ''
+            } ${isPressed ? '!fill-[var(--key-pressed-text)]' : ''}`}
             textAnchor="middle"
             dominantBaseline="middle"
           >

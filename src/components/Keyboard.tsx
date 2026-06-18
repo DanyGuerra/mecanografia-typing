@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Key from './Key';
-import styles from './Keyboard.module.css';
 
 interface KeyConfig {
   code: string;
@@ -164,10 +163,10 @@ export default function Keyboard({ language, pressedKeys }: KeyboardProps) {
   const layout = language === 'es' ? spanishLayout : englishLayout;
 
   return (
-    <div className={styles.keyboardContainer}>
-      <div className={styles.keyboardFrame}>
+    <div className="w-full p-4 bg-muted/20 border border-border rounded-xl shadow-sm">
+      <div className="flex flex-col gap-[5px] w-full">
         {layout.map((row, rowIndex) => (
-          <div key={rowIndex} className={styles.keyboardRow}>
+          <div key={rowIndex} className="flex gap-1 w-full justify-between">
             {row.map((key) => (
               <Key
                 key={key.code}

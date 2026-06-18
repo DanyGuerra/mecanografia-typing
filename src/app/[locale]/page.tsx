@@ -10,7 +10,7 @@ import Footer from '@/components/Footer';
 import Dashboard from '@/components/Dashboard';
 import CompletedOverlay from '@/components/CompletedOverlay';
 import { useAudio } from '@/hooks/useAudio';
-import styles from '../page.module.css';
+import { Button } from '@/components/ui/button';
 
 const PHRASES = {
   es: [
@@ -56,10 +56,14 @@ export default function Home({ params }: PageProps) {
     const saved = localStorage.getItem('theme');
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     const activeTheme = (saved === 'light' || saved === 'dark') ? saved : systemTheme;
-    document.documentElement.setAttribute('data-theme', activeTheme);
-    setTimeout(() => {
+    if (activeTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    requestAnimationFrame(() => {
       setTheme(activeTheme);
-    }, 0);
+    });
   }, []);
 
   useEffect(() => {
@@ -74,7 +78,11 @@ export default function Home({ params }: PageProps) {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(nextTheme);
     localStorage.setItem('theme', nextTheme);
-    document.documentElement.setAttribute('data-theme', nextTheme);
+    if (nextTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   };
 
   const keystrokesCount = useRef(0);
@@ -263,7 +271,7 @@ export default function Home({ params }: PageProps) {
   }, []);
 
   return (
-    <div className={styles.mainContainer} ref={containerRef}>
+    <div className="flex flex-col min-h-screen w-full max-w-5xl px-5 py-10 gap-8" ref={containerRef}>
       <Header
         appLanguage={appLanguage}
         onAppLanguageChange={handleAppLanguageChange}
@@ -289,13 +297,13 @@ export default function Home({ params }: PageProps) {
         timeLabel={t('metricTime')}
       />
 
-      <section className={styles.typingSection} onClick={forceFocus}>
+      <section className="relative cursor-pointer w-full" onClick={forceFocus}>
         <TypingArea text={currentPhrase} userInput={userInput} hasError={hasError} />
         
         {!isFocused && (
-          <div className={styles.focusOverlay}>
-            <div className={styles.focusMsg}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.focusIcon}>
+          <div className="absolute inset-0 pb-6 bg-background/85 backdrop-blur-[2px] rounded-xl flex justify-center items-center z-10 border border-border animate-fade-in">
+            <div className="flex flex-col items-center gap-2.5 text-muted-foreground text-sm font-medium text-center p-5">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/60 animate-bounce">
                 <rect x="2" y="4" width="20" height="16" rx="2" ry="2" />
                 <line x1="6" y1="8" x2="6" y2="8" />
                 <line x1="10" y1="8" x2="10" y2="8" />
@@ -323,26 +331,33 @@ export default function Home({ params }: PageProps) {
         )}
       </section>
 
-      <section className={styles.keyboardSection}>
-        <div className={styles.keyboardLabel}>
-          <div className={styles.keyboardLabelLeft}>
+      <section className="flex flex-col gap-2.5">
+        <div className="flex justify-between items-center px-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">
+          <div className="flex items-center gap-2">
             <span>{t('keyboardLabel')}</span>
-            <div className={styles.btnGroup}>
-              <button 
-                className={`${styles.controlBtn} ${styles.miniBtn} ${keyboardLanguage === 'es' ? styles.activeBtn : ''}`}
+            <div className="flex bg-muted border border-border rounded-md p-0.5 h-6">
+              <Button 
+                variant={keyboardLanguage === 'es' ? 'secondary' : 'ghost'}
+                size="xs"
+                className="text-[9px] font-bold h-5 px-1.5 rounded-sm"
                 onClick={() => handleKeyboardLanguageChange('es')}
               >
                 ES
-              </button>
-              <button 
-                className={`${styles.controlBtn} ${styles.miniBtn} ${keyboardLanguage === 'en' ? styles.activeBtn : ''}`}
+              </Button>
+              <Button 
+                variant={keyboardLanguage === 'en' ? 'secondary' : 'ghost'}
+                size="xs"
+                className="text-[9px] font-bold h-5 px-1.5 rounded-sm"
                 onClick={() => handleKeyboardLanguageChange('en')}
               >
                 EN
-              </button>
+              </Button>
             </div>
           </div>
-          <button className={styles.resetTextLink} onClick={() => changePhrase('random')}>
+          <button 
+            className="bg-transparent border-none text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground cursor-pointer transition-colors duration-150" 
+            onClick={() => changePhrase('random')}
+          >
             {t('nextPhraseBtn')}
           </button>
         </div>

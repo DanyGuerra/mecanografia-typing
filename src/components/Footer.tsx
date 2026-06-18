@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import styles from './Footer.module.css';
 
 interface FooterProps {
   text: string;
@@ -9,7 +8,7 @@ interface FooterProps {
 
 export default function Footer({ text }: FooterProps) {
   return (
-    <footer className={styles.footer}>
+    <footer className="text-center text-xs text-muted-foreground mt-auto leading-relaxed border-t border-border pt-4 w-full">
       <p>{text}</p>
     </footer>
   );

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import styles from './TypingArea.module.css';
 
 interface TypingAreaProps {
   text: string;
@@ -11,26 +10,26 @@ interface TypingAreaProps {
 
 export default function TypingArea({ text, userInput, hasError }: TypingAreaProps) {
   return (
-    <div className={`${styles.typingArea} ${hasError ? 'shake-error' : ''}`}>
-      <div className={styles.textContainer}>
+    <div className={`w-full max-w-[900px] bg-muted/30 border border-border rounded-xl p-6 shadow-sm mb-6 ${hasError ? 'shake-error' : ''}`}>
+      <div className="font-mono text-xl leading-relaxed tracking-wide break-words whitespace-pre-wrap select-none">
         {text.split('').map((char, index) => {
-          let charClass = styles.upcoming;
+          let charClass = "text-muted-foreground";
           const isTyped = index < userInput.length;
           const isCurrent = index === userInput.length;
           const isSpace = char === ' ';
 
           if (isTyped) {
             const isCorrect = userInput[index] === char;
-            charClass = isCorrect ? styles.correct : styles.wrong;
+            charClass = isCorrect ? "text-foreground font-semibold" : "text-destructive bg-destructive/15 rounded-[2px] px-[1px]";
           } else if (isCurrent) {
-            charClass = styles.current;
+            charClass = "text-foreground";
           }
 
           return (
-            <span key={index} className={`${styles.char} ${charClass}`}>
+            <span key={index} className={`relative transition-colors duration-100 ${charClass}`}>
               {isCurrent && (
                 <span
-                  className={`${styles.cursor} ${hasError ? styles.cursorError : ''}`}
+                  className={`absolute -left-[1px] top-[15%] h-[70%] w-[2px] inline-block pointer-events-none cursor-blink ${hasError ? 'bg-destructive' : 'bg-foreground'}`}
                 />
               )}
               {isSpace ? ' ' : char}
@@ -38,8 +37,8 @@ export default function TypingArea({ text, userInput, hasError }: TypingAreaProp
           );
         })}
         {userInput.length === text.length && (
-          <span className={`${styles.char} ${styles.current}`}>
-            <span className={styles.cursor} />
+          <span className="relative text-foreground">
+            <span className="absolute -left-[1px] top-[15%] h-[70%] w-[2px] inline-block pointer-events-none cursor-blink bg-foreground" />
           </span>
         )}
       </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import styles from './Dashboard.module.css';
+import { Card } from '@/components/ui/card';
 
 interface DashboardProps {
   wpm: number;
@@ -21,19 +21,31 @@ export default function Dashboard({
   timeLabel,
 }: DashboardProps) {
   return (
-    <section className={styles.dashboard}>
-      <div className={styles.metricCard}>
-        <span className={styles.metricLabel}>{wpmLabel}</span>
-        <span className={styles.metricValue}>{wpm}</span>
-      </div>
-      <div className={styles.metricCard}>
-        <span className={styles.metricLabel}>{accuracyLabel}</span>
-        <span className={styles.metricValue}>{accuracy}%</span>
-      </div>
-      <div className={styles.metricCard}>
-        <span className={styles.metricLabel}>{timeLabel}</span>
-        <span className={styles.metricValue}>{elapsedTime}s</span>
-      </div>
+    <section className="grid grid-cols-3 gap-4">
+      <Card className="flex flex-col items-center justify-center text-center p-4 bg-muted/30 border-border">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+          {wpmLabel}
+        </span>
+        <span className="font-mono text-3xl font-bold text-foreground">
+          {wpm}
+        </span>
+      </Card>
+      <Card className="flex flex-col items-center justify-center text-center p-4 bg-muted/30 border-border">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+          {accuracyLabel}
+        </span>
+        <span className="font-mono text-3xl font-bold text-foreground">
+          {accuracy}%
+        </span>
+      </Card>
+      <Card className="flex flex-col items-center justify-center text-center p-4 bg-muted/30 border-border">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+          {timeLabel}
+        </span>
+        <span className="font-mono text-3xl font-bold text-foreground">
+          {elapsedTime}s
+        </span>
+      </Card>
     </section>
   );
 }
