@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Key from './Key';
 
 interface KeyConfig {
@@ -15,6 +15,7 @@ interface KeyboardProps {
   language: 'es' | 'en';
   pressedKeys: Record<string, boolean>;
   capsLockActive?: boolean;
+  osMode: 'mac' | 'windows';
 }
 
 const englishLayout: KeyConfig[][] = [
@@ -164,8 +165,36 @@ const spanishLayout: KeyConfig[][] = [
   ],
 ];
 
-export default function Keyboard({ language, pressedKeys, capsLockActive }: KeyboardProps) {
-  const layout = language === 'es' ? spanishLayout : englishLayout;
+
+
+export default function Keyboard({ language, pressedKeys, capsLockActive, osMode }: KeyboardProps) {
+  const baseLayout = language === 'es' ? spanishLayout : englishLayout;
+  const layout = baseLayout.map((row, index) => {
+    if (index !== 4) return row;
+
+    if (osMode === 'mac') {
+      return [
+        { code: 'ControlLeft', label: 'Ctrl ⌃', widthUnit: 1.5, flexGrow: 1.5 },
+        { code: 'AltLeft', label: 'Opt ⌥', widthUnit: 1.5, flexGrow: 1.5 },
+        { code: 'MetaLeft', label: 'Cmd ⌘', widthUnit: 1.5, flexGrow: 1.5 },
+        { code: 'Space', label: ' ', widthUnit: 6.0, flexGrow: 6.0 },
+        { code: 'MetaRight', label: 'Cmd ⌘', widthUnit: 1.5, flexGrow: 1.5 },
+        { code: 'AltRight', label: 'Opt ⌥', widthUnit: 1.5, flexGrow: 1.5 },
+        { code: 'ControlRight', label: 'Ctrl ⌃', widthUnit: 1.5, flexGrow: 1.5 },
+      ];
+    } else {
+      return [
+        { code: 'ControlLeft', label: 'Ctrl', widthUnit: 1.5, flexGrow: 1.5 },
+        { code: 'MetaLeft', label: 'Win ⊞', widthUnit: 1.5, flexGrow: 1.5 },
+        { code: 'AltLeft', label: 'Alt', widthUnit: 1.5, flexGrow: 1.5 },
+        { code: 'Space', label: ' ', widthUnit: 6.0, flexGrow: 6.0 },
+        { code: 'AltRight', label: language === 'es' ? 'AltGr' : 'Alt', widthUnit: 1.5, flexGrow: 1.5 },
+        { code: 'MetaRight', label: 'Win ⊞', widthUnit: 1.5, flexGrow: 1.5 },
+        { code: 'ControlRight', label: 'Ctrl', widthUnit: 1.5, flexGrow: 1.5 },
+      ];
+    }
+  });
+
   const isShiftActive = !!pressedKeys['ShiftLeft'] || !!pressedKeys['ShiftRight'];
 
   return (

@@ -52,6 +52,7 @@ export default function Home({ params }: PageProps) {
   const [isCompleted, setIsCompleted] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [capsLockActive, setCapsLockActive] = useState(false);
+  const [osMode, setOsMode] = useState<'mac' | 'windows'>('mac');
 
   useEffect(() => {
     const saved = localStorage.getItem('theme');
@@ -70,8 +71,16 @@ export default function Home({ params }: PageProps) {
   useEffect(() => {
     const saved = localStorage.getItem('keyboardLanguage');
     const targetLang = (saved === 'es' || saved === 'en') ? saved : appLanguage;
+    const savedOs = localStorage.getItem('osMode');
+    let targetOs: 'mac' | 'windows' = 'mac';
+    if (savedOs === 'mac' || savedOs === 'windows') {
+      targetOs = savedOs;
+    } else {
+      targetOs = navigator.userAgent.toLowerCase().includes('mac') ? 'mac' : 'windows';
+    }
     setTimeout(() => {
       setKeyboardLanguage(targetLang);
+      setOsMode(targetOs);
     }, 0);
   }, [appLanguage]);
 
@@ -125,6 +134,11 @@ export default function Home({ params }: PageProps) {
   const handleKeyboardLanguageChange = (lang: 'es' | 'en') => {
     setKeyboardLanguage(lang);
     localStorage.setItem('keyboardLanguage', lang);
+  };
+
+  const handleOsModeChange = (mode: 'mac' | 'windows') => {
+    setOsMode(mode);
+    localStorage.setItem('osMode', mode);
   };
 
   useEffect(() => {
@@ -365,6 +379,25 @@ export default function Home({ params }: PageProps) {
                 EN
               </Button>
             </div>
+            
+            <div className="flex bg-muted border border-border rounded-lg p-0.5 h-6 gap-0.5 shadow-sm ml-2">
+              <Button
+                variant={osMode === 'windows' ? 'secondary' : 'ghost'}
+                size="xs"
+                className="text-[9px] font-bold h-5 px-2 rounded-md transition-all duration-200"
+                onClick={() => handleOsModeChange('windows')}
+              >
+                WIN
+              </Button>
+              <Button
+                variant={osMode === 'mac' ? 'secondary' : 'ghost'}
+                size="xs"
+                className="text-[9px] font-bold h-5 px-2 rounded-md transition-all duration-200"
+                onClick={() => handleOsModeChange('mac')}
+              >
+                MAC
+              </Button>
+            </div>
           </div>
           <Button
             variant="ghost"
@@ -379,7 +412,7 @@ export default function Home({ params }: PageProps) {
             </svg>
           </Button>
         </div>
-        <Keyboard language={keyboardLanguage} pressedKeys={pressedKeys} capsLockActive={capsLockActive} />
+        <Keyboard language={keyboardLanguage} pressedKeys={pressedKeys} capsLockActive={capsLockActive} osMode={osMode} />
       </section>
 
       <Footer text={t('footerText')} />
