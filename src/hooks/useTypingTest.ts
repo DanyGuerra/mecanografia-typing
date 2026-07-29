@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
 import { useAudio } from '@/hooks/useAudio';
 import { PHRASES } from '@/lib/phrases';
 
@@ -20,7 +21,6 @@ export function useTypingTest(locale: string) {
   const [wpm, setWpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [capsLockActive, setCapsLockActive] = useState(false);
   const [osMode, setOsMode] = useState<'mac' | 'windows'>('mac');
 
@@ -32,47 +32,11 @@ export function useTypingTest(locale: string) {
   const { playClick } = useAudio();
   const currentPhrase = PHRASES[appLanguage][phraseIndex];
 
-  // Theme Sync
-  useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    const activeTheme = (saved === 'light' || saved === 'dark') ? saved : systemTheme;
-    if (activeTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    requestAnimationFrame(() => {
-      setTheme(activeTheme);
-    });
-  }, []);
-
-  // Settings Sync
-  useEffect(() => {
-    const saved = localStorage.getItem('keyboardLanguage');
-    const targetLang = (saved === 'es' || saved === 'en') ? saved : appLanguage;
-    const savedOs = localStorage.getItem('osMode');
-    let targetOs: 'mac' | 'windows' = 'mac';
-    if (savedOs === 'mac' || savedOs === 'windows') {
-      targetOs = savedOs;
-    } else {
-      targetOs = navigator.userAgent.toLowerCase().includes('mac') ? 'mac' : 'windows';
-    }
-    setTimeout(() => {
-      setKeyboardLanguage(targetLang);
-      setOsMode(targetOs);
-    }, 0);
-  }, [appLanguage]);
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const currentTheme = (resolvedTheme as 'light' | 'dark') || (theme as 'light' | 'dark') || 'dark';
 
   const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    localStorage.setItem('theme', nextTheme);
-    if (nextTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
   };
 
   const handleReset = useCallback(() => {
@@ -262,7 +226,7 @@ export function useTypingTest(locale: string) {
     appLanguage,
     soundEnabled,
     setSoundEnabled,
-    theme,
+    theme: currentTheme,
     toggleTheme,
     currentPhrase,
     userInput,

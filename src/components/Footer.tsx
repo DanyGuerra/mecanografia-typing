@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Heart } from 'lucide-react';
 
 interface FooterProps {
   text: string;
@@ -8,8 +9,9 @@ interface FooterProps {
 
 export default function Footer({ text }: FooterProps) {
   return (
-    <footer className="text-center text-xs text-muted-foreground mt-auto leading-relaxed border-t border-border pt-4 w-full">
-      <p>{text}</p>
+    <footer className="text-center text-xs text-muted-foreground/80 mt-auto leading-relaxed border-t border-border/80 pt-4 pb-2 w-full flex items-center justify-center gap-1.5 font-medium">
+      <Heart className="size-3 text-destructive/70 fill-destructive/20 inline" />
+      <span>{text}</span>
     </footer>
   );
 }

@@ -1,8 +1,13 @@
-import {NextIntlClientProvider} from 'next-intl';
-import {getMessages} from 'next-intl/server';
-import "../globals.css";
+import { getMessages } from 'next-intl/server';
+import { AppProviders } from '@/components/AppProviders';
+import '../globals.css';
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+interface RootLayoutProps {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({ params }: RootLayoutProps) {
   const { locale } = await params;
   return {
     title: locale === 'en' ? 'Interactive Typing | Typing App' : 'Mecanografía Interactiva | Typing App',
@@ -12,35 +17,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-export default async function RootLayout({
-  children,
-  params,
-}: Readonly<{
-  children: React.ReactNode;
-  params: Promise<{ locale: string }>;
-}>) {
+export default async function RootLayout({ children, params }: RootLayoutProps) {
   const { locale } = await params;
   const messages = await getMessages();
-  
+
   return (
     <html lang={locale || 'es'} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{__html: `
-          (function() {
-            var saved = localStorage.getItem('theme');
-            var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            if (theme === 'dark') {
-              document.documentElement.classList.add('dark');
-            } else {
-              document.documentElement.classList.remove('dark');
-            }
-          })()
-        `}} />
-      </head>
       <body>
-        <NextIntlClientProvider messages={messages}>
+        <AppProviders locale={locale} messages={messages}>
           {children}
-        </NextIntlClientProvider>
+        </AppProviders>
       </body>
     </html>
   );
