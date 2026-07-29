@@ -1,289 +1,53 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { use } from 'react';
 import { useTranslations } from 'next-intl';
-import Keyboard from '@/components/Keyboard';
-import TypingArea from '@/components/TypingArea';
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Dashboard from '@/components/Dashboard';
+import TypingArea from '@/components/TypingArea';
+import Keyboard from '@/components/Keyboard';
 import CompletedOverlay from '@/components/CompletedOverlay';
-import { useAudio } from '@/hooks/useAudio';
-import { Button } from '@/components/ui/button';
+import FocusOverlay from '@/components/FocusOverlay';
+import KeyboardToolbar from '@/components/KeyboardToolbar';
 
-const PHRASES = {
-  es: [
-    "El veloz murciélago hindú comía feliz cardo y escabeche en el gran foso del castillo medieval.",
-    "Mecanografiar con fluidez requiere mantener una postura relajada y no mirar el teclado constantemente.",
-    "La tecnología moderna nos permite desarrollar aplicaciones web interactivas y dinámicas en tiempo récord.",
-    "Bajo el cielo estrellado de la noche, el programador escribía código sin parar para terminar su gran proyecto."
-  ],
-  en: [
-    "The quick brown fox jumps over the lazy dog under the gentle autumn rain in the forest.",
-    "Typing quickly and accurately requires consistent daily practice and proper finger alignment.",
-    "Modern web applications utilize high-performance components to deliver interactive user experiences.",
-    "Under the glowing neon city lights, the developer designed a gorgeous virtual mechanical keyboard."
-  ]
-};
+import { useTypingTest } from '@/hooks/useTypingTest';
 
 interface PageProps {
   params: Promise<{ locale: string }>;
 }
 
 export default function Home({ params }: PageProps) {
-  const router = useRouter();
   const { locale } = use(params);
   const t = useTranslations('HomePage');
 
-  const appLanguage = (locale === 'en' || locale === 'es') ? locale : 'es';
-  const [keyboardLanguage, setKeyboardLanguage] = useState<'es' | 'en'>(appLanguage);
-  const [phraseIndex, setPhraseIndex] = useState(0);
-  const [userInput, setUserInput] = useState('');
-  const [pressedKeys, setPressedKeys] = useState<Record<string, boolean>>({});
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [hasError, setHasError] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
-
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const [wpm, setWpm] = useState(0);
-  const [accuracy, setAccuracy] = useState(100);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
-  const [capsLockActive, setCapsLockActive] = useState(false);
-  const [osMode, setOsMode] = useState<'mac' | 'windows'>('mac');
-
-  useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    const activeTheme = (saved === 'light' || saved === 'dark') ? saved : systemTheme;
-    if (activeTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    requestAnimationFrame(() => {
-      setTheme(activeTheme);
-    });
-  }, []);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('keyboardLanguage');
-    const targetLang = (saved === 'es' || saved === 'en') ? saved : appLanguage;
-    const savedOs = localStorage.getItem('osMode');
-    let targetOs: 'mac' | 'windows' = 'mac';
-    if (savedOs === 'mac' || savedOs === 'windows') {
-      targetOs = savedOs;
-    } else {
-      targetOs = navigator.userAgent.toLowerCase().includes('mac') ? 'mac' : 'windows';
-    }
-    setTimeout(() => {
-      setKeyboardLanguage(targetLang);
-      setOsMode(targetOs);
-    }, 0);
-  }, [appLanguage]);
-
-  const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    localStorage.setItem('theme', nextTheme);
-    if (nextTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
-
-  const keystrokesCount = useRef(0);
-  const correctKeystrokesCount = useRef(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const { playClick } = useAudio();
-  const currentPhrase = PHRASES[appLanguage][phraseIndex];
-
-  const handleReset = useCallback(() => {
-    setUserInput('');
-    setStartTime(null);
-    setElapsedTime(0);
-    setWpm(0);
-    setAccuracy(100);
-    setIsCompleted(false);
-    setHasError(false);
-    keystrokesCount.current = 0;
-    correctKeystrokesCount.current = 0;
-  }, []);
-
-  const changePhrase = useCallback((direction: 'next' | 'random') => {
-    handleReset();
-    if (direction === 'next') {
-      setPhraseIndex((prev) => (prev + 1) % PHRASES[appLanguage].length);
-    } else {
-      const randomIndex = Math.floor(Math.random() * PHRASES[appLanguage].length);
-      setPhraseIndex(randomIndex);
-    }
-  }, [appLanguage, handleReset]);
-
-  const handleAppLanguageChange = (lang: 'es' | 'en') => {
-    handleReset();
-    setPhraseIndex(0);
-    router.push(`/${lang}`);
-  };
-
-  const handleKeyboardLanguageChange = (lang: 'es' | 'en') => {
-    setKeyboardLanguage(lang);
-    localStorage.setItem('keyboardLanguage', lang);
-  };
-
-  const handleOsModeChange = (mode: 'mac' | 'windows') => {
-    setOsMode(mode);
-    localStorage.setItem('osMode', mode);
-  };
-
-  useEffect(() => {
-    if (startTime && !isCompleted) {
-      const interval = setInterval(() => {
-        const now = Date.now();
-        const elapsedSecs = Math.round((now - startTime) / 1000);
-        setElapsedTime(elapsedSecs);
-
-        const timeDiffMinutes = (now - startTime) / 60000;
-        if (timeDiffMinutes > 0) {
-          let correctChars = 0;
-          for (let i = 0; i < userInput.length; i++) {
-            if (userInput[i] === currentPhrase[i]) {
-              correctChars++;
-            }
-          }
-          setWpm(Math.round((correctChars / 5) / timeDiffMinutes));
-        }
-      }, 500);
-      return () => clearInterval(interval);
-    }
-  }, [startTime, isCompleted, userInput, currentPhrase]);
-
-  const handleKeyPress = useCallback((key: string, code: string) => {
-    if (userInput.length === currentPhrase.length) return;
-
-    let currentStartTime = startTime;
-    if (!startTime) {
-      currentStartTime = Date.now();
-      setStartTime(currentStartTime);
-    }
-
-    if (soundEnabled) {
-      if (code === 'Space') {
-        playClick('space');
-      } else if (code === 'Backspace') {
-        playClick('backspace');
-      } else {
-        playClick('standard');
-      }
-    }
-
-    let nextUserInput = userInput;
-    if (code === 'Backspace') {
-      if (userInput.length > 0) {
-        nextUserInput = userInput.slice(0, -1);
-        setUserInput(nextUserInput);
-        setHasError(false);
-      }
-      return;
-    }
-
-    if (key.length === 1) {
-      keystrokesCount.current += 1;
-      const expectedChar = currentPhrase[userInput.length];
-
-      if (userInput.length < currentPhrase.length) {
-        const isCorrect = key === expectedChar;
-        if (isCorrect) {
-          correctKeystrokesCount.current += 1;
-          setHasError(false);
-        } else {
-          setHasError(true);
-          if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
-          errorTimeoutRef.current = setTimeout(() => setHasError(false), 200);
-        }
-        nextUserInput = userInput + key;
-        setUserInput(nextUserInput);
-      }
-    }
-
-    if (currentStartTime) {
-      const now = Date.now();
-      const elapsedSecs = Math.round((now - currentStartTime) / 1000);
-      setElapsedTime(elapsedSecs);
-
-      const timeDiffMinutes = (now - currentStartTime) / 60000;
-      if (timeDiffMinutes > 0) {
-        let correctChars = 0;
-        for (let i = 0; i < nextUserInput.length; i++) {
-          if (nextUserInput[i] === currentPhrase[i]) {
-            correctChars++;
-          }
-        }
-        setWpm(Math.round((correctChars / 5) / timeDiffMinutes));
-      }
-    }
-
-    if (keystrokesCount.current > 0) {
-      setAccuracy(Math.round((correctKeystrokesCount.current / keystrokesCount.current) * 100));
-    }
-
-    if (nextUserInput.length === currentPhrase.length && nextUserInput.length > 0) {
-      setIsCompleted(true);
-    }
-  }, [userInput, currentPhrase, startTime, soundEnabled, playClick]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      setPressedKeys((prev) => ({ ...prev, [e.code]: true }));
-      
-      // Update CapsLock state reliably from the OS
-      setCapsLockActive(e.getModifierState('CapsLock'));
-
-      if (!isFocused) return;
-
-      if (e.code === 'Space' || e.code === 'Backspace' || e.code === 'Tab') {
-        e.preventDefault();
-      }
-
-      handleKeyPress(e.key, e.code);
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      setPressedKeys((prev) => ({ ...prev, [e.code]: false }));
-      setCapsLockActive(e.getModifierState('CapsLock'));
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
-    };
-  }, [isFocused, handleKeyPress]);
-
-  const forceFocus = () => {
-    setIsFocused(true);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsFocused(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  const {
+    appLanguage,
+    soundEnabled,
+    setSoundEnabled,
+    theme,
+    toggleTheme,
+    currentPhrase,
+    userInput,
+    hasError,
+    isFocused,
+    containerRef,
+    wpm,
+    accuracy,
+    elapsedTime,
+    isCompleted,
+    keyboardLanguage,
+    pressedKeys,
+    capsLockActive,
+    osMode,
+    handleReset,
+    changePhrase,
+    handleAppLanguageChange,
+    handleKeyboardLanguageChange,
+    handleOsModeChange,
+    forceFocus,
+  } = useTypingTest(locale);
 
   return (
     <div className="flex flex-col min-h-screen w-full max-w-5xl px-5 py-10 gap-8" ref={containerRef}>
@@ -315,24 +79,7 @@ export default function Home({ params }: PageProps) {
       <section className="relative cursor-pointer w-full" onClick={forceFocus}>
         <TypingArea text={currentPhrase} userInput={userInput} hasError={hasError} />
 
-        {!isFocused && (
-          <div className="absolute inset-0 pb-6 bg-background/85 backdrop-blur-[2px] rounded-xl flex justify-center items-center z-10 border border-border animate-fade-in">
-            <div className="flex flex-col items-center gap-2.5 text-muted-foreground text-sm font-medium text-center p-5">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/60 animate-bounce">
-                <rect x="2" y="4" width="20" height="16" rx="2" ry="2" />
-                <line x1="6" y1="8" x2="6" y2="8" />
-                <line x1="10" y1="8" x2="10" y2="8" />
-                <line x1="14" y1="8" x2="14" y2="8" />
-                <line x1="18" y1="8" x2="18" y2="8" />
-                <line x1="6" y1="12" x2="6" y2="12" />
-                <line x1="18" y1="12" x2="18" y2="12" />
-                <line x1="7" y1="16" x2="17" y2="16" />
-                <line x1="10" y1="12" x2="14" y2="12" />
-              </svg>
-              <span>{t('focusMessage')}</span>
-            </div>
-          </div>
-        )}
+        {!isFocused && <FocusOverlay message={t('focusMessage')} />}
 
         {isCompleted && (
           <CompletedOverlay
@@ -347,72 +94,21 @@ export default function Home({ params }: PageProps) {
       </section>
 
       <section className="flex flex-col gap-2.5">
-        <div className="flex justify-between items-center px-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">
-          <div className="flex items-center gap-2">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/60">
-              <rect x="2" y="4" width="20" height="16" rx="2" ry="2" />
-              <path d="M6 8h.01" />
-              <path d="M10 8h.01" />
-              <path d="M14 8h.01" />
-              <path d="M18 8h.01" />
-              <path d="M6 12h.01" />
-              <path d="M18 12h.01" />
-              <path d="M7 16h10" />
-              <path d="M10 12h4" />
-            </svg>
-            <span>{t('keyboardLabel')}</span>
-            <div className="flex bg-muted border border-border rounded-lg p-0.5 h-6 gap-0.5 shadow-sm">
-              <Button
-                variant={keyboardLanguage === 'es' ? 'secondary' : 'ghost'}
-                size="xs"
-                className="text-[9px] font-bold h-5 px-2 rounded-md transition-all duration-200"
-                onClick={() => handleKeyboardLanguageChange('es')}
-              >
-                ES
-              </Button>
-              <Button
-                variant={keyboardLanguage === 'en' ? 'secondary' : 'ghost'}
-                size="xs"
-                className="text-[9px] font-bold h-5 px-2 rounded-md transition-all duration-200"
-                onClick={() => handleKeyboardLanguageChange('en')}
-              >
-                EN
-              </Button>
-            </div>
-            
-            <div className="flex bg-muted border border-border rounded-lg p-0.5 h-6 gap-0.5 shadow-sm ml-2">
-              <Button
-                variant={osMode === 'windows' ? 'secondary' : 'ghost'}
-                size="xs"
-                className="text-[9px] font-bold h-5 px-2 rounded-md transition-all duration-200"
-                onClick={() => handleOsModeChange('windows')}
-              >
-                WIN
-              </Button>
-              <Button
-                variant={osMode === 'mac' ? 'secondary' : 'ghost'}
-                size="xs"
-                className="text-[9px] font-bold h-5 px-2 rounded-md transition-all duration-200"
-                onClick={() => handleOsModeChange('mac')}
-              >
-                MAC
-              </Button>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-[10px] font-bold uppercase tracking-wider h-6 rounded-md px-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 gap-1.5 transition-all duration-200 group/btn"
-            onClick={() => changePhrase('random')}
-          >
-            <span>{t('nextPhraseBtn').replace('->', '').trim()}</span>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-200 group-hover/btn:translate-x-0.5 opacity-80">
-              <path d="M5 12h14" />
-              <path d="m12 5 7 7-7 7" />
-            </svg>
-          </Button>
-        </div>
-        <Keyboard language={keyboardLanguage} pressedKeys={pressedKeys} capsLockActive={capsLockActive} osMode={osMode} />
+        <KeyboardToolbar
+          label={t('keyboardLabel')}
+          keyboardLanguage={keyboardLanguage}
+          onKeyboardLanguageChange={handleKeyboardLanguageChange}
+          osMode={osMode}
+          onOsModeChange={handleOsModeChange}
+          nextPhraseLabel={t('nextPhraseBtn')}
+          onNextPhrase={() => changePhrase('random')}
+        />
+        <Keyboard
+          language={keyboardLanguage}
+          pressedKeys={pressedKeys}
+          capsLockActive={capsLockActive}
+          osMode={osMode}
+        />
       </section>
 
       <Footer text={t('footerText')} />
