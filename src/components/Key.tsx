@@ -93,13 +93,13 @@ function Key({
           {hasHomingBar && (
             <line
               x1={padding + (keyWidth / 2) - 5}
-              y1={padding + (capHeight / 2) + 12}
+              y1={padding + capHeight - 6}
               x2={padding + (keyWidth / 2) + 5}
-              y2={padding + (capHeight / 2) + 12}
+              y2={padding + capHeight - 6}
               stroke={isPressed ? 'var(--key-pressed-text)' : 'var(--key-normal-text)'}
-              strokeWidth={2.5}
+              strokeWidth={1.8}
               strokeLinecap="round"
-              opacity={0.8}
+              opacity={0.6}
             />
           )}
 
