@@ -196,7 +196,7 @@ function Keyboard({ language, pressedKeys, capsLockActive, osMode }: KeyboardPro
   const isShiftActive = !!pressedKeys['ShiftLeft'] || !!pressedKeys['ShiftRight'];
 
   return (
-    <div className="w-full p-5 sm:p-6 bg-muted/20 border border-border rounded-xl shadow-sm">
+    <div className="w-full p-3 sm:p-4 bg-muted/20 border border-border rounded-xl shadow-sm">
       <div className="flex flex-col gap-[5px] w-full">
         {layout.map((row, rowIndex) => (
           <div key={rowIndex} className="flex gap-1 w-full justify-between">

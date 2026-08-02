@@ -48,7 +48,7 @@ export default function Home({ params }: PageProps) {
   } = useTypingTest(locale);
 
   return (
-    <div className="flex flex-col min-h-screen w-full max-w-5xl px-5 py-8 mx-auto gap-6" ref={containerRef}>
+    <div className="flex flex-col min-h-screen h-screen max-h-screen overflow-hidden w-full max-w-5xl px-4 sm:px-6 py-3 sm:py-4 mx-auto justify-between gap-2.5 sm:gap-3" ref={containerRef}>
       <Header
         appLanguage={appLanguage}
         onAppLanguageChange={handleAppLanguageChange}

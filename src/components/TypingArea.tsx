@@ -223,18 +223,18 @@ function TypingArea({
       </div>
 
       {/* Main Content Area */}
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-5">
         {isEditingMode ? (
-          <form onSubmit={handleCustomSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleCustomSubmit} className="flex flex-col gap-3">
             <div className="relative">
               <textarea
                 value={customInputText}
                 onChange={(e) => setCustomInputText(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={customTextPlaceholder}
-                rows={4}
+                rows={3}
                 autoFocus
-                className="w-full p-4 rounded-md border border-input bg-background font-mono text-lg leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none transition-colors max-h-[220px]"
+                className="w-full p-3.5 rounded-md border border-input bg-background font-mono text-base sm:text-lg leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none transition-colors max-h-[160px]"
               />
               <div className="absolute right-3 bottom-3 text-xs text-muted-foreground flex items-center gap-1 font-mono">
                 <Text className="size-3.5" />
@@ -275,7 +275,7 @@ function TypingArea({
             ref={textContainerRef}
             onWheel={(e) => e.preventDefault()}
             onTouchMove={(e) => e.preventDefault()}
-            className="font-mono text-xl sm:text-2xl leading-[2.8rem] sm:leading-[3.2rem] tracking-wide break-words whitespace-pre-wrap select-none max-h-[170px] overflow-hidden pr-1"
+            className="font-mono text-xl sm:text-2xl leading-[2.5rem] sm:leading-[2.8rem] tracking-wide break-words whitespace-pre-wrap select-none max-h-[125px] sm:max-h-[145px] overflow-hidden pr-1"
           >
             {text.split('').map((char, index) => {
               const isTyped = index < userInput.length;

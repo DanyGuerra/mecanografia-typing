@@ -24,7 +24,7 @@ function Key({
   const baseWidth = 60;
   const padding = 2;
   const nominalWidth = Math.round(baseWidth * widthUnit);
-  const nominalHeight = 58;
+  const nominalHeight = 50;
   const keyWidth = nominalWidth - padding * 2;
   const keyHeight = nominalHeight - padding * 2;
 
@@ -50,7 +50,7 @@ function Key({
 
   return (
     <div
-      className="flex h-[58px] relative select-none"
+      className="flex h-[50px] relative select-none"
       style={{
         flexGrow: flexGrow,
         flexBasis: `${nominalWidth}px`,
