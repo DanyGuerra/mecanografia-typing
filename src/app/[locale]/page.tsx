@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Dashboard from '@/components/Dashboard';
 import TypingArea from '@/components/TypingArea';
 import Keyboard from '@/components/Keyboard';
 import CompletedOverlay from '@/components/CompletedOverlay';
@@ -33,6 +34,7 @@ export default function Home({ params }: PageProps) {
     containerRef,
     wpm,
     accuracy,
+    elapsedTime,
     isCompleted,
     keyboardLanguage,
     pressedKeys,
@@ -46,7 +48,7 @@ export default function Home({ params }: PageProps) {
   } = useTypingTest(locale);
 
   return (
-    <div className="flex flex-col min-h-screen w-full max-w-5xl px-5 py-10 gap-7" ref={containerRef}>
+    <div className="flex flex-col min-h-screen w-full max-w-5xl px-5 py-8 mx-auto gap-6" ref={containerRef}>
       <Header
         appLanguage={appLanguage}
         onAppLanguageChange={handleAppLanguageChange}
@@ -63,6 +65,15 @@ export default function Home({ params }: PageProps) {
         themeDarkTitle={t('themeDarkTitle')}
       />
 
+      <Dashboard
+        wpm={wpm}
+        accuracy={accuracy}
+        elapsedTime={elapsedTime}
+        wpmLabel={t('wpmLabel')}
+        accuracyLabel={t('accuracyLabel')}
+        timeLabel={t('timeLabel')}
+      />
+
       <section className="relative w-full">
         <TypingArea
           text={currentPhrase}
@@ -72,24 +83,35 @@ export default function Home({ params }: PageProps) {
           onApplyCustomText={(text) => {
             setCustomPhrase(text);
           }}
-          customTextTitle={t('customTextTitle')}
           customTextPlaceholder={t('customTextPlaceholder')}
           customTextApply={t('customTextApply')}
+          customTextCancel={t('customTextCancel')}
+          changeTextBtn={t('changeTextBtn')}
+          editTextTitle={t('editTextTitle')}
+          enterTextPrompt={t('enterTextPrompt')}
+          typingErrorAlert={t('typingErrorAlert')}
+          progressLabel={t('progressLabel')}
+          charCountLabel={t('charCountLabel')}
+          pressCtrlEnterHint={t('pressCtrlEnterHint')}
         />
 
         {isCompleted && (
           <CompletedOverlay
             wpm={wpm}
             accuracy={accuracy}
+            elapsedTime={elapsedTime}
             onRestart={handleReset}
             title={t('completedTitle')}
             body={t('completedBody', { wpm, accuracy })}
             restartBtnLabel={t('restartBtn')}
+            wpmLabel={t('wpmLabel')}
+            accuracyLabel={t('accuracyLabel')}
+            timeLabel={t('timeLabel')}
           />
         )}
       </section>
 
-      <section className="flex flex-col gap-2.5">
+      <section className="flex flex-col gap-3">
         <KeyboardToolbar
           label={t('keyboardLabel')}
           keyboardLanguage={keyboardLanguage}
@@ -105,7 +127,11 @@ export default function Home({ params }: PageProps) {
         />
       </section>
 
-      <Footer text={t('footerText')} />
+      <Footer
+        text={t('footerText')}
+        newlineHint={t('newlineHint')}
+        saveTextHint={t('saveTextHint')}
+      />
     </div>
   );
 }

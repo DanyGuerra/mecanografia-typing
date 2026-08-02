@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect, memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PenLine, Play, CheckCircle2, AlertCircle, X, Text } from 'lucide-react';
@@ -11,9 +11,16 @@ interface TypingAreaProps {
   hasError: boolean;
   errorKey?: number;
   onApplyCustomText: (text: string) => void;
-  customTextTitle: string;
   customTextPlaceholder: string;
   customTextApply: string;
+  customTextCancel: string;
+  changeTextBtn: string;
+  editTextTitle: string;
+  enterTextPrompt: string;
+  typingErrorAlert: string;
+  progressLabel: string;
+  charCountLabel: string;
+  pressCtrlEnterHint: string;
 }
 
 interface CharItemProps {
@@ -25,7 +32,7 @@ interface CharItemProps {
   innerRef?: React.Ref<HTMLSpanElement>;
 }
 
-const CharItem = React.memo(function CharItem({
+const CharItem = memo(function CharItem({
   char,
   isTyped,
   isCurrent,
@@ -81,6 +88,14 @@ function TypingArea({
   onApplyCustomText,
   customTextPlaceholder,
   customTextApply,
+  customTextCancel,
+  changeTextBtn,
+  editTextTitle,
+  enterTextPrompt,
+  typingErrorAlert,
+  progressLabel,
+  charCountLabel,
+  pressCtrlEnterHint,
 }: TypingAreaProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [customInputText, setCustomInputText] = useState('');
@@ -159,17 +174,17 @@ function TypingArea({
           {isEditingMode ? (
             <span className="font-semibold text-foreground flex items-center gap-1.5">
               <PenLine className="size-4 text-primary" />
-              <span>{text.length === 0 ? 'Ingresa tu texto para practicar' : 'Editar texto'}</span>
+              <span>{text.length === 0 ? enterTextPrompt : editTextTitle}</span>
             </span>
           ) : hasError ? (
             <span className="flex items-center gap-1 text-destructive font-medium animate-pulse">
               <AlertCircle className="size-3.5" />
-              <span>Error de escritura</span>
+              <span>{typingErrorAlert}</span>
             </span>
           ) : (
             <span className="flex items-center gap-1.5 font-medium">
               <CheckCircle2 className="size-3.5 text-primary" />
-              <span>Progreso: {progressPercent}%</span>
+              <span>{progressLabel}: {progressPercent}%</span>
             </span>
           )}
         </div>
@@ -187,7 +202,7 @@ function TypingArea({
               className="h-7 px-2.5 text-xs gap-1.5 font-medium"
             >
               <PenLine className="size-3.5 text-primary" />
-              <span>Cambiar Texto</span>
+              <span>{changeTextBtn}</span>
             </Button>
           ) : (
             text.length > 0 && (
@@ -198,7 +213,7 @@ function TypingArea({
                   e.stopPropagation();
                   setIsEditing(false);
                 }}
-                title="Cancelar"
+                title={customTextCancel}
               >
                 <X className="size-4" />
               </Button>
@@ -223,13 +238,13 @@ function TypingArea({
               />
               <div className="absolute right-3 bottom-3 text-xs text-muted-foreground flex items-center gap-1 font-mono">
                 <Text className="size-3.5" />
-                <span>{customInputText.length} caracteres</span>
+                <span>{customInputText.length} {charCountLabel}</span>
               </div>
             </div>
 
             <div className="flex justify-between items-center">
               <span className="text-xs text-muted-foreground hidden sm:inline">
-                Presiona <kbd className="px-1.5 py-0.5 rounded bg-muted border border-border text-[10px] font-mono">Ctrl</kbd> + <kbd className="px-1.5 py-0.5 rounded bg-muted border border-border text-[10px] font-mono">Enter</kbd> para guardar y comenzar
+                {pressCtrlEnterHint}
               </span>
 
               <div className="flex items-center gap-2 ml-auto">
@@ -240,7 +255,7 @@ function TypingArea({
                     size="sm"
                     onClick={() => setIsEditing(false)}
                   >
-                    Cancelar
+                    {customTextCancel}
                   </Button>
                 )}
                 <Button
@@ -291,4 +306,4 @@ function TypingArea({
   );
 }
 
-export default React.memo(TypingArea);
+export default memo(TypingArea);

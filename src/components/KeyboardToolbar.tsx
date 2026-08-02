@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Keyboard } from 'lucide-react';
+import { Keyboard, Laptop, Monitor } from 'lucide-react';
 
 interface KeyboardToolbarProps {
   label: string;
@@ -12,7 +12,7 @@ interface KeyboardToolbarProps {
   onOsModeChange: (mode: 'mac' | 'windows') => void;
 }
 
-export default function KeyboardToolbar({
+function KeyboardToolbar({
   label,
   keyboardLanguage,
   onKeyboardLanguageChange,
@@ -20,53 +20,57 @@ export default function KeyboardToolbar({
   onOsModeChange,
 }: KeyboardToolbarProps) {
   return (
-    <div className="flex justify-between items-center px-0.5 text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
-      <div className="flex items-center gap-2.5">
-        <div className="flex items-center gap-1.5">
-          <Keyboard className="size-3.5 text-muted-foreground/70" />
+    <div className="flex justify-between items-center px-1 text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground select-none">
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-1.5 text-foreground/90 font-bold">
+          <Keyboard className="size-4 text-primary" />
           <span>{label}</span>
         </div>
 
         {/* Keyboard Layout Language Selector */}
-        <div className="flex bg-muted/80 border border-border/80 rounded-lg p-0.5 h-6 gap-0.5 shadow-2xs">
+        <div className="flex bg-muted/80 border border-border/80 rounded-lg p-0.5 h-7 gap-0.5 shadow-2xs items-center">
           <Button
-            variant={keyboardLanguage === 'es' ? 'secondary' : 'ghost'}
+            variant={keyboardLanguage === 'es' ? 'default' : 'ghost'}
             size="xs"
-            className="text-[9px] font-black h-5 px-2 rounded-md transition-all duration-200"
+            className="text-[10px] font-bold h-6 px-2.5 rounded-md transition-all duration-150"
             onClick={() => onKeyboardLanguageChange('es')}
           >
-            ES
+            ES PAÑOL
           </Button>
           <Button
-            variant={keyboardLanguage === 'en' ? 'secondary' : 'ghost'}
+            variant={keyboardLanguage === 'en' ? 'default' : 'ghost'}
             size="xs"
-            className="text-[9px] font-black h-5 px-2 rounded-md transition-all duration-200"
+            className="text-[10px] font-bold h-6 px-2.5 rounded-md transition-all duration-150"
             onClick={() => onKeyboardLanguageChange('en')}
           >
-            EN
+            ENGLISH
           </Button>
         </div>
 
         {/* OS Mode Switcher */}
-        <div className="flex bg-muted/80 border border-border/80 rounded-lg p-0.5 h-6 gap-0.5 shadow-2xs ml-1">
-          <Button
-            variant={osMode === 'windows' ? 'secondary' : 'ghost'}
-            size="xs"
-            className="text-[9px] font-black h-5 px-2 rounded-md transition-all duration-200"
-            onClick={() => onOsModeChange('windows')}
-          >
-            WIN
-          </Button>
+        <div className="flex bg-muted/80 border border-border/80 rounded-lg p-0.5 h-7 gap-0.5 shadow-2xs items-center ml-1">
           <Button
             variant={osMode === 'mac' ? 'secondary' : 'ghost'}
             size="xs"
-            className="text-[9px] font-black h-5 px-2 rounded-md transition-all duration-200"
+            className="text-[10px] font-bold h-6 px-2.5 gap-1 rounded-md transition-all duration-150"
             onClick={() => onOsModeChange('mac')}
           >
-            MAC
+            <Laptop className="size-3" />
+            <span>macOS</span>
+          </Button>
+          <Button
+            variant={osMode === 'windows' ? 'secondary' : 'ghost'}
+            size="xs"
+            className="text-[10px] font-bold h-6 px-2.5 gap-1 rounded-md transition-all duration-150"
+            onClick={() => onOsModeChange('windows')}
+          >
+            <Monitor className="size-3" />
+            <span>Windows</span>
           </Button>
         </div>
       </div>
     </div>
   );
 }
+
+export default memo(KeyboardToolbar);

@@ -29,8 +29,18 @@ export function useTypingTest(locale: string) {
   const containerRef = useRef<HTMLDivElement>(null);
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { playClick } = useAudio();
+  const userInputRef = useRef(userInput);
+  useEffect(() => {
+    userInputRef.current = userInput;
+  }, [userInput]);
+
   const currentPhrase = customPhrase;
+  const currentPhraseRef = useRef(currentPhrase);
+  useEffect(() => {
+    currentPhraseRef.current = currentPhrase;
+  }, [currentPhrase]);
+
+  const { playClick } = useAudio();
 
   const { theme, setTheme, resolvedTheme } = useTheme();
   const currentTheme = (resolvedTheme as 'light' | 'dark') || (theme as 'light' | 'dark') || 'dark';
@@ -79,28 +89,33 @@ export function useTypingTest(locale: string) {
     localStorage.setItem('osMode', mode);
   };
 
-  // Timer & WPM calculation
+  // Timer & WPM calculation (Interval runs smoothly without being reset on every keypress)
   useEffect(() => {
-    if (startTime && !isCompleted && currentPhrase.length > 0) {
+    if (startTime && !isCompleted) {
       const interval = setInterval(() => {
         const now = Date.now();
-        const elapsedSecs = Math.round((now - startTime) / 1000);
+        const elapsedMs = now - startTime;
+        const elapsedSecs = Math.max(1, Math.floor(elapsedMs / 1000));
         setElapsedTime(elapsedSecs);
 
-        const timeDiffMinutes = (now - startTime) / 60000;
+        const timeDiffMinutes = elapsedMs / 60000;
         if (timeDiffMinutes > 0) {
+          const input = userInputRef.current;
+          const phrase = currentPhraseRef.current;
           let correctChars = 0;
-          for (let i = 0; i < userInput.length; i++) {
-            if (userInput[i] === currentPhrase[i]) {
+          for (let i = 0; i < input.length; i++) {
+            if (input[i] === phrase[i]) {
               correctChars++;
             }
           }
-          setWpm(Math.round((correctChars / 5) / timeDiffMinutes));
+          const calculatedWpm = Math.round((correctChars / 5) / timeDiffMinutes);
+          setWpm(calculatedWpm);
         }
-      }, 500);
+      }, 250);
+
       return () => clearInterval(interval);
     }
-  }, [startTime, isCompleted, userInput, currentPhrase]);
+  }, [startTime, isCompleted]);
 
   const handleKeyPress = useCallback((key: string, code: string) => {
     if (!currentPhrase || currentPhrase.length === 0 || userInput.length === currentPhrase.length) return;
@@ -164,6 +179,19 @@ export function useTypingTest(locale: string) {
 
     if (nextUserInput.length === currentPhrase.length && nextUserInput.length > 0) {
       setIsCompleted(true);
+      const finalTimeMs = Date.now() - (currentStartTime || Date.now());
+      const finalSecs = Math.max(1, Math.round(finalTimeMs / 1000));
+      setElapsedTime(finalSecs);
+      const finalMinutes = finalTimeMs / 60000;
+      if (finalMinutes > 0) {
+        let correctChars = 0;
+        for (let i = 0; i < nextUserInput.length; i++) {
+          if (nextUserInput[i] === currentPhrase[i]) {
+            correctChars++;
+          }
+        }
+        setWpm(Math.round((correctChars / 5) / finalMinutes));
+      }
     }
   }, [userInput, currentPhrase, startTime, soundEnabled, playClick]);
 

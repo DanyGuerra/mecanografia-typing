@@ -1,66 +1,94 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trophy, RotateCcw, Gauge, Target } from 'lucide-react';
+import { Trophy, RotateCcw, Gauge, Target, Clock, Sparkles } from 'lucide-react';
 
 interface CompletedOverlayProps {
   wpm: number;
   accuracy: number;
+  elapsedTime: number;
   onRestart: () => void;
   title: string;
   body: string;
   restartBtnLabel: string;
+  wpmLabel: string;
+  accuracyLabel: string;
+  timeLabel: string;
 }
 
-export default function CompletedOverlay({
+function formatTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  if (mins > 0) {
+    return `${mins}m ${secs}s`;
+  }
+  return `${secs}s`;
+}
+
+function CompletedOverlay({
   wpm,
   accuracy,
+  elapsedTime,
   onRestart,
   title,
   body,
   restartBtnLabel,
+  wpmLabel,
+  accuracyLabel,
+  timeLabel,
 }: CompletedOverlayProps) {
   return (
-    <div className="absolute inset-0 bg-background/80 backdrop-blur-md rounded-xl flex justify-center items-center z-20 animate-fade-in p-4">
-      <Card className="w-full max-w-sm border border-border/80 bg-card/95 shadow-xl text-center flex flex-col items-center p-6 overflow-hidden relative">
-        <div className="size-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 mb-3 animate-bounce shadow-2xs">
-          <Trophy className="size-7" />
+    <div className="absolute inset-0 bg-background/85 backdrop-blur-md rounded-xl flex justify-center items-center z-30 p-4 animate-in fade-in zoom-in-95 duration-200">
+      <Card className="w-full max-w-md border border-border bg-card shadow-2xl text-center flex flex-col items-center p-6 overflow-hidden relative">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="size-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 shadow-xs">
+            <Trophy className="size-7 animate-bounce" />
+          </div>
         </div>
 
         <CardHeader className="p-0 mb-3">
-          <CardTitle className="text-2xl font-black tracking-tight text-foreground">
-            {title}
+          <CardTitle className="text-2xl font-black tracking-tight text-foreground flex items-center justify-center gap-1.5">
+            <span>{title}</span>
+            <Sparkles className="size-5 text-amber-500 fill-amber-500/20" />
           </CardTitle>
-          <CardDescription className="text-muted-foreground text-xs leading-relaxed max-w-[280px] mt-1">
+          <CardDescription className="text-muted-foreground text-xs leading-relaxed max-w-[320px] mt-1">
             {body}
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="p-0 w-full grid grid-cols-2 gap-3 my-2">
-          <div className="flex flex-col items-center p-3 rounded-lg bg-muted/50 border border-border/60">
-            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
-              <Gauge className="size-3.5 text-primary" />
-              <span>WPM</span>
+        <CardContent className="p-0 w-full grid grid-cols-3 gap-2.5 my-2">
+          <div className="flex flex-col items-center p-2.5 rounded-lg bg-muted/50 border border-border/60">
+            <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+              <Gauge className="size-3 text-primary" />
+              <span>{wpmLabel}</span>
             </div>
-            <span className="font-mono text-2xl font-black text-foreground">{wpm}</span>
+            <span className="font-mono text-xl font-black text-foreground">{wpm}</span>
           </div>
 
-          <div className="flex flex-col items-center p-3 rounded-lg bg-muted/50 border border-border/60">
-            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
-              <Target className="size-3.5 text-emerald-500" />
-              <span>Precisión</span>
+          <div className="flex flex-col items-center p-2.5 rounded-lg bg-muted/50 border border-border/60">
+            <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+              <Target className="size-3 text-emerald-500" />
+              <span>{accuracyLabel}</span>
             </div>
-            <span className="font-mono text-2xl font-black text-foreground">{accuracy}%</span>
+            <span className="font-mono text-xl font-black text-foreground">{accuracy}%</span>
+          </div>
+
+          <div className="flex flex-col items-center p-2.5 rounded-lg bg-muted/50 border border-border/60">
+            <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+              <Clock className="size-3 text-indigo-500" />
+              <span>{timeLabel}</span>
+            </div>
+            <span className="font-mono text-xl font-black text-foreground">{formatTime(elapsedTime)}</span>
           </div>
         </CardContent>
 
         <CardFooter className="p-0 mt-4 w-full">
-          <Button 
-            variant="default" 
-            size="lg" 
-            className="w-full font-bold gap-2 rounded-lg cursor-pointer transition-all duration-150 active:scale-95 shadow-sm"
+          <Button
+            variant="default"
+            size="lg"
+            className="w-full font-bold gap-2 rounded-lg cursor-pointer transition-all duration-150 active:scale-95 shadow-md"
             onClick={onRestart}
           >
             <RotateCcw className="size-4" />
@@ -71,3 +99,5 @@ export default function CompletedOverlay({
     </div>
   );
 }
+
+export default memo(CompletedOverlay);
