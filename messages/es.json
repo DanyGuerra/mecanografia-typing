@@ -8,6 +8,7 @@
     "completedTitle": "¡Completado con éxito!",
     "completedBody": "Tu velocidad final fue de {wpm} WPM con una precisión de {accuracy}%.",
     "restartBtn": "Intentar de Nuevo",
+    "tryWithCustomTextBtn": "Intentar con mi texto",
     "keyboardLabel": "Teclado Interactivo",
     "footerText": "Presiona las teclas físicas para ver la simulación en pantalla. Las teclas responden en 3D con sonido mecánico.",
     "soundOnTitle": "Desactivar sonido de teclado",
@@ -28,6 +29,7 @@
     "pressCtrlEnterHint": "Presiona Ctrl + Enter para guardar y comenzar",
     "newlineHint": "Salto de línea",
     "saveTextHint": "Guardar Texto",
-    "gradeLabel": "Grado"
+    "gradeLabel": "Grado",
+    "defaultPhrase": "Comienza a escribir para practicar mecanografía."
   }
 }

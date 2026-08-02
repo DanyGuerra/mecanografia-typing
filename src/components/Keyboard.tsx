@@ -16,6 +16,8 @@ interface KeyboardProps {
   pressedKeys: Record<string, boolean>;
   capsLockActive?: boolean;
   osMode: 'mac' | 'windows';
+  nextKeyCode?: string | null;
+  nextKeyNeedsShift?: boolean;
 }
 
 const englishLayout: KeyConfig[][] = [
@@ -165,7 +167,14 @@ const spanishLayout: KeyConfig[][] = [
   ],
 ];
 
-function Keyboard({ language, pressedKeys, capsLockActive, osMode }: KeyboardProps) {
+function Keyboard({
+  language,
+  pressedKeys,
+  capsLockActive,
+  osMode,
+  nextKeyCode,
+  nextKeyNeedsShift,
+}: KeyboardProps) {
   const baseLayout = language === 'es' ? spanishLayout : englishLayout;
   const layout = baseLayout.map((row, index) => {
     if (index !== 4) return row;
@@ -211,6 +220,8 @@ function Keyboard({ language, pressedKeys, capsLockActive, osMode }: KeyboardPro
                 displayShiftLabel = undefined;
               }
 
+              const isTargetNextKey = key.code === nextKeyCode || (!!nextKeyNeedsShift && (key.code === 'ShiftLeft' || key.code === 'ShiftRight') && !isShiftActive);
+
               return (
                 <Key
                   key={key.code}
@@ -220,6 +231,7 @@ function Keyboard({ language, pressedKeys, capsLockActive, osMode }: KeyboardPro
                   widthUnit={key.widthUnit}
                   flexGrow={key.flexGrow}
                   isPressed={key.code === 'CapsLock' ? !!capsLockActive : !!pressedKeys[key.code]}
+                  isTargetNextKey={isTargetNextKey}
                   isCapsLockActive={capsLockActive && key.code === 'CapsLock'}
                 />
               );

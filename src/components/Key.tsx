@@ -7,6 +7,7 @@ interface KeyProps {
   shiftLabel?: string;
   code: string;
   isPressed: boolean;
+  isTargetNextKey?: boolean;
   flexGrow?: number;
   widthUnit?: number;
   isCapsLockActive?: boolean;
@@ -17,6 +18,7 @@ function Key({
   shiftLabel,
   code,
   isPressed,
+  isTargetNextKey = false,
   flexGrow = 1,
   widthUnit = 1,
   isCapsLockActive = false,
@@ -47,6 +49,28 @@ function Key({
     : (isSpecialKey ? 'var(--key-shadow-special)' : 'var(--key-shadow-normal)');
 
   const hasHomingBar = ['KeyF', 'KeyJ'].includes(code);
+
+  const keyFill = isPressed
+    ? pressedFill
+    : isTargetNextKey
+    ? 'var(--primary)'
+    : isSpecialKey
+    ? specialFill
+    : normalFill;
+
+  const keyStroke = isPressed
+    ? pressedBorder
+    : isTargetNextKey
+    ? 'var(--primary)'
+    : isSpecialKey
+    ? specialBorder
+    : normalBorder;
+
+  const textColorClass = isPressed
+    ? '!fill-[var(--key-pressed-text)]'
+    : isTargetNextKey
+    ? '!fill-[var(--primary-foreground)]'
+    : '';
 
   return (
     <div
@@ -85,9 +109,10 @@ function Key({
             height={capHeight}
             rx={4}
             ry={4}
-            fill={isPressed ? pressedFill : (isSpecialKey ? specialFill : normalFill)}
-            stroke={isPressed ? pressedBorder : (isSpecialKey ? specialBorder : normalBorder)}
-            strokeWidth={1}
+            fill={keyFill}
+            stroke={keyStroke}
+            strokeWidth={isTargetNextKey ? 1.5 : 1}
+            className={isTargetNextKey && !isPressed ? 'animate-pulse' : ''}
           />
 
           {hasHomingBar && (
@@ -96,7 +121,7 @@ function Key({
               y1={padding + capHeight - 6}
               x2={padding + (keyWidth / 2) + 5}
               y2={padding + capHeight - 6}
-              stroke={isPressed ? 'var(--key-pressed-text)' : 'var(--key-normal-text)'}
+              stroke={isPressed ? 'var(--key-pressed-text)' : isTargetNextKey ? 'var(--primary-foreground)' : 'var(--key-normal-text)'}
               strokeWidth={1.8}
               strokeLinecap="round"
               opacity={0.6}
@@ -118,7 +143,7 @@ function Key({
               <text
                 x={padding + (keyWidth / 2)}
                 y={padding + 16}
-                className={`font-sans text-[13px] font-semibold fill-[var(--key-special-text)] pointer-events-none transition-colors duration-75 ${isPressed ? '!fill-[var(--key-pressed-text)]' : ''}`}
+                className={`font-sans text-[13px] font-semibold fill-[var(--key-special-text)] pointer-events-none transition-colors duration-75 ${textColorClass}`}
                 textAnchor="middle"
                 dominantBaseline="middle"
               >
@@ -127,7 +152,7 @@ function Key({
               <text
                 x={padding + (keyWidth / 2)}
                 y={padding + capHeight - 14}
-                className={`font-sans text-[18px] font-bold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-75 ${isPressed ? '!fill-[var(--key-pressed-text)]' : ''}`}
+                className={`font-sans text-[18px] font-bold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-75 ${textColorClass}`}
                 textAnchor="middle"
                 dominantBaseline="middle"
               >
@@ -138,9 +163,9 @@ function Key({
             <text
               x={padding + (keyWidth / 2)}
               y={padding + (capHeight / 2) + 2}
-              className={`font-sans text-[22px] font-bold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-75 ${
-                isSpecialKey ? '!text-[13px] !font-bold !fill-[var(--key-special-text)] tracking-widest uppercase' : ''
-              } ${isPressed ? '!fill-[var(--key-pressed-text)]' : ''}`}
+              className={`font-sans text-[20px] font-bold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-75 ${
+                isSpecialKey ? '!text-[12px] !font-bold !fill-[var(--key-special-text)] tracking-widest uppercase' : ''
+              } ${textColorClass}`}
               textAnchor="middle"
               dominantBaseline="middle"
             >

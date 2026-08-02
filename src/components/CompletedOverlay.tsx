@@ -3,16 +3,18 @@
 import React, { memo } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trophy, RotateCcw, Gauge, Target, Clock, Sparkles } from 'lucide-react';
+import { Trophy, RotateCcw, PenLine, Gauge, Target, Clock, Sparkles } from 'lucide-react';
 
 interface CompletedOverlayProps {
   wpm: number;
   accuracy: number;
   elapsedTime: number;
   onRestart: () => void;
+  onRestartWithCustomText: () => void;
   title: string;
   body: string;
   restartBtnLabel: string;
+  tryWithCustomTextBtnLabel: string;
   wpmLabel: string;
   accuracyLabel: string;
   timeLabel: string;
@@ -32,9 +34,11 @@ function CompletedOverlay({
   accuracy,
   elapsedTime,
   onRestart,
+  onRestartWithCustomText,
   title,
   body,
   restartBtnLabel,
+  tryWithCustomTextBtnLabel,
   wpmLabel,
   accuracyLabel,
   timeLabel,
@@ -84,7 +88,7 @@ function CompletedOverlay({
           </div>
         </CardContent>
 
-        <CardFooter className="p-0 mt-4 w-full">
+        <CardFooter className="p-0 mt-4 w-full flex flex-col gap-2">
           <Button
             variant="default"
             size="lg"
@@ -93,6 +97,16 @@ function CompletedOverlay({
           >
             <RotateCcw className="size-4" />
             <span>{restartBtnLabel}</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-full font-semibold gap-2 rounded-lg cursor-pointer transition-all duration-150 active:scale-95"
+            onClick={onRestartWithCustomText}
+          >
+            <PenLine className="size-4 text-primary" />
+            <span>{tryWithCustomTextBtnLabel}</span>
           </Button>
         </CardFooter>
       </Card>

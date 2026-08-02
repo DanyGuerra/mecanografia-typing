@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl';
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import Dashboard from '@/components/Dashboard';
 import TypingArea from '@/components/TypingArea';
 import Keyboard from '@/components/Keyboard';
 import CompletedOverlay from '@/components/CompletedOverlay';
@@ -40,15 +39,20 @@ export default function Home({ params }: PageProps) {
     pressedKeys,
     capsLockActive,
     osMode,
+    isEditingText,
+    setIsEditingText,
+    nextKeyCode,
+    nextKeyNeedsShift,
     handleReset,
+    handleRestartWithCustomText,
     setCustomPhrase,
     handleAppLanguageChange,
     handleKeyboardLanguageChange,
     handleOsModeChange,
-  } = useTypingTest(locale);
+  } = useTypingTest(locale, t('defaultPhrase'));
 
   return (
-    <div className="flex flex-col min-h-screen h-screen max-h-screen overflow-hidden w-full max-w-5xl px-4 sm:px-6 py-3 sm:py-4 mx-auto justify-between gap-2.5 sm:gap-3" ref={containerRef}>
+    <div className="flex flex-col min-h-screen w-full max-w-5xl px-4 sm:px-6 py-6 sm:py-8 mx-auto gap-6" ref={containerRef}>
       <Header
         appLanguage={appLanguage}
         onAppLanguageChange={handleAppLanguageChange}
@@ -65,21 +69,15 @@ export default function Home({ params }: PageProps) {
         themeDarkTitle={t('themeDarkTitle')}
       />
 
-      <Dashboard
-        wpm={wpm}
-        accuracy={accuracy}
-        elapsedTime={elapsedTime}
-        wpmLabel={t('wpmLabel')}
-        accuracyLabel={t('accuracyLabel')}
-        timeLabel={t('timeLabel')}
-      />
-
       <section className="relative w-full">
         <TypingArea
           text={currentPhrase}
           userInput={userInput}
           hasError={hasError}
           errorKey={errorKey}
+          isEditingText={isEditingText}
+          defaultPhrase={t('defaultPhrase')}
+          onToggleEditing={setIsEditingText}
           onApplyCustomText={(text) => {
             setCustomPhrase(text);
           }}
@@ -101,9 +99,11 @@ export default function Home({ params }: PageProps) {
             accuracy={accuracy}
             elapsedTime={elapsedTime}
             onRestart={handleReset}
+            onRestartWithCustomText={handleRestartWithCustomText}
             title={t('completedTitle')}
             body={t('completedBody', { wpm, accuracy })}
             restartBtnLabel={t('restartBtn')}
+            tryWithCustomTextBtnLabel={t('tryWithCustomTextBtn')}
             wpmLabel={t('wpmLabel')}
             accuracyLabel={t('accuracyLabel')}
             timeLabel={t('timeLabel')}
@@ -111,7 +111,7 @@ export default function Home({ params }: PageProps) {
         )}
       </section>
 
-      <section className="flex flex-col gap-3">
+      <section className="flex flex-col gap-2">
         <KeyboardToolbar
           label={t('keyboardLabel')}
           keyboardLanguage={keyboardLanguage}
@@ -124,6 +124,8 @@ export default function Home({ params }: PageProps) {
           pressedKeys={pressedKeys}
           capsLockActive={capsLockActive}
           osMode={osMode}
+          nextKeyCode={nextKeyCode}
+          nextKeyNeedsShift={nextKeyNeedsShift}
         />
       </section>
 

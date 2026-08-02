@@ -157,9 +157,16 @@ body {
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--foreground);
+  background: hsl(217 91% 60% / 0.45);
+  color: inherit;
 }
+
+textarea::selection,
+textarea::-moz-selection {
+  background: hsl(217 91% 60% / 0.55) !important;
+  color: white !important;
+}
+
 
 @keyframes blink {
   0%, 100% { opacity: 1; }

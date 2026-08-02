@@ -8,6 +8,7 @@
     "completedTitle": "Completed successfully!",
     "completedBody": "Your final speed was {wpm} WPM with an accuracy of {accuracy}%.",
     "restartBtn": "Try Again",
+    "tryWithCustomTextBtn": "Try with my text",
     "keyboardLabel": "Interactive Keyboard",
     "footerText": "Press physical keys to see the simulator on screen. The keys respond in 3D with mechanical sound.",
     "soundOnTitle": "Disable keyboard sound",
@@ -28,6 +29,7 @@
     "pressCtrlEnterHint": "Press Ctrl + Enter to save and start",
     "newlineHint": "Line break",
     "saveTextHint": "Save Text",
-    "gradeLabel": "Grade"
+    "gradeLabel": "Grade",
+    "defaultPhrase": "Start typing to practice typing on this interactive keyboard."
   }
 }

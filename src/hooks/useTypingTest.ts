@@ -2,19 +2,19 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useAudio } from '@/hooks/useAudio';
+import { charToKeyCode } from '@/utils/keyboardMap';
 
-export function useTypingTest(locale: string) {
+export function useTypingTest(locale: string, defaultPhraseText: string = '') {
   const router = useRouter();
   const appLanguage: 'es' | 'en' = locale === 'en' ? 'en' : 'es';
 
   const [keyboardLanguage, setKeyboardLanguage] = useState<'es' | 'en'>(appLanguage);
-  const [customPhrase, setCustomPhraseState] = useState<string>('');
+  const [customPhrase, setCustomPhraseState] = useState<string>(defaultPhraseText);
   const [userInput, setUserInput] = useState('');
   const [pressedKeys, setPressedKeys] = useState<Record<string, boolean>>({});
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [errorKey, setErrorKey] = useState(0);
-  const [isFocused, setIsFocused] = useState(true);
 
   const [startTime, setStartTime] = useState<number | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -23,18 +23,27 @@ export function useTypingTest(locale: string) {
   const [isCompleted, setIsCompleted] = useState(false);
   const [capsLockActive, setCapsLockActive] = useState(false);
   const [osMode, setOsMode] = useState<'mac' | 'windows'>('mac');
+  const [isEditingText, setIsEditingText] = useState(false);
 
   const keystrokesCount = useRef(0);
   const correctKeystrokesCount = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [prevDefaultPhrase, setPrevDefaultPhrase] = useState(defaultPhraseText);
+  if (defaultPhraseText !== prevDefaultPhrase) {
+    setPrevDefaultPhrase(defaultPhraseText);
+    if (!customPhrase) {
+      setCustomPhraseState(defaultPhraseText);
+    }
+  }
+
   const userInputRef = useRef(userInput);
   useEffect(() => {
     userInputRef.current = userInput;
   }, [userInput]);
 
-  const currentPhrase = customPhrase;
+  const currentPhrase = customPhrase || defaultPhraseText;
   const currentPhraseRef = useRef(currentPhrase);
   useEffect(() => {
     currentPhraseRef.current = currentPhrase;
@@ -60,6 +69,22 @@ export function useTypingTest(locale: string) {
     setErrorKey(0);
     keystrokesCount.current = 0;
     correctKeystrokesCount.current = 0;
+    setCustomPhraseState('');
+    setIsEditingText(false);
+  }, []);
+
+  const handleRestartWithCustomText = useCallback(() => {
+    setUserInput('');
+    setStartTime(null);
+    setElapsedTime(0);
+    setWpm(0);
+    setAccuracy(100);
+    setIsCompleted(false);
+    setHasError(false);
+    setErrorKey(0);
+    keystrokesCount.current = 0;
+    correctKeystrokesCount.current = 0;
+    setIsEditingText(true);
   }, []);
 
   const setCustomPhrase = useCallback((text: string) => {
@@ -68,14 +93,25 @@ export function useTypingTest(locale: string) {
       .replace(/\r/g, '\n')
       .trim();
     if (cleanText.length > 0) {
-      handleReset();
+      setUserInput('');
+      setStartTime(null);
+      setElapsedTime(0);
+      setWpm(0);
+      setAccuracy(100);
+      setIsCompleted(false);
+      setHasError(false);
+      setErrorKey(0);
+      keystrokesCount.current = 0;
+      correctKeystrokesCount.current = 0;
       setCustomPhraseState(cleanText);
+      setIsEditingText(false);
     }
-  }, [handleReset]);
+  }, []);
 
   const handleAppLanguageChange = (lang: 'es' | 'en') => {
     handleReset();
     setCustomPhraseState('');
+    setIsEditingText(false);
     router.push(`/${lang}`);
   };
 
@@ -118,7 +154,7 @@ export function useTypingTest(locale: string) {
   }, [startTime, isCompleted]);
 
   const handleKeyPress = useCallback((key: string, code: string) => {
-    if (!currentPhrase || currentPhrase.length === 0 || userInput.length === currentPhrase.length) return;
+    if (isEditingText || !currentPhrase || currentPhrase.length === 0 || userInput.length === currentPhrase.length) return;
 
     let currentStartTime = startTime;
     if (!startTime) {
@@ -193,7 +229,7 @@ export function useTypingTest(locale: string) {
         setWpm(Math.round((correctChars / 5) / finalMinutes));
       }
     }
-  }, [userInput, currentPhrase, startTime, soundEnabled, playClick]);
+  }, [userInput, currentPhrase, startTime, soundEnabled, playClick, isEditingText]);
 
   // Keyboard Event Listeners
   useEffect(() => {
@@ -203,6 +239,10 @@ export function useTypingTest(locale: string) {
 
       const activeElement = document.activeElement;
       if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+        return;
+      }
+
+      if (e.ctrlKey || e.metaKey || e.altKey) {
         return;
       }
 
@@ -228,9 +268,8 @@ export function useTypingTest(locale: string) {
     };
   }, [handleKeyPress]);
 
-  const forceFocus = () => {
-    setIsFocused(true);
-  };
+  const expectedChar = currentPhrase && userInput.length < currentPhrase.length ? currentPhrase[userInput.length] : null;
+  const nextKeyInfo = expectedChar ? charToKeyCode(expectedChar, keyboardLanguage) : null;
 
   return {
     appLanguage,
@@ -242,7 +281,6 @@ export function useTypingTest(locale: string) {
     userInput,
     hasError,
     errorKey,
-    isFocused,
     containerRef,
     wpm,
     accuracy,
@@ -252,12 +290,16 @@ export function useTypingTest(locale: string) {
     pressedKeys,
     capsLockActive,
     osMode,
+    isEditingText,
+    setIsEditingText,
+    nextKeyCode: nextKeyInfo?.code || null,
+    nextKeyNeedsShift: nextKeyInfo?.needsShift || false,
     handleReset,
+    handleRestartWithCustomText,
     setCustomPhrase,
     customPhrase,
     handleAppLanguageChange,
     handleKeyboardLanguageChange,
     handleOsModeChange,
-    forceFocus,
   };
 }

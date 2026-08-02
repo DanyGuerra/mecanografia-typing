@@ -10,6 +10,9 @@ interface TypingAreaProps {
   userInput: string;
   hasError: boolean;
   errorKey?: number;
+  isEditingText?: boolean;
+  defaultPhrase?: string;
+  onToggleEditing?: (editing: boolean) => void;
   onApplyCustomText: (text: string) => void;
   customTextPlaceholder: string;
   customTextApply: string;
@@ -41,8 +44,6 @@ const CharItem = memo(function CharItem({
   innerRef,
 }: CharItemProps) {
   let charClass = "text-muted-foreground/50";
-  const isSpace = char === ' ';
-  const isNewline = char === '\n';
 
   if (isTyped) {
     charClass = isCorrect 
@@ -51,6 +52,9 @@ const CharItem = memo(function CharItem({
   } else if (isCurrent) {
     charClass = "text-foreground font-semibold";
   }
+
+  const isSpace = char === ' ';
+  const isNewline = char === '\n';
 
   return (
     <React.Fragment>
@@ -85,6 +89,9 @@ function TypingArea({
   userInput,
   hasError,
   errorKey = 0,
+  isEditingText = false,
+  defaultPhrase = '',
+  onToggleEditing,
   onApplyCustomText,
   customTextPlaceholder,
   customTextApply,
@@ -98,13 +105,25 @@ function TypingArea({
   pressCtrlEnterHint,
 }: TypingAreaProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [customInputText, setCustomInputText] = useState('');
+  const [customInputText, setCustomInputText] = useState(
+    text === defaultPhrase ? '' : text
+  );
+  const [prevText, setPrevText] = useState(text);
+
+  if (text !== prevText) {
+    setPrevText(text);
+    if (text.length > 0 && text !== defaultPhrase) {
+      setCustomInputText(text);
+    } else {
+      setCustomInputText('');
+    }
+  }
 
   const cardRef = useRef<HTMLDivElement>(null);
   const textContainerRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLSpanElement>(null);
 
-  const isEditingMode = isEditing || text.length === 0;
+  const isEditingMode = isEditingText || isEditing || text.length === 0;
   const progressPercent = text.length > 0 ? Math.min(100, Math.round((userInput.length / text.length) * 100)) : 0;
 
   // Restart shake animation on mistake WITHOUT remounting component DOM
@@ -143,6 +162,7 @@ function TypingArea({
     if (cleanText.length > 0) {
       onApplyCustomText(cleanText);
       setIsEditing(false);
+      if (onToggleEditing) onToggleEditing(false);
     }
   };
 
@@ -196,8 +216,9 @@ function TypingArea({
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
-                setCustomInputText(text);
+                setCustomInputText(text === defaultPhrase ? '' : text);
                 setIsEditing(true);
+                if (onToggleEditing) onToggleEditing(true);
               }}
               className="h-7 px-2.5 text-xs gap-1.5 font-medium"
             >
@@ -212,6 +233,7 @@ function TypingArea({
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsEditing(false);
+                  if (onToggleEditing) onToggleEditing(false);
                 }}
                 title={customTextCancel}
               >
@@ -253,7 +275,10 @@ function TypingArea({
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={() => setIsEditing(false)}
+                    onClick={() => {
+                      setIsEditing(false);
+                      if (onToggleEditing) onToggleEditing(false);
+                    }}
                   >
                     {customTextCancel}
                   </Button>
@@ -275,7 +300,7 @@ function TypingArea({
             ref={textContainerRef}
             onWheel={(e) => e.preventDefault()}
             onTouchMove={(e) => e.preventDefault()}
-            className="font-mono text-xl sm:text-2xl leading-[2.5rem] sm:leading-[2.8rem] tracking-wide break-words whitespace-pre-wrap select-none max-h-[125px] sm:max-h-[145px] overflow-hidden pr-1"
+            className="font-mono text-xl sm:text-2xl leading-[2.5rem] sm:leading-[2.8rem] tracking-wide break-words whitespace-pre-wrap select-text selection:bg-primary selection:text-primary-foreground max-h-[125px] sm:max-h-[145px] overflow-hidden pr-1"
           >
             {text.split('').map((char, index) => {
               const isTyped = index < userInput.length;
