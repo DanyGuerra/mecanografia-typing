@@ -5,43 +5,44 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --panel-bg: #f5f5f4;
-  --panel-border: #e7e5e4;
-  --accent-color: #1c1917;
-  --text-dim: #a8a29e;
-  --text-correct: #1c1917;
-  --text-wrong: #ca4754;
+  --panel-bg: #f8fafc;
+  --panel-border: #e2e8f0;
+  --accent-color: #0f172a;
+  --text-dim: #64748b;
+  --text-correct: #0f172a;
+  --text-wrong: #ef4444;
 
-  --btn-group-bg: #e7e5e4;
-  --btn-active-bg: #d6d3d1;
-  --btn-text-inactive: #78716c;
+  --btn-group-bg: #f1f5f9;
+  --btn-active-bg: #e2e8f0;
+  --btn-text-inactive: #64748b;
 
-  --key-normal-fill: #e7e5e4;
-  --key-normal-stroke: #d6d3d1;
-  --key-normal-text: #4b5563;
+  --key-normal-fill: #ffffff;
+  --key-normal-stroke: #cbd5e1;
+  --key-normal-text: #1e293b;
 
-  --key-special-fill: #f5f5f4;
-  --key-special-stroke: #e7e5e4;
-  --key-special-text: #78716c;
+  --key-special-fill: #f8fafc;
+  --key-special-stroke: #e2e8f0;
+  --key-special-text: #475569;
 
-  --key-pressed-fill: #1c1917;
-  --key-pressed-stroke: #0c0a09;
-  --key-pressed-text: #fafafa;
+  --key-pressed-fill: #0f172a;
+  --key-pressed-stroke: #020617;
+  --key-pressed-text: #ffffff;
 
-  --key-shadow-normal: #d6d3d1;
-  --key-shadow-special: #e7e5e4;
-  --key-shadow-pressed: #78716c;
+  --key-shadow-normal: #cbd5e1;
+  --key-shadow-special: #e2e8f0;
+  --key-shadow-pressed: #334155;
 
-  --key-shadow: rgba(0, 0, 0, 0.08);
+  --key-shadow: rgba(15, 23, 42, 0.08);
   --keyboard-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 
-  --overlay-bg: rgba(250, 250, 250, 0.85);
-  --overlay-completed-bg: rgba(250, 250, 250, 0.95);
+  --overlay-bg: rgba(248, 250, 252, 0.85);
+  --overlay-completed-bg: rgba(255, 255, 255, 0.95);
 
-  --scrollbar-thumb: rgba(0, 0, 0, 0.08);
-  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.15);
+  --scrollbar-thumb: rgba(100, 116, 139, 0.2);
+  --scrollbar-thumb-hover: rgba(100, 116, 139, 0.4);
 
-  --background: oklch(1 0 0);
+  /* shadcn/ui standard color tokens */
+  --background: oklch(0.99 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -49,21 +50,17 @@
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: oklch(0.965 0.005 240);
   --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
+  --muted: oklch(0.965 0.005 240);
+  --muted-foreground: oklch(0.55 0.01 240);
+  --accent: oklch(0.965 0.005 240);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.92 0.005 240);
+  --input: oklch(0.92 0.005 240);
+  --ring: oklch(0.4 0.01 240);
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -71,78 +68,75 @@
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-border: oklch(0.92 0 0);
+  --sidebar-ring: oklch(0.7 0 0);
 }
 
 .dark {
-  --panel-bg: #161616;
-  --panel-border: #2a2a2a;
-  --accent-color: #f3f4f6;
-  --text-dim: #555555;
+  --panel-bg: #0f172a;
+  --panel-border: #1e293b;
+  --accent-color: #f8fafc;
+  --text-dim: #64748b;
   --text-correct: #ffffff;
   --text-wrong: #ca4754;
 
-  --btn-group-bg: #1c1c1c;
-  --btn-active-bg: #2e2e2e;
-  --btn-text-inactive: #6b7280;
+  --btn-group-bg: #0f172a;
+  --btn-active-bg: #1e293b;
+  --btn-text-inactive: #64748b;
 
-  --key-normal-fill: #222222;
-  --key-normal-stroke: #2e2e2e;
-  --key-normal-text: #9ca3af;
+  --key-normal-fill: #1e293b;
+  --key-normal-stroke: #334155;
+  --key-normal-text: #e2e8f0;
 
-  --key-special-fill: #1c1c1c;
-  --key-special-stroke: #262626;
-  --key-special-text: #4b5563;
+  --key-special-fill: #0f172a;
+  --key-special-stroke: #1e293b;
+  --key-special-text: #94a3b8;
 
-  --key-pressed-fill: #e5e7eb;
+  --key-pressed-fill: #f8fafc;
   --key-pressed-stroke: #ffffff;
-  --key-pressed-text: #121212;
+  --key-pressed-text: #0f172a;
 
-  --key-shadow-normal: #0e0e0e;
-  --key-shadow-special: #0a0a0a;
-  --key-shadow-pressed: #a3a3a3;
+  --key-shadow-normal: #0f172a;
+  --key-shadow-special: #020617;
+  --key-shadow-pressed: #cbd5e1;
 
   --key-shadow: rgba(0, 0, 0, 0.4);
   --keyboard-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 
-  --overlay-bg: rgba(18, 18, 18, 0.85);
-  --overlay-completed-bg: rgba(18, 18, 18, 0.95);
+  --overlay-bg: rgba(15, 23, 42, 0.85);
+  --overlay-completed-bg: rgba(15, 23, 42, 0.95);
 
   --scrollbar-thumb: rgba(255, 255, 255, 0.08);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.15);
 
-  --background: oklch(0.145 0 0);
+  /* shadcn/ui dark mode color tokens */
+  --background: oklch(0.13 0.01 240);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: oklch(0.17 0.01 240);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: oklch(0.17 0.01 240);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.145 0 0);
+  --secondary: oklch(0.24 0.01 240);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  --muted: oklch(0.24 0.01 240);
+  --muted-foreground: oklch(0.7 0.01 240);
+  --accent: oklch(0.24 0.01 240);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.25 0.01 240);
+  --input: oklch(0.25 0.01 240);
+  --ring: oklch(0.6 0.01 240);
+  --sidebar: oklch(0.17 0.01 240);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent: oklch(0.24 0.01 240);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-border: oklch(0.25 0.01 240);
+  --sidebar-ring: oklch(0.6 0.01 240);
 }
 
 * {
@@ -157,7 +151,7 @@ html, body {
 
 body {
   background-color: var(--background);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-sans), 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   display: flex;
@@ -168,7 +162,7 @@ body {
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.12);
   color: var(--foreground);
 }
 
@@ -209,6 +203,7 @@ body {
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -217,14 +212,10 @@ body {
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);

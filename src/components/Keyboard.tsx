@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { memo } from 'react';
 import Key from './Key';
 
 interface KeyConfig {
@@ -165,9 +165,7 @@ const spanishLayout: KeyConfig[][] = [
   ],
 ];
 
-
-
-export default function Keyboard({ language, pressedKeys, capsLockActive, osMode }: KeyboardProps) {
+function Keyboard({ language, pressedKeys, capsLockActive, osMode }: KeyboardProps) {
   const baseLayout = language === 'es' ? spanishLayout : englishLayout;
   const layout = baseLayout.map((row, index) => {
     if (index !== 4) return row;
@@ -232,3 +230,5 @@ export default function Keyboard({ language, pressedKeys, capsLockActive, osMode
     </div>
   );
 }
+
+export default memo(Keyboard);

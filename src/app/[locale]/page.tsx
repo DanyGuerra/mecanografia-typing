@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+import React, { use } from 'react';
 import { useTranslations } from 'next-intl';
 
 import Header from '@/components/Header';
@@ -8,9 +8,7 @@ import Footer from '@/components/Footer';
 import TypingArea from '@/components/TypingArea';
 import Keyboard from '@/components/Keyboard';
 import CompletedOverlay from '@/components/CompletedOverlay';
-import FocusOverlay from '@/components/FocusOverlay';
 import KeyboardToolbar from '@/components/KeyboardToolbar';
-import CustomTextInput from '@/components/CustomTextInput';
 
 import { useTypingTest } from '@/hooks/useTypingTest';
 
@@ -31,7 +29,7 @@ export default function Home({ params }: PageProps) {
     currentPhrase,
     userInput,
     hasError,
-    isFocused,
+    errorKey,
     containerRef,
     wpm,
     accuracy,
@@ -41,12 +39,10 @@ export default function Home({ params }: PageProps) {
     capsLockActive,
     osMode,
     handleReset,
-    changePhrase,
     setCustomPhrase,
     handleAppLanguageChange,
     handleKeyboardLanguageChange,
     handleOsModeChange,
-    forceFocus,
   } = useTypingTest(locale);
 
   return (
@@ -67,25 +63,19 @@ export default function Home({ params }: PageProps) {
         themeDarkTitle={t('themeDarkTitle')}
       />
 
-      <CustomTextInput
-        onApplyText={(text) => {
-          setCustomPhrase(text);
-          forceFocus();
-        }}
-        onRandomText={() => {
-          changePhrase('random');
-          forceFocus();
-        }}
-        title={t('customTextTitle')}
-        placeholder={t('customTextPlaceholder')}
-        applyLabel={t('customTextApply')}
-        randomLabel={t('nextPhraseBtn')}
-      />
-
-      <section className="relative cursor-pointer w-full" onClick={forceFocus}>
-        <TypingArea text={currentPhrase} userInput={userInput} hasError={hasError} />
-
-        {!isFocused && <FocusOverlay message={t('focusMessage')} />}
+      <section className="relative w-full">
+        <TypingArea
+          text={currentPhrase}
+          userInput={userInput}
+          hasError={hasError}
+          errorKey={errorKey}
+          onApplyCustomText={(text) => {
+            setCustomPhrase(text);
+          }}
+          customTextTitle={t('customTextTitle')}
+          customTextPlaceholder={t('customTextPlaceholder')}
+          customTextApply={t('customTextApply')}
+        />
 
         {isCompleted && (
           <CompletedOverlay
@@ -119,5 +109,3 @@ export default function Home({ params }: PageProps) {
     </div>
   );
 }
-
-

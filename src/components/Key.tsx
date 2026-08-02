@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 
 interface KeyProps {
   label: string;
@@ -12,7 +12,7 @@ interface KeyProps {
   isCapsLockActive?: boolean;
 }
 
-export default function Key({
+function Key({
   label,
   shiftLabel,
   code,
@@ -152,3 +152,5 @@ export default function Key({
     </div>
   );
 }
+
+export default memo(Key);

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Keyboard, Shuffle } from 'lucide-react';
+import { Keyboard } from 'lucide-react';
 
 interface KeyboardToolbarProps {
   label: string;
@@ -10,8 +10,6 @@ interface KeyboardToolbarProps {
   onKeyboardLanguageChange: (lang: 'es' | 'en') => void;
   osMode: 'mac' | 'windows';
   onOsModeChange: (mode: 'mac' | 'windows') => void;
-  nextPhraseLabel?: string;
-  onNextPhrase?: () => void;
 }
 
 export default function KeyboardToolbar({
@@ -20,8 +18,6 @@ export default function KeyboardToolbar({
   onKeyboardLanguageChange,
   osMode,
   onOsModeChange,
-  nextPhraseLabel,
-  onNextPhrase,
 }: KeyboardToolbarProps) {
   return (
     <div className="flex justify-between items-center px-0.5 text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
@@ -71,21 +67,6 @@ export default function KeyboardToolbar({
           </Button>
         </div>
       </div>
-
-      {onNextPhrase && nextPhraseLabel && (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-[9px] font-extrabold uppercase tracking-wider h-6 rounded-md px-2 text-muted-foreground/80 hover:text-foreground hover:bg-muted/60 gap-1 transition-all duration-150 cursor-pointer group/btn"
-          onClick={onNextPhrase}
-        >
-          <Shuffle className="size-3 text-muted-foreground/70 group-hover/btn:text-foreground" />
-          <span>{nextPhraseLabel.replace('->', '').trim()}</span>
-        </Button>
-      )}
     </div>
   );
 }
-
-
-

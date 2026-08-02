@@ -2,20 +2,19 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useAudio } from '@/hooks/useAudio';
-import { PHRASES } from '@/lib/phrases';
 
 export function useTypingTest(locale: string) {
   const router = useRouter();
   const appLanguage: 'es' | 'en' = locale === 'en' ? 'en' : 'es';
 
   const [keyboardLanguage, setKeyboardLanguage] = useState<'es' | 'en'>(appLanguage);
-  const [phraseIndex, setPhraseIndex] = useState(0);
-  const [customPhrase, setCustomPhraseState] = useState<string | null>(null);
+  const [customPhrase, setCustomPhraseState] = useState<string>('');
   const [userInput, setUserInput] = useState('');
   const [pressedKeys, setPressedKeys] = useState<Record<string, boolean>>({});
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
+  const [errorKey, setErrorKey] = useState(0);
+  const [isFocused, setIsFocused] = useState(true);
 
   const [startTime, setStartTime] = useState<number | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -31,7 +30,7 @@ export function useTypingTest(locale: string) {
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { playClick } = useAudio();
-  const currentPhrase = customPhrase || PHRASES[appLanguage][phraseIndex];
+  const currentPhrase = customPhrase;
 
   const { theme, setTheme, resolvedTheme } = useTheme();
   const currentTheme = (resolvedTheme as 'light' | 'dark') || (theme as 'light' | 'dark') || 'dark';
@@ -48,34 +47,25 @@ export function useTypingTest(locale: string) {
     setAccuracy(100);
     setIsCompleted(false);
     setHasError(false);
+    setErrorKey(0);
     keystrokesCount.current = 0;
     correctKeystrokesCount.current = 0;
   }, []);
 
   const setCustomPhrase = useCallback((text: string) => {
-    const trimmed = text.trim();
-    if (trimmed.length > 0) {
+    const cleanText = text
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n')
+      .trim();
+    if (cleanText.length > 0) {
       handleReset();
-      setCustomPhraseState(trimmed);
+      setCustomPhraseState(cleanText);
     }
   }, [handleReset]);
 
-  const changePhrase = useCallback((direction: 'next' | 'random') => {
-    handleReset();
-    setCustomPhraseState(null);
-    if (direction === 'next') {
-      setPhraseIndex((prev) => (prev + 1) % PHRASES[appLanguage].length);
-    } else {
-      const randomIndex = Math.floor(Math.random() * PHRASES[appLanguage].length);
-      setPhraseIndex(randomIndex);
-    }
-  }, [appLanguage, handleReset]);
-
   const handleAppLanguageChange = (lang: 'es' | 'en') => {
     handleReset();
-    setCustomPhraseState(null);
-
-    setPhraseIndex(0);
+    setCustomPhraseState('');
     router.push(`/${lang}`);
   };
 
@@ -91,7 +81,7 @@ export function useTypingTest(locale: string) {
 
   // Timer & WPM calculation
   useEffect(() => {
-    if (startTime && !isCompleted) {
+    if (startTime && !isCompleted && currentPhrase.length > 0) {
       const interval = setInterval(() => {
         const now = Date.now();
         const elapsedSecs = Math.round((now - startTime) / 1000);
@@ -113,7 +103,7 @@ export function useTypingTest(locale: string) {
   }, [startTime, isCompleted, userInput, currentPhrase]);
 
   const handleKeyPress = useCallback((key: string, code: string) => {
-    if (userInput.length === currentPhrase.length) return;
+    if (!currentPhrase || currentPhrase.length === 0 || userInput.length === currentPhrase.length) return;
 
     let currentStartTime = startTime;
     if (!startTime) {
@@ -126,6 +116,8 @@ export function useTypingTest(locale: string) {
         playClick('space');
       } else if (code === 'Backspace') {
         playClick('backspace');
+      } else if (code === 'Enter') {
+        playClick('space');
       } else {
         playClick('standard');
       }
@@ -141,39 +133,28 @@ export function useTypingTest(locale: string) {
       return;
     }
 
-    if (key.length === 1) {
+    let typedChar = key;
+    if (code === 'Enter' || key === 'Enter') {
+      typedChar = '\n';
+    }
+
+    if (typedChar.length === 1 || typedChar === '\n') {
       keystrokesCount.current += 1;
       const expectedChar = currentPhrase[userInput.length];
 
       if (userInput.length < currentPhrase.length) {
-        const isCorrect = key === expectedChar;
+        const isCorrect = typedChar === expectedChar;
         if (isCorrect) {
           correctKeystrokesCount.current += 1;
           setHasError(false);
         } else {
           setHasError(true);
+          setErrorKey((prev) => prev + 1);
           if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
-          errorTimeoutRef.current = setTimeout(() => setHasError(false), 200);
+          errorTimeoutRef.current = setTimeout(() => setHasError(false), 250);
         }
-        nextUserInput = userInput + key;
+        nextUserInput = userInput + typedChar;
         setUserInput(nextUserInput);
-      }
-    }
-
-    if (currentStartTime) {
-      const now = Date.now();
-      const elapsedSecs = Math.round((now - currentStartTime) / 1000);
-      setElapsedTime(elapsedSecs);
-
-      const timeDiffMinutes = (now - currentStartTime) / 60000;
-      if (timeDiffMinutes > 0) {
-        let correctChars = 0;
-        for (let i = 0; i < nextUserInput.length; i++) {
-          if (nextUserInput[i] === currentPhrase[i]) {
-            correctChars++;
-          }
-        }
-        setWpm(Math.round((correctChars / 5) / timeDiffMinutes));
       }
     }
 
@@ -192,9 +173,12 @@ export function useTypingTest(locale: string) {
       setPressedKeys((prev) => ({ ...prev, [e.code]: true }));
       setCapsLockActive(e.getModifierState('CapsLock'));
 
-      if (!isFocused) return;
+      const activeElement = document.activeElement;
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+        return;
+      }
 
-      if (e.code === 'Space' || e.code === 'Backspace' || e.code === 'Tab') {
+      if (e.code === 'Space' || e.code === 'Backspace' || e.code === 'Tab' || e.code === 'Enter') {
         e.preventDefault();
       }
 
@@ -214,25 +198,11 @@ export function useTypingTest(locale: string) {
       window.removeEventListener('keyup', handleKeyUp);
       if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
     };
-  }, [isFocused, handleKeyPress]);
+  }, [handleKeyPress]);
 
   const forceFocus = () => {
     setIsFocused(true);
   };
-
-  // Click Outside Listener
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsFocused(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   return {
     appLanguage,
@@ -243,6 +213,7 @@ export function useTypingTest(locale: string) {
     currentPhrase,
     userInput,
     hasError,
+    errorKey,
     isFocused,
     containerRef,
     wpm,
@@ -254,7 +225,6 @@ export function useTypingTest(locale: string) {
     capsLockActive,
     osMode,
     handleReset,
-    changePhrase,
     setCustomPhrase,
     customPhrase,
     handleAppLanguageChange,
@@ -263,4 +233,3 @@ export function useTypingTest(locale: string) {
     forceFocus,
   };
 }
-

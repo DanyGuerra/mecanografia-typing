@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 import { Globe, Volume2, VolumeX, Sun, Moon, Check, ChevronDown } from 'lucide-react';
@@ -28,7 +29,7 @@ interface HeaderProps {
   themeDarkTitle: string;
 }
 
-export default function Header({
+function Header({
   appLanguage,
   onAppLanguageChange,
   soundEnabled,
@@ -78,40 +79,30 @@ export default function Header({
                 size="sm"
                 className="text-xs font-semibold h-9 rounded-lg gap-2 px-3 border border-border bg-background hover:bg-muted transition-colors cursor-pointer"
                 aria-label="Seleccionar idioma"
-              />
+              >
+                <Globe className="size-4 text-muted-foreground" />
+                <span className="font-bold text-xs uppercase">{appLanguage === 'es' ? 'ES' : 'EN'}</span>
+                <ChevronDown className="size-3.5 text-muted-foreground opacity-60 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+              </Button>
             }
-          >
-            <Globe className="size-4 text-muted-foreground" />
-            <span className="font-bold text-xs uppercase">{appLanguage === 'es' ? 'ES' : 'EN'}</span>
-            <ChevronDown className="size-3.5 text-muted-foreground opacity-60 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            sideOffset={6}
-            className="min-w-[130px] p-1 rounded-lg border border-border bg-popover shadow-md"
-          >
-            <DropdownMenuItem
-              onClick={() => onAppLanguageChange('es')}
-              className={`text-xs font-medium px-3 py-2 cursor-pointer rounded-md flex items-center justify-between transition-colors ${
-                appLanguage === 'es'
-                  ? 'bg-secondary font-semibold text-secondary-foreground'
-                  : 'hover:bg-muted text-foreground'
-              }`}
-            >
-              <span>Español</span>
-              {appLanguage === 'es' && <Check className="size-4 text-primary" />}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onAppLanguageChange('en')}
-              className={`text-xs font-medium px-3 py-2 cursor-pointer rounded-md flex items-center justify-between transition-colors ${
-                appLanguage === 'en'
-                  ? 'bg-secondary font-semibold text-secondary-foreground'
-                  : 'hover:bg-muted text-foreground'
-              }`}
-            >
-              <span>English</span>
-              {appLanguage === 'en' && <Check className="size-4 text-primary" />}
-            </DropdownMenuItem>
+          />
+          <DropdownMenuContent align="end" sideOffset={4} className="min-w-[130px]">
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                onClick={() => onAppLanguageChange('es')}
+                className="justify-between cursor-pointer"
+              >
+                <span>Español</span>
+                {appLanguage === 'es' && <Check className="size-4 text-primary" />}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onAppLanguageChange('en')}
+                className="justify-between cursor-pointer"
+              >
+                <span>English</span>
+                {appLanguage === 'en' && <Check className="size-4 text-primary" />}
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -153,3 +144,5 @@ export default function Header({
     </header>
   );
 }
+
+export default memo(Header);
