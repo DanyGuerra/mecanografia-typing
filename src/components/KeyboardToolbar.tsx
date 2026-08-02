@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Keyboard, ArrowRight } from 'lucide-react';
+import { Keyboard, Shuffle } from 'lucide-react';
 
 interface KeyboardToolbarProps {
   label: string;
@@ -10,8 +10,8 @@ interface KeyboardToolbarProps {
   onKeyboardLanguageChange: (lang: 'es' | 'en') => void;
   osMode: 'mac' | 'windows';
   onOsModeChange: (mode: 'mac' | 'windows') => void;
-  nextPhraseLabel: string;
-  onNextPhrase: () => void;
+  nextPhraseLabel?: string;
+  onNextPhrase?: () => void;
 }
 
 export default function KeyboardToolbar({
@@ -72,16 +72,20 @@ export default function KeyboardToolbar({
         </div>
       </div>
 
-      {/* Next Phrase Button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="text-[10px] font-extrabold uppercase tracking-wider h-6 rounded-md px-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/60 gap-1.5 transition-all duration-200 group/btn"
-        onClick={onNextPhrase}
-      >
-        <span>{nextPhraseLabel.replace('->', '').trim()}</span>
-        <ArrowRight className="size-3 transition-transform duration-200 group-hover/btn:translate-x-0.5 text-muted-foreground group-hover/btn:text-foreground" />
-      </Button>
+      {onNextPhrase && nextPhraseLabel && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-[9px] font-extrabold uppercase tracking-wider h-6 rounded-md px-2 text-muted-foreground/80 hover:text-foreground hover:bg-muted/60 gap-1 transition-all duration-150 cursor-pointer group/btn"
+          onClick={onNextPhrase}
+        >
+          <Shuffle className="size-3 text-muted-foreground/70 group-hover/btn:text-foreground" />
+          <span>{nextPhraseLabel.replace('->', '').trim()}</span>
+        </Button>
+      )}
     </div>
   );
 }
+
+
+

@@ -18,6 +18,14 @@
     "soundOffTitle": "Activar sonido de teclado",
     "themeLabel": "Tema",
     "themeLightTitle": "Cambiar a tema claro",
-    "themeDarkTitle": "Cambiar a tema oscuro"
+    "themeDarkTitle": "Cambiar a tema oscuro",
+    "customTextBtn": "Ingresar Mi Texto",
+    "nextPhraseBtn": "Texto Aleatorio",
+    "customTextTitle": "Ingresar Texto Personalizado",
+    "customTextPlaceholder": "Escribe o pega aquí el texto con el que deseas practicar mecanografía...",
+    "customTextApply": "Usar este texto",
+    "customTextCancel": "Cancelar"
   }
 }
+
+

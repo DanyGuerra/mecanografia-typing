@@ -18,6 +18,14 @@
     "soundOffTitle": "Enable keyboard sound",
     "themeLabel": "Theme",
     "themeLightTitle": "Switch to light theme",
-    "themeDarkTitle": "Switch to dark theme"
+    "themeDarkTitle": "Switch to dark theme",
+    "customTextBtn": "Enter My Text",
+    "nextPhraseBtn": "Random Text",
+    "customTextTitle": "Enter Custom Text",
+    "customTextPlaceholder": "Type or paste the text you want to practice typing with here...",
+    "customTextApply": "Use this text",
+    "customTextCancel": "Cancel"
   }
 }
+
+

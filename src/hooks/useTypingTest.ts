@@ -10,6 +10,7 @@ export function useTypingTest(locale: string) {
 
   const [keyboardLanguage, setKeyboardLanguage] = useState<'es' | 'en'>(appLanguage);
   const [phraseIndex, setPhraseIndex] = useState(0);
+  const [customPhrase, setCustomPhraseState] = useState<string | null>(null);
   const [userInput, setUserInput] = useState('');
   const [pressedKeys, setPressedKeys] = useState<Record<string, boolean>>({});
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -30,7 +31,7 @@ export function useTypingTest(locale: string) {
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { playClick } = useAudio();
-  const currentPhrase = PHRASES[appLanguage][phraseIndex];
+  const currentPhrase = customPhrase || PHRASES[appLanguage][phraseIndex];
 
   const { theme, setTheme, resolvedTheme } = useTheme();
   const currentTheme = (resolvedTheme as 'light' | 'dark') || (theme as 'light' | 'dark') || 'dark';
@@ -51,8 +52,17 @@ export function useTypingTest(locale: string) {
     correctKeystrokesCount.current = 0;
   }, []);
 
+  const setCustomPhrase = useCallback((text: string) => {
+    const trimmed = text.trim();
+    if (trimmed.length > 0) {
+      handleReset();
+      setCustomPhraseState(trimmed);
+    }
+  }, [handleReset]);
+
   const changePhrase = useCallback((direction: 'next' | 'random') => {
     handleReset();
+    setCustomPhraseState(null);
     if (direction === 'next') {
       setPhraseIndex((prev) => (prev + 1) % PHRASES[appLanguage].length);
     } else {
@@ -63,6 +73,8 @@ export function useTypingTest(locale: string) {
 
   const handleAppLanguageChange = (lang: 'es' | 'en') => {
     handleReset();
+    setCustomPhraseState(null);
+
     setPhraseIndex(0);
     router.push(`/${lang}`);
   };
@@ -243,9 +255,12 @@ export function useTypingTest(locale: string) {
     osMode,
     handleReset,
     changePhrase,
+    setCustomPhrase,
+    customPhrase,
     handleAppLanguageChange,
     handleKeyboardLanguageChange,
     handleOsModeChange,
     forceFocus,
   };
 }
+

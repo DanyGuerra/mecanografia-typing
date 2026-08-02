@@ -11,6 +11,7 @@ interface DashboardProps {
   wpmLabel: string;
   accuracyLabel: string;
   timeLabel: string;
+  isCompleted?: boolean;
 }
 
 export default function Dashboard({
@@ -20,6 +21,7 @@ export default function Dashboard({
   wpmLabel,
   accuracyLabel,
   timeLabel,
+  isCompleted = false,
 }: DashboardProps) {
   return (
     <section className="grid grid-cols-3 gap-4">
@@ -32,7 +34,7 @@ export default function Dashboard({
         </CardHeader>
         <CardContent>
           <span className="font-mono text-3xl font-black tracking-tight text-foreground">
-            {wpm}
+            {isCompleted ? wpm : '—'}
           </span>
         </CardContent>
       </Card>
@@ -46,7 +48,7 @@ export default function Dashboard({
         </CardHeader>
         <CardContent>
           <span className="font-mono text-3xl font-black tracking-tight text-foreground">
-            {accuracy}%
+            {isCompleted ? `${accuracy}%` : '—'}
           </span>
         </CardContent>
       </Card>
@@ -60,10 +62,11 @@ export default function Dashboard({
         </CardHeader>
         <CardContent>
           <span className="font-mono text-3xl font-black tracking-tight text-foreground">
-            {elapsedTime}s
+            {isCompleted ? `${elapsedTime}s` : '—'}
           </span>
         </CardContent>
       </Card>
     </section>
   );
 }
+

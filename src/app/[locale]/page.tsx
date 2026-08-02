@@ -5,12 +5,12 @@ import { useTranslations } from 'next-intl';
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import Dashboard from '@/components/Dashboard';
 import TypingArea from '@/components/TypingArea';
 import Keyboard from '@/components/Keyboard';
 import CompletedOverlay from '@/components/CompletedOverlay';
 import FocusOverlay from '@/components/FocusOverlay';
 import KeyboardToolbar from '@/components/KeyboardToolbar';
+import CustomTextInput from '@/components/CustomTextInput';
 
 import { useTypingTest } from '@/hooks/useTypingTest';
 
@@ -35,7 +35,6 @@ export default function Home({ params }: PageProps) {
     containerRef,
     wpm,
     accuracy,
-    elapsedTime,
     isCompleted,
     keyboardLanguage,
     pressedKeys,
@@ -43,6 +42,7 @@ export default function Home({ params }: PageProps) {
     osMode,
     handleReset,
     changePhrase,
+    setCustomPhrase,
     handleAppLanguageChange,
     handleKeyboardLanguageChange,
     handleOsModeChange,
@@ -50,7 +50,7 @@ export default function Home({ params }: PageProps) {
   } = useTypingTest(locale);
 
   return (
-    <div className="flex flex-col min-h-screen w-full max-w-5xl px-5 py-10 gap-8" ref={containerRef}>
+    <div className="flex flex-col min-h-screen w-full max-w-5xl px-5 py-10 gap-7" ref={containerRef}>
       <Header
         appLanguage={appLanguage}
         onAppLanguageChange={handleAppLanguageChange}
@@ -67,13 +67,19 @@ export default function Home({ params }: PageProps) {
         themeDarkTitle={t('themeDarkTitle')}
       />
 
-      <Dashboard
-        wpm={wpm}
-        accuracy={accuracy}
-        elapsedTime={elapsedTime}
-        wpmLabel={t('metricWpm')}
-        accuracyLabel={t('metricAccuracy')}
-        timeLabel={t('metricTime')}
+      <CustomTextInput
+        onApplyText={(text) => {
+          setCustomPhrase(text);
+          forceFocus();
+        }}
+        onRandomText={() => {
+          changePhrase('random');
+          forceFocus();
+        }}
+        title={t('customTextTitle')}
+        placeholder={t('customTextPlaceholder')}
+        applyLabel={t('customTextApply')}
+        randomLabel={t('nextPhraseBtn')}
       />
 
       <section className="relative cursor-pointer w-full" onClick={forceFocus}>
@@ -100,8 +106,6 @@ export default function Home({ params }: PageProps) {
           onKeyboardLanguageChange={handleKeyboardLanguageChange}
           osMode={osMode}
           onOsModeChange={handleOsModeChange}
-          nextPhraseLabel={t('nextPhraseBtn')}
-          onNextPhrase={() => changePhrase('random')}
         />
         <Keyboard
           language={keyboardLanguage}
@@ -115,3 +119,5 @@ export default function Home({ params }: PageProps) {
     </div>
   );
 }
+
+

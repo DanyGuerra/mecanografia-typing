@@ -1,6 +1,19 @@
 import { getMessages } from 'next-intl/server';
+import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import { AppProviders } from '@/components/AppProviders';
 import '../globals.css';
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+});
 
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -22,8 +35,8 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
   const messages = await getMessages();
 
   return (
-    <html lang={locale || 'es'} suppressHydrationWarning>
-      <body>
+    <html lang={locale || 'es'} className={`${plusJakartaSans.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+      <body className="font-sans antialiased">
         <AppProviders locale={locale} messages={messages}>
           {children}
         </AppProviders>
@@ -31,3 +44,4 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
     </html>
   );
 }
+
