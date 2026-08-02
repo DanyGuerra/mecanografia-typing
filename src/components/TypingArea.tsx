@@ -9,6 +9,7 @@ interface TypingAreaProps {
   text: string;
   userInput: string;
   hasError: boolean;
+  hasSuccess?: boolean;
   errorKey?: number;
   isEditingText?: boolean;
   defaultPhrase?: string;
@@ -47,8 +48,8 @@ const CharItem = memo(function CharItem({
 
   if (isTyped) {
     charClass = isCorrect 
-      ? "text-foreground font-semibold" 
-      : "text-destructive bg-destructive/15 rounded-xs px-[1px]";
+      ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 rounded-[2px]" 
+      : "text-destructive bg-destructive/15 rounded-[2px]";
   } else if (isCurrent) {
     charClass = "text-foreground font-semibold";
   }
@@ -88,6 +89,7 @@ function TypingArea({
   text,
   userInput,
   hasError,
+  hasSuccess = false,
   errorKey = 0,
   isEditingText = false,
   defaultPhrase = '',
@@ -176,8 +178,12 @@ function TypingArea({
   return (
     <Card 
       ref={cardRef}
-      className={`w-full bg-card border border-border shadow-sm relative overflow-hidden transition-all duration-200 ${
-        hasError ? 'border-destructive/60' : ''
+      className={`w-full bg-card border shadow-sm relative overflow-hidden transition-all duration-200 ${
+        hasError
+          ? 'border-destructive/60'
+          : hasSuccess
+            ? 'border-emerald-500/60'
+            : 'border-border'
       }`}
     >
       {/* Progress Bar Line */}
@@ -200,6 +206,11 @@ function TypingArea({
             <span className="flex items-center gap-1 text-destructive font-medium animate-pulse">
               <AlertCircle className="size-3.5" />
               <span>{typingErrorAlert}</span>
+            </span>
+          ) : hasSuccess ? (
+            <span className="flex items-center gap-1 text-emerald-500 font-medium">
+              <CheckCircle2 className="size-3.5 fill-emerald-500/20" />
+              <span>{progressLabel}: {progressPercent}%</span>
             </span>
           ) : (
             <span className="flex items-center gap-1.5 font-medium">

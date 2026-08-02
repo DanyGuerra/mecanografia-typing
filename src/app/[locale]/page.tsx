@@ -29,6 +29,7 @@ export default function Home({ params }: PageProps) {
     currentPhrase,
     userInput,
     hasError,
+    hasSuccess,
     errorKey,
     containerRef,
     wpm,
@@ -74,6 +75,7 @@ export default function Home({ params }: PageProps) {
           text={currentPhrase}
           userInput={userInput}
           hasError={hasError}
+          hasSuccess={hasSuccess}
           errorKey={errorKey}
           isEditingText={isEditingText}
           defaultPhrase={t('defaultPhrase')}

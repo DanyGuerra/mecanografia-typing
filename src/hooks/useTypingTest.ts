@@ -15,6 +15,7 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [errorKey, setErrorKey] = useState(0);
+  const [hasSuccess, setHasSuccess] = useState(false);
 
   const [startTime, setStartTime] = useState<number | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -29,6 +30,7 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
   const correctKeystrokesCount = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const [prevDefaultPhrase, setPrevDefaultPhrase] = useState(defaultPhraseText);
   if (defaultPhraseText !== prevDefaultPhrase) {
@@ -198,8 +200,12 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
         if (isCorrect) {
           correctKeystrokesCount.current += 1;
           setHasError(false);
+          setHasSuccess(true);
+          if (successTimeoutRef.current) clearTimeout(successTimeoutRef.current);
+          successTimeoutRef.current = setTimeout(() => setHasSuccess(false), 120);
         } else {
           setHasError(true);
+          setHasSuccess(false);
           setErrorKey((prev) => prev + 1);
           if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
           errorTimeoutRef.current = setTimeout(() => setHasError(false), 250);
@@ -280,6 +286,7 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
     currentPhrase,
     userInput,
     hasError,
+    hasSuccess,
     errorKey,
     containerRef,
     wpm,
