@@ -47,7 +47,7 @@ function CompletedOverlay({
     <div className="absolute inset-0 bg-background/85 backdrop-blur-md rounded-xl flex justify-center items-center z-30 p-4 animate-in fade-in zoom-in-95 duration-200">
       <Card className="w-full max-w-md border border-border bg-card shadow-2xl text-center flex flex-col items-center p-6 overflow-hidden relative">
         <div className="flex items-center gap-3 mb-2">
-          <div className="size-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 shadow-xs">
+          <div className="size-14 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-xs">
             <Trophy className="size-7 animate-bounce" />
           </div>
         </div>
@@ -55,7 +55,7 @@ function CompletedOverlay({
         <CardHeader className="p-0 mb-3">
           <CardTitle className="text-2xl font-black tracking-tight text-foreground flex items-center justify-center gap-1.5">
             <span>{title}</span>
-            <Sparkles className="size-5 text-amber-500 fill-amber-500/20" />
+            <Sparkles className="size-5 text-primary fill-primary/20" />
           </CardTitle>
           <CardDescription className="text-muted-foreground text-xs leading-relaxed max-w-[320px] mt-1">
             {body}
@@ -73,7 +73,7 @@ function CompletedOverlay({
 
           <div className="flex flex-col items-center p-2.5 rounded-lg bg-muted/50 border border-border/60">
             <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
-              <Target className="size-3 text-emerald-500" />
+              <Target className="size-3 text-primary" />
               <span>{accuracyLabel}</span>
             </div>
             <span className="font-mono text-xl font-black text-foreground">{accuracy}%</span>
@@ -81,7 +81,7 @@ function CompletedOverlay({
 
           <div className="flex flex-col items-center p-2.5 rounded-lg bg-muted/50 border border-border/60">
             <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
-              <Clock className="size-3 text-indigo-500" />
+              <Clock className="size-3 text-primary" />
               <span>{timeLabel}</span>
             </div>
             <span className="font-mono text-xl font-black text-foreground">{formatTime(elapsedTime)}</span>

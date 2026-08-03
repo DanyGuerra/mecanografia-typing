@@ -48,7 +48,7 @@ const CharItem = memo(function CharItem({
 
   if (isTyped) {
     charClass = isCorrect 
-      ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 rounded-[2px]" 
+      ? "text-primary bg-primary/15 rounded-[2px]" 
       : "text-destructive bg-destructive/15 rounded-[2px]";
   } else if (isCurrent) {
     charClass = "text-foreground font-semibold";
@@ -182,7 +182,7 @@ function TypingArea({
         hasError
           ? 'border-destructive/60'
           : hasSuccess
-            ? 'border-emerald-500/60'
+            ? 'border-primary/60'
             : 'border-border'
       }`}
     >
@@ -208,8 +208,8 @@ function TypingArea({
               <span>{typingErrorAlert}</span>
             </span>
           ) : hasSuccess ? (
-            <span className="flex items-center gap-1 text-emerald-500 font-medium">
-              <CheckCircle2 className="size-3.5 fill-emerald-500/20" />
+            <span className="flex items-center gap-1 text-primary font-medium">
+              <CheckCircle2 className="size-3.5 fill-primary/20" />
               <span>{progressLabel}: {progressPercent}%</span>
             </span>
           ) : (

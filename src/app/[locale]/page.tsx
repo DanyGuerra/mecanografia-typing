@@ -50,6 +50,8 @@ export default function Home({ params }: PageProps) {
     handleAppLanguageChange,
     handleKeyboardLanguageChange,
     handleOsModeChange,
+    accentColor,
+    setAccentColor,
   } = useTypingTest(locale, t('defaultPhrase'));
 
   return (
@@ -68,6 +70,8 @@ export default function Home({ params }: PageProps) {
         themeLabel={t('themeLabel')}
         themeLightTitle={t('themeLightTitle')}
         themeDarkTitle={t('themeDarkTitle')}
+        accentColor={accentColor}
+        onAccentColorChange={setAccentColor}
       />
 
       <section className="relative w-full">

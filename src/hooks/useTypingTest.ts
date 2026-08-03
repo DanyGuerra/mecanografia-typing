@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useAudio } from '@/hooks/useAudio';
 import { charToKeyCode } from '@/utils/keyboardMap';
+import { useAccentColor } from '@/hooks/useAccentColor';
 
 export function useTypingTest(locale: string, defaultPhraseText: string = '') {
   const router = useRouter();
@@ -59,6 +60,8 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
   const toggleTheme = () => {
     setTheme(currentTheme === 'dark' ? 'light' : 'dark');
   };
+
+  const { accentColor, setAccentColor } = useAccentColor(currentTheme === 'dark');
 
   const handleReset = useCallback(() => {
     setUserInput('');
@@ -308,5 +311,7 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
     handleAppLanguageChange,
     handleKeyboardLanguageChange,
     handleOsModeChange,
+    accentColor,
+    setAccentColor,
   };
 }

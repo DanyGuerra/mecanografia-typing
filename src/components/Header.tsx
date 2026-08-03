@@ -10,8 +10,9 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
-import { Globe, Volume2, VolumeX, Sun, Moon, Check, ChevronDown } from 'lucide-react';
+import { Globe, Volume2, VolumeX, Sun, Moon, Check, ChevronDown, Palette } from 'lucide-react';
 import KeyboardLogo from './KeyboardLogo';
+import { type AccentColorKey, ACCENT_COLORS } from '@/hooks/useAccentColor';
 
 interface HeaderProps {
   appLanguage: 'es' | 'en';
@@ -27,6 +28,8 @@ interface HeaderProps {
   themeLabel: string;
   themeLightTitle: string;
   themeDarkTitle: string;
+  accentColor: AccentColorKey;
+  onAccentColorChange: (key: AccentColorKey) => void;
 }
 
 function Header({
@@ -41,6 +44,8 @@ function Header({
   onThemeToggle,
   themeLightTitle,
   themeDarkTitle,
+  accentColor,
+  onAccentColorChange,
 }: HeaderProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -49,6 +54,8 @@ function Header({
       setMounted(true);
     });
   }, []);
+
+  const currentAccent = ACCENT_COLORS.find((c) => c.key === accentColor) ?? ACCENT_COLORS[0];
 
   return (
     <header className="w-full flex justify-between items-center flex-wrap gap-4 border-b border-border pb-4 transition-all duration-200">
@@ -103,6 +110,48 @@ function Header({
                 {appLanguage === 'en' && <Check className="size-4 text-primary" />}
               </DropdownMenuItem>
             </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Accent Color Picker */}
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 rounded-lg gap-2 px-3 border border-border bg-background hover:bg-muted transition-colors cursor-pointer"
+                aria-label="Color de énfasis"
+                title="Color de énfasis"
+              >
+                <Palette className="size-4 text-muted-foreground" />
+                <span
+                  className="size-3.5 rounded-full border border-border/60 shadow-xs flex-shrink-0"
+                  style={{ backgroundColor: currentAccent.hex }}
+                />
+              </Button>
+            }
+          />
+          <DropdownMenuContent align="end" sideOffset={4} className="min-w-[fit-content] p-2">
+            <div className="grid grid-cols-4 gap-1.5">
+              {ACCENT_COLORS.map((color) => (
+                <button
+                  key={color.key}
+                  onClick={() => onAccentColorChange(color.key)}
+                  title={color.label}
+                  className="relative size-6 rounded-full border-2 transition-all duration-150 cursor-pointer hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
+                  style={{
+                    backgroundColor: color.hex,
+                    borderColor: accentColor === color.key ? color.hex : 'transparent',
+                    boxShadow: accentColor === color.key ? `0 0 0 2px ${color.hex}44` : 'none',
+                  }}
+                >
+                  {accentColor === color.key && (
+                    <Check className="size-3 text-white absolute inset-0 m-auto drop-shadow-sm" />
+                  )}
+                </button>
+              ))}
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
 
