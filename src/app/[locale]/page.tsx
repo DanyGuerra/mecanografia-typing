@@ -74,6 +74,8 @@ export default function Home({ params }: PageProps) {
         themeDarkTitle={t('themeDarkTitle')}
         accentColor={accentColor}
         onAccentColorChange={setAccentColor}
+        testModeTab={t('testModeTab')}
+        practiceModeTab={t('practiceModeTab')}
       />
 
       <section className="relative w-full">

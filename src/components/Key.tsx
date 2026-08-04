@@ -10,6 +10,7 @@ interface KeyProps {
   flexGrow?: number;
   widthUnit?: number;
   isCapsLockActive?: boolean;
+  isTarget?: boolean;
 }
 
 function Key({
@@ -20,6 +21,7 @@ function Key({
   flexGrow = 1,
   widthUnit = 1,
   isCapsLockActive = false,
+  isTarget = false,
 }: KeyProps) {
   const baseWidth = 60;
   const padding = 2;
@@ -43,11 +45,13 @@ function Key({
   // --- Color logic ---
   const keyFill = isPressed
     ? 'var(--primary)'
+    : isTarget
+    ? 'color-mix(in srgb, var(--primary) 28%, var(--key-normal-fill))'
     : isSpecialKey
     ? 'var(--key-special-fill)'
     : 'var(--key-normal-fill)';
 
-  const keyStroke = isPressed
+  const keyStroke = isPressed || isTarget
     ? 'var(--primary)'
     : isSpecialKey
     ? 'var(--key-special-stroke)'
@@ -55,12 +59,16 @@ function Key({
 
   const baseShadowFill = isPressed
     ? 'var(--primary)'
+    : isTarget
+    ? 'color-mix(in srgb, var(--primary) 40%, var(--key-shadow-normal))'
     : isSpecialKey
     ? 'var(--key-shadow-special)'
     : 'var(--key-shadow-normal)';
 
   const textColorClass = isPressed
     ? '!fill-[var(--primary-foreground)]'
+    : isTarget
+    ? '!fill-primary font-extrabold'
     : '';
 
   return (
@@ -108,8 +116,24 @@ function Key({
             ry={5}
             fill={keyFill}
             stroke={keyStroke}
-            strokeWidth={0.8}
+            strokeWidth={isTarget ? 1.8 : 0.8}
           />
+
+          {/* Target Key Pulsing Glow Ring */}
+          {isTarget && !isPressed && (
+            <rect
+              x={padding + 1.5}
+              y={padding + 1.5}
+              width={keyWidth - 3}
+              height={capHeight - 3}
+              rx={4}
+              ry={4}
+              fill="none"
+              stroke="var(--primary)"
+              strokeWidth={1.5}
+              className="animate-pulse"
+            />
+          )}
 
           {/* Homing bar for F and J keys */}
           {hasHomingBar && (

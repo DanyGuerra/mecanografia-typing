@@ -32,6 +32,21 @@
     "gradeLabel": "Grado",
     "defaultPhrase": "Comienza a escribir para practicar mecanografía.",
     "pausedTitle": "En pausa",
-    "pausedSubtitle": "Presiona cualquier tecla para continuar"
+    "pausedSubtitle": "Presiona cualquier tecla para continuar",
+    "testModeTab": "Prueba de Velocidad",
+    "practiceModeTab": "Práctica Libre",
+    "practiceTitle": "Modo Práctica Guiada",
+    "practiceSubtitle": "Sigue la tecla resaltada en el teclado interactivo.",
+    "nextKeyLabel": "Siguiente tecla",
+    "pressKeyInstruction": "Presiona la tecla resaltada en el teclado 3D",
+    "homeRowCategory": "Fila Central",
+    "topRowCategory": "Fila Superior",
+    "bottomRowCategory": "Fila Inferior",
+    "commonWordsCategory": "Palabras Comunes",
+    "numbersCategory": "Números",
+    "symbolsCategory": "Símbolos",
+    "customCategory": "Texto Propio",
+    "practiceCompleted": "¡Felicidades! Has completado el ejercicio.",
+    "nextExercise": "Siguiente Ejercicio"
   }
 }

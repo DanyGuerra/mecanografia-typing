@@ -2,6 +2,7 @@
 
 import { useState, useEffect, memo } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,7 +11,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
-import { Globe, Volume2, VolumeX, Sun, Moon, Check, ChevronDown, Palette } from 'lucide-react';
+import { Globe, Volume2, VolumeX, Sun, Moon, Check, ChevronDown, Palette, Zap, Target } from 'lucide-react';
 import KeyboardLogo from './KeyboardLogo';
 import { type AccentColorKey, ACCENT_COLORS } from '@/hooks/useAccentColor';
 
@@ -30,6 +31,8 @@ interface HeaderProps {
   themeDarkTitle: string;
   accentColor: AccentColorKey;
   onAccentColorChange: (key: AccentColorKey) => void;
+  testModeTab?: string;
+  practiceModeTab?: string;
 }
 
 function Header({
@@ -46,8 +49,12 @@ function Header({
   themeDarkTitle,
   accentColor,
   onAccentColorChange,
+  testModeTab = 'Prueba de Velocidad',
+  practiceModeTab = 'Práctica Libre',
 }: HeaderProps) {
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
+  const isPracticeMode = pathname?.includes('/practice');
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -59,22 +66,50 @@ function Header({
 
   return (
     <header className="w-full flex justify-between items-center flex-wrap gap-4 border-b border-border pb-4 transition-all duration-200">
-      <Link
-        href={`/${appLanguage}`}
-        className="group flex items-center gap-3 text-foreground transition-colors"
-      >
-        <div className="flex items-center justify-center p-2 rounded-lg bg-muted border border-border group-hover:border-primary/50 transition-colors">
-          <KeyboardLogo className="text-foreground size-6 group-hover:scale-105 transition-transform duration-200" />
+      <div className="flex items-center gap-4 flex-wrap">
+        <Link
+          href={`/${appLanguage}`}
+          className="group flex items-center gap-3 text-foreground transition-colors"
+        >
+          <div className="flex items-center justify-center p-2 rounded-lg bg-muted border border-border group-hover:border-primary/50 transition-colors">
+            <KeyboardLogo className="text-foreground size-6 group-hover:scale-105 transition-transform duration-200" />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-bold tracking-tight text-foreground group-hover:text-primary transition-colors">
+              {logoText}
+            </span>
+            <span className="px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase bg-secondary text-secondary-foreground rounded-md border border-border">
+              typing
+            </span>
+          </div>
+        </Link>
+
+        {/* Mode Switcher Tabs */}
+        <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border">
+          <Link
+            href={`/${appLanguage}`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+              !isPracticeMode
+                ? 'bg-background text-foreground shadow-xs'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Zap className="size-3.5 text-primary" />
+            <span>{testModeTab}</span>
+          </Link>
+          <Link
+            href={`/${appLanguage}/practice`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+              isPracticeMode
+                ? 'bg-background text-primary shadow-xs'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Target className="size-3.5 text-primary animate-pulse" />
+            <span>{practiceModeTab}</span>
+          </Link>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xl font-bold tracking-tight text-foreground group-hover:text-primary transition-colors">
-            {logoText}
-          </span>
-          <span className="px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase bg-secondary text-secondary-foreground rounded-md border border-border">
-            typing
-          </span>
-        </div>
-      </Link>
+      </div>
 
       <div className="flex items-center gap-2">
         {/* Language Selector Dropdown */}

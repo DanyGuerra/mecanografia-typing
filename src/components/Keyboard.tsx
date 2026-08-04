@@ -2,6 +2,7 @@
 
 import React, { memo } from 'react';
 import Key from './Key';
+import { charToKeyCode } from '@/utils/keyboardMap';
 
 interface KeyConfig {
   code: string;
@@ -18,6 +19,7 @@ interface KeyboardProps {
   osMode: 'mac' | 'windows';
   nextKeyCode?: string | null;
   nextKeyNeedsShift?: boolean;
+  targetChar?: string | null;
 }
 
 const englishLayout: KeyConfig[][] = [
@@ -174,7 +176,19 @@ function Keyboard({
   osMode,
   nextKeyCode,
   nextKeyNeedsShift,
+  targetChar,
 }: KeyboardProps) {
+  let activeTargetCode = nextKeyCode;
+  let activeTargetShift = nextKeyNeedsShift;
+
+  if (!activeTargetCode && targetChar) {
+    const mapped = charToKeyCode(targetChar, language);
+    if (mapped) {
+      activeTargetCode = mapped.code;
+      activeTargetShift = mapped.needsShift;
+    }
+  }
+
   const baseLayout = language === 'es' ? spanishLayout : englishLayout;
   const layout = baseLayout.map((row, index) => {
     if (index !== 4) return row;
@@ -228,6 +242,10 @@ function Keyboard({
                   displayShiftLabel = undefined;
                 }
 
+                const isTargetKey =
+                  key.code === activeTargetCode ||
+                  (activeTargetShift && (key.code === 'ShiftLeft' || key.code === 'ShiftRight'));
+
                 return (
                   <Key
                     key={key.code}
@@ -242,6 +260,7 @@ function Keyboard({
                         : !!pressedKeys[key.code]
                     }
                     isCapsLockActive={capsLockActive && key.code === 'CapsLock'}
+                    isTarget={isTargetKey}
                   />
                 );
               })}

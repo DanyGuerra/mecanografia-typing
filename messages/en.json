@@ -32,6 +32,21 @@
     "gradeLabel": "Grade",
     "defaultPhrase": "Start typing to practice typing on this interactive keyboard.",
     "pausedTitle": "Paused",
-    "pausedSubtitle": "Press any key to resume"
+    "pausedSubtitle": "Press any key to resume",
+    "testModeTab": "Speed Test",
+    "practiceModeTab": "Free Practice",
+    "practiceTitle": "Guided Practice Mode",
+    "practiceSubtitle": "Follow the highlighted target key on the 3D keyboard.",
+    "nextKeyLabel": "Next key",
+    "pressKeyInstruction": "Press the highlighted key on the 3D keyboard",
+    "homeRowCategory": "Home Row",
+    "topRowCategory": "Top Row",
+    "bottomRowCategory": "Bottom Row",
+    "commonWordsCategory": "Common Words",
+    "numbersCategory": "Numbers",
+    "symbolsCategory": "Symbols",
+    "customCategory": "Custom Text",
+    "practiceCompleted": "Congratulations! You completed the exercise.",
+    "nextExercise": "Next Exercise"
   }
 }
