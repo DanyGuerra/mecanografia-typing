@@ -7,7 +7,6 @@ interface KeyProps {
   shiftLabel?: string;
   code: string;
   isPressed: boolean;
-  isTargetNextKey?: boolean;
   flexGrow?: number;
   widthUnit?: number;
   isCapsLockActive?: boolean;
@@ -18,7 +17,6 @@ function Key({
   shiftLabel,
   code,
   isPressed,
-  isTargetNextKey = false,
   flexGrow = 1,
   widthUnit = 1,
   isCapsLockActive = false,
@@ -26,133 +24,145 @@ function Key({
   const baseWidth = 60;
   const padding = 2;
   const nominalWidth = Math.round(baseWidth * widthUnit);
-  const nominalHeight = 50;
+  const nominalHeight = 52;
   const keyWidth = nominalWidth - padding * 2;
   const keyHeight = nominalHeight - padding * 2;
 
-  const shadowHeight = 2.5;
+  const shadowHeight = 3;
   const pressOffsetY = isPressed ? shadowHeight : 0;
   const capHeight = keyHeight - shadowHeight;
 
-  const isSpecialKey = ['ShiftLeft', 'ShiftRight', 'Enter', 'Space', 'Backspace', 'Tab', 'CapsLock', 'MetaLeft', 'MetaRight', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'ContextMenu'].includes(code);
-
-  const normalFill = 'var(--key-normal-fill)';
-  const normalBorder = 'var(--key-normal-stroke)';
-  const specialFill = 'var(--key-special-fill)';
-  const specialBorder = 'var(--key-special-stroke)';
-  
-  const pressedFill = 'var(--key-pressed-fill)';
-  const pressedBorder = 'var(--key-pressed-stroke)';
-
-  const baseShadowFill = isPressed 
-    ? 'var(--key-shadow-pressed)' 
-    : (isSpecialKey ? 'var(--key-shadow-special)' : 'var(--key-shadow-normal)');
+  const isSpecialKey = [
+    'ShiftLeft', 'ShiftRight', 'Enter', 'Space', 'Backspace', 'Tab',
+    'CapsLock', 'MetaLeft', 'MetaRight', 'ControlLeft', 'ControlRight',
+    'AltLeft', 'AltRight', 'ContextMenu',
+  ].includes(code);
 
   const hasHomingBar = ['KeyF', 'KeyJ'].includes(code);
 
+  // --- Color logic ---
   const keyFill = isPressed
-    ? pressedFill
-    : isTargetNextKey
     ? 'var(--primary)'
     : isSpecialKey
-    ? specialFill
-    : normalFill;
+    ? 'var(--key-special-fill)'
+    : 'var(--key-normal-fill)';
 
   const keyStroke = isPressed
-    ? pressedBorder
-    : isTargetNextKey
     ? 'var(--primary)'
     : isSpecialKey
-    ? specialBorder
-    : normalBorder;
+    ? 'var(--key-special-stroke)'
+    : 'var(--key-normal-stroke)';
+
+  const baseShadowFill = isPressed
+    ? 'var(--primary)'
+    : isSpecialKey
+    ? 'var(--key-shadow-special)'
+    : 'var(--key-shadow-normal)';
 
   const textColorClass = isPressed
-    ? '!fill-[var(--key-pressed-text)]'
-    : isTargetNextKey
     ? '!fill-[var(--primary-foreground)]'
     : '';
 
   return (
     <div
-      className="flex h-[50px] relative select-none"
+      className="relative select-none"
       style={{
         flexGrow: flexGrow,
         flexBasis: `${nominalWidth}px`,
+        height: `${nominalHeight}px`,
         maxWidth: code === 'Space' ? '380px' : 'none',
       }}
     >
       <svg
         viewBox={`0 0 ${nominalWidth} ${nominalHeight}`}
-        className={`w-full h-full overflow-visible ${isPressed ? '' : 'drop-shadow-[0_1.5px_1.5px_var(--key-shadow)]'}`}
+        className="w-full h-full overflow-visible"
         preserveAspectRatio="none"
       >
+        {/* Shadow / side of the keycap */}
         <rect
           x={padding}
           y={padding + shadowHeight}
           width={keyWidth}
           height={capHeight}
-          rx={4}
-          ry={4}
+          rx={5}
+          ry={5}
           fill={baseShadowFill}
         />
 
+        {/* Animated key group */}
         <g
           style={{
             transform: `translateY(${pressOffsetY}px)`,
-            transition: 'transform 0.06s cubic-bezier(0.2, 0.8, 0.2, 1)',
+            transition: 'transform 0.08s cubic-bezier(0.34, 1.56, 0.64, 1)',
           }}
         >
+          {/* Key cap base */}
           <rect
             x={padding}
             y={padding}
             width={keyWidth}
             height={capHeight}
-            rx={4}
-            ry={4}
+            rx={5}
+            ry={5}
             fill={keyFill}
             stroke={keyStroke}
-            strokeWidth={isTargetNextKey ? 1.5 : 1}
-            className={isTargetNextKey && !isPressed ? 'animate-pulse' : ''}
+            strokeWidth={0.8}
           />
 
+          {/* Homing bar for F and J keys */}
           {hasHomingBar && (
             <line
-              x1={padding + (keyWidth / 2) - 5}
-              y1={padding + capHeight - 6}
-              x2={padding + (keyWidth / 2) + 5}
-              y2={padding + capHeight - 6}
-              stroke={isPressed ? 'var(--key-pressed-text)' : isTargetNextKey ? 'var(--primary-foreground)' : 'var(--key-normal-text)'}
-              strokeWidth={1.8}
+              x1={padding + keyWidth / 2 - 6}
+              y1={padding + capHeight - 7}
+              x2={padding + keyWidth / 2 + 6}
+              y2={padding + capHeight - 7}
+              stroke={
+                isPressed
+                  ? 'var(--key-pressed-text)'
+                  : 'var(--key-normal-text)'
+              }
+              strokeWidth={2}
               strokeLinecap="round"
-              opacity={0.6}
+              opacity={0.5}
             />
           )}
 
+          {/* CapsLock indicator LED */}
           {isCapsLockActive && (
-            <circle
-              cx={padding + 12}
-              cy={padding + 12}
-              r={2.5}
-              fill="#10b981"
-              className="animate-pulse"
-            />
+            <>
+              <circle
+                cx={padding + 12}
+                cy={padding + 12}
+                r={3}
+                fill="#10b981"
+                opacity={0.3}
+              />
+              <circle
+                cx={padding + 12}
+                cy={padding + 12}
+                r={2}
+                fill="#34d399"
+                className="animate-pulse"
+              />
+            </>
           )}
 
+          {/* Key labels */}
           {shiftLabel && !isSpecialKey ? (
             <>
               <text
-                x={padding + (keyWidth / 2)}
-                y={padding + 16}
-                className={`font-sans text-[13px] font-semibold fill-[var(--key-special-text)] pointer-events-none transition-colors duration-75 ${textColorClass}`}
+                x={padding + keyWidth / 2}
+                y={padding + 15}
+                className={`font-sans text-[12px] font-medium fill-[var(--key-special-text)] pointer-events-none transition-colors duration-100 ${textColorClass}`}
                 textAnchor="middle"
                 dominantBaseline="middle"
               >
                 {shiftLabel}
               </text>
               <text
-                x={padding + (keyWidth / 2)}
-                y={padding + capHeight - 14}
-                className={`font-sans text-[18px] font-bold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-75 ${textColorClass}`}
+                x={padding + keyWidth / 2}
+                y={padding + capHeight - 13}
+                className={`font-sans text-[17px] font-semibold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-100 ${textColorClass}`}
                 textAnchor="middle"
                 dominantBaseline="middle"
               >
@@ -161,10 +171,12 @@ function Key({
             </>
           ) : (
             <text
-              x={padding + (keyWidth / 2)}
-              y={padding + (capHeight / 2) + 2}
-              className={`font-sans text-[20px] font-bold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-75 ${
-                isSpecialKey ? '!text-[12px] !font-bold !fill-[var(--key-special-text)] tracking-widest uppercase' : ''
+              x={padding + keyWidth / 2}
+              y={padding + capHeight / 2 + 1}
+              className={`font-sans pointer-events-none transition-colors duration-100 ${
+                isSpecialKey
+                  ? 'text-[11px] font-semibold fill-[var(--key-special-text)] tracking-wide'
+                  : 'text-[19px] font-semibold fill-[var(--key-normal-text)]'
               } ${textColorClass}`}
               textAnchor="middle"
               dominantBaseline="middle"

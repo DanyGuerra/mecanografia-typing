@@ -24,16 +24,26 @@
   --key-special-stroke: #e2e8f0;
   --key-special-text: #475569;
 
-  --key-pressed-fill: #0f172a;
-  --key-pressed-stroke: #020617;
-  --key-pressed-text: #ffffff;
+  --key-pressed-fill: var(--primary);
+  --key-pressed-stroke: var(--primary);
+  --key-pressed-text: var(--primary-foreground);
 
   --key-shadow-normal: #cbd5e1;
   --key-shadow-special: #e2e8f0;
-  --key-shadow-pressed: #334155;
+  --key-shadow-pressed: var(--primary);
 
   --key-shadow: rgba(15, 23, 42, 0.08);
   --keyboard-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+
+  --key-target-fill: #3b82f6;
+  --key-target-stroke: #2563eb;
+  --key-target-text: #ffffff;
+  --key-target-glow: #60a5fa;
+
+  --keyboard-case-bg: #e2e5ea;
+  --keyboard-case-border: #d1d5db;
+  --keyboard-surface-bg: #d8dce2;
+  --keyboard-surface-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
 
   --overlay-bg: rgba(248, 250, 252, 0.85);
   --overlay-completed-bg: rgba(255, 255, 255, 0.95);
@@ -92,16 +102,26 @@
   --key-special-stroke: #1e293b;
   --key-special-text: #94a3b8;
 
-  --key-pressed-fill: #f8fafc;
-  --key-pressed-stroke: #ffffff;
-  --key-pressed-text: #0f172a;
+  --key-pressed-fill: var(--primary);
+  --key-pressed-stroke: var(--primary);
+  --key-pressed-text: var(--primary-foreground);
 
   --key-shadow-normal: #0f172a;
   --key-shadow-special: #020617;
-  --key-shadow-pressed: #cbd5e1;
+  --key-shadow-pressed: var(--primary);
 
   --key-shadow: rgba(0, 0, 0, 0.4);
   --keyboard-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+
+  --key-target-fill: #3b82f6;
+  --key-target-stroke: #2563eb;
+  --key-target-text: #ffffff;
+  --key-target-glow: #3b82f6;
+
+  --keyboard-case-bg: #151b2b;
+  --keyboard-case-border: #1e293b;
+  --keyboard-surface-bg: #111827;
+  --keyboard-surface-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
 
   --overlay-bg: rgba(15, 23, 42, 0.85);
   --overlay-completed-bg: rgba(15, 23, 42, 0.95);
@@ -252,4 +272,31 @@ textarea::-moz-selection {
   html {
     @apply font-sans;
   }
+}
+
+/* ── Keyboard Case Shell ── */
+.keyboard-case {
+  width: 100%;
+  background: var(--keyboard-case-bg);
+  border: 1px solid var(--keyboard-case-border);
+  border-radius: 16px;
+  padding: 6px;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.15) inset;
+}
+
+.dark .keyboard-case {
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 8px 24px rgba(0, 0, 0, 0.25),
+    0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+.keyboard-surface {
+  background: var(--keyboard-surface-bg);
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: var(--keyboard-surface-shadow);
 }

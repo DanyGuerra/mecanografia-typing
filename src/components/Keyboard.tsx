@@ -205,39 +205,49 @@ function Keyboard({
   const isShiftActive = !!pressedKeys['ShiftLeft'] || !!pressedKeys['ShiftRight'];
 
   return (
-    <div className="w-full p-3 sm:p-4 bg-muted/20 border border-border rounded-xl shadow-sm">
-      <div className="flex flex-col gap-[5px] w-full">
-        {layout.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex gap-1 w-full justify-between">
-            {row.map((key) => {
-              const isLetter = key.label.length === 1 && key.label.toLowerCase() !== key.label.toUpperCase();
-              let displayLabel = key.label;
-              let displayShiftLabel = key.shiftLabel;
+    <div className="keyboard-case">
+      {/* Inner surface with key tray effect */}
+      <div className="keyboard-surface">
+        <div className="flex flex-col gap-[5px] w-full">
+          {layout.map((row, rowIndex) => (
+            <div key={rowIndex} className="flex gap-[4px] w-full justify-between">
+              {row.map((key) => {
+                const isLetter =
+                  key.label.length === 1 &&
+                  key.label.toLowerCase() !== key.label.toUpperCase();
+                let displayLabel = key.label;
+                let displayShiftLabel = key.shiftLabel;
 
-              if (isLetter) {
-                const isUpperCase = (capsLockActive && !isShiftActive) || (!capsLockActive && isShiftActive);
-                displayLabel = isUpperCase ? key.label.toUpperCase() : key.label.toLowerCase();
-                displayShiftLabel = undefined;
-              }
+                if (isLetter) {
+                  const isUpperCase =
+                    (capsLockActive && !isShiftActive) ||
+                    (!capsLockActive && isShiftActive);
+                  displayLabel = isUpperCase
+                    ? key.label.toUpperCase()
+                    : key.label.toLowerCase();
+                  displayShiftLabel = undefined;
+                }
 
-              const isTargetNextKey = key.code === nextKeyCode || (!!nextKeyNeedsShift && (key.code === 'ShiftLeft' || key.code === 'ShiftRight') && !isShiftActive);
-
-              return (
-                <Key
-                  key={key.code}
-                  code={key.code}
-                  label={displayLabel}
-                  shiftLabel={displayShiftLabel}
-                  widthUnit={key.widthUnit}
-                  flexGrow={key.flexGrow}
-                  isPressed={key.code === 'CapsLock' ? !!capsLockActive : !!pressedKeys[key.code]}
-                  isTargetNextKey={isTargetNextKey}
-                  isCapsLockActive={capsLockActive && key.code === 'CapsLock'}
-                />
-              );
-            })}
-          </div>
-        ))}
+                return (
+                  <Key
+                    key={key.code}
+                    code={key.code}
+                    label={displayLabel}
+                    shiftLabel={displayShiftLabel}
+                    widthUnit={key.widthUnit}
+                    flexGrow={key.flexGrow}
+                    isPressed={
+                      key.code === 'CapsLock'
+                        ? !!capsLockActive
+                        : !!pressedKeys[key.code]
+                    }
+                    isCapsLockActive={capsLockActive && key.code === 'CapsLock'}
+                  />
+                );
+              })}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
