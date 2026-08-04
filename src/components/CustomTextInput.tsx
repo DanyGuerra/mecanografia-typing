@@ -39,15 +39,8 @@ export default function CustomTextInput({
   };
 
   return (
-    <>
-      <style>{`
-        .custom-text-area::selection {
-          background-color: var(--primary);
-          color: var(--primary-foreground);
-        }
-      `}</style>
-      <Card
-        className="w-full bg-card/60 backdrop-blur-xs shadow-2xs p-4 sm:p-5 rounded-2xl"
+    <Card
+      className="w-full bg-card/60 backdrop-blur-xs shadow-2xs p-4 sm:p-5 rounded-2xl"
         style={{ border: '1px solid color-mix(in srgb, var(--primary) 30%, transparent)' }}
       >
         <CardHeader className="p-0 mb-3 flex flex-row items-center justify-between">
@@ -97,6 +90,5 @@ export default function CustomTextInput({
           </CardFooter>
         </form>
       </Card>
-    </>
   );
 }

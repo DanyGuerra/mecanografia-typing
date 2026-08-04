@@ -176,15 +176,16 @@ body {
   overflow-x: hidden;
 }
 
-::selection {
-  background: hsl(217 91% 60% / 0.45);
+::selection,
+::-moz-selection {
+  background: color-mix(in srgb, var(--primary) 40%, transparent);
   color: inherit;
 }
 
 textarea::selection,
 textarea::-moz-selection {
-  background: hsl(217 91% 60% / 0.55) !important;
-  color: white !important;
+  background: color-mix(in srgb, var(--primary) 40%, transparent);
+  color: var(--foreground);
 }
 
 
