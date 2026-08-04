@@ -30,6 +30,8 @@
     "newlineHint": "Line break",
     "saveTextHint": "Save Text",
     "gradeLabel": "Grade",
-    "defaultPhrase": "Start typing to practice typing on this interactive keyboard."
+    "defaultPhrase": "Start typing to practice typing on this interactive keyboard.",
+    "pausedTitle": "Paused",
+    "pausedSubtitle": "Press any key to resume"
   }
 }

@@ -23,12 +23,15 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
   const [wpm, setWpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [capsLockActive, setCapsLockActive] = useState(false);
   const [osMode, setOsMode] = useState<'mac' | 'windows'>('mac');
   const [isEditingText, setIsEditingText] = useState(false);
 
   const keystrokesCount = useRef(0);
   const correctKeystrokesCount = useRef(0);
+  const lastKeyPressRef = useRef<number | null>(null);
+  const pauseStartTimeRef = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -70,10 +73,13 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
     setWpm(0);
     setAccuracy(100);
     setIsCompleted(false);
+    setIsPaused(false);
     setHasError(false);
     setErrorKey(0);
     keystrokesCount.current = 0;
     correctKeystrokesCount.current = 0;
+    lastKeyPressRef.current = null;
+    pauseStartTimeRef.current = null;
     setCustomPhraseState('');
     setIsEditingText(false);
   }, []);
@@ -85,10 +91,13 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
     setWpm(0);
     setAccuracy(100);
     setIsCompleted(false);
+    setIsPaused(false);
     setHasError(false);
     setErrorKey(0);
     keystrokesCount.current = 0;
     correctKeystrokesCount.current = 0;
+    lastKeyPressRef.current = null;
+    pauseStartTimeRef.current = null;
     setIsEditingText(true);
   }, []);
 
@@ -104,14 +113,28 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
       setWpm(0);
       setAccuracy(100);
       setIsCompleted(false);
+      setIsPaused(false);
       setHasError(false);
       setErrorKey(0);
       keystrokesCount.current = 0;
       correctKeystrokesCount.current = 0;
+      lastKeyPressRef.current = null;
+      pauseStartTimeRef.current = null;
       setCustomPhraseState(cleanText);
       setIsEditingText(false);
     }
   }, []);
+
+  const handleResume = useCallback(() => {
+    const now = Date.now();
+    if (pauseStartTimeRef.current && startTime) {
+      const pausedMs = now - pauseStartTimeRef.current;
+      setStartTime((prev) => (prev ? prev + pausedMs : now));
+    }
+    pauseStartTimeRef.current = null;
+    lastKeyPressRef.current = now;
+    setIsPaused(false);
+  }, [startTime]);
 
   const handleAppLanguageChange = (lang: 'es' | 'en') => {
     handleReset();
@@ -130,11 +153,19 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
     localStorage.setItem('osMode', mode);
   };
 
-  // Timer & WPM calculation (Interval runs smoothly without being reset on every keypress)
+  // Timer & WPM calculation + 10-second inactivity auto-pause
   useEffect(() => {
-    if (startTime && !isCompleted) {
+    if (startTime && !isCompleted && !isPaused) {
       const interval = setInterval(() => {
         const now = Date.now();
+
+        // If user hasn't pressed any key for > 10 seconds, auto-pause
+        if (lastKeyPressRef.current && now - lastKeyPressRef.current >= 10000) {
+          setIsPaused(true);
+          pauseStartTimeRef.current = now;
+          return;
+        }
+
         const elapsedMs = now - startTime;
         const elapsedSecs = Math.max(1, Math.floor(elapsedMs / 1000));
         setElapsedTime(elapsedSecs);
@@ -156,14 +187,30 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
 
       return () => clearInterval(interval);
     }
-  }, [startTime, isCompleted]);
+  }, [startTime, isCompleted, isPaused]);
 
   const handleKeyPress = useCallback((key: string, code: string) => {
     if (isEditingText || !currentPhrase || currentPhrase.length === 0 || userInput.length === currentPhrase.length) return;
 
+    const now = Date.now();
+
+    // If test was auto-paused, resume on keypress without evaluating key as typed input or error
+    if (isPaused) {
+      if (pauseStartTimeRef.current && startTime) {
+        const pausedMs = now - pauseStartTimeRef.current;
+        setStartTime((prev) => (prev ? prev + pausedMs : now));
+      }
+      pauseStartTimeRef.current = null;
+      lastKeyPressRef.current = now;
+      setIsPaused(false);
+      return;
+    }
+
+    lastKeyPressRef.current = now;
+
     let currentStartTime = startTime;
     if (!startTime) {
-      currentStartTime = Date.now();
+      currentStartTime = now;
       setStartTime(currentStartTime);
     }
 
@@ -238,7 +285,7 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
         setWpm(Math.round((correctChars / 5) / finalMinutes));
       }
     }
-  }, [userInput, currentPhrase, startTime, soundEnabled, playClick, isEditingText]);
+  }, [userInput, currentPhrase, startTime, soundEnabled, playClick, isEditingText, isPaused]);
 
   // Keyboard Event Listeners
   useEffect(() => {
@@ -296,6 +343,8 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
     accuracy,
     elapsedTime,
     isCompleted,
+    isPaused,
+    handleResume,
     keyboardLanguage,
     pressedKeys,
     capsLockActive,

@@ -4,6 +4,7 @@ import React, { useState, useRef, useLayoutEffect, useEffect, memo } from 'react
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PenLine, Play, CheckCircle2, AlertCircle, X, Text } from 'lucide-react';
+import PauseOverlay from '@/components/PauseOverlay';
 
 interface TypingAreaProps {
   text: string;
@@ -12,6 +13,10 @@ interface TypingAreaProps {
   hasSuccess?: boolean;
   errorKey?: number;
   isEditingText?: boolean;
+  isPaused?: boolean;
+  onResume?: () => void;
+  pausedTitle?: string;
+  pausedSubtitle?: string;
   defaultPhrase?: string;
   onToggleEditing?: (editing: boolean) => void;
   onApplyCustomText: (text: string) => void;
@@ -92,6 +97,10 @@ function TypingArea({
   hasSuccess = false,
   errorKey = 0,
   isEditingText = false,
+  isPaused = false,
+  onResume,
+  pausedTitle,
+  pausedSubtitle,
   defaultPhrase = '',
   onToggleEditing,
   onApplyCustomText,
@@ -126,7 +135,10 @@ function TypingArea({
   const cursorRef = useRef<HTMLSpanElement>(null);
 
   const isEditingMode = isEditingText || isEditing || text.length === 0;
-  const progressPercent = text.length > 0 ? Math.min(100, Math.round((userInput.length / text.length) * 100)) : 0;
+
+  const totalChars = text.length;
+  const typedChars = userInput.length;
+  const progressPercent = totalChars > 0 ? Math.min(100, Math.round((typedChars / totalChars) * 100)) : 0;
 
   // Restart shake animation on mistake WITHOUT remounting component DOM
   useEffect(() => {
@@ -186,6 +198,15 @@ function TypingArea({
             : 'border-border'
       }`}
     >
+      {/* Pause Overlay inside Typing Area Card */}
+      {isPaused && (
+        <PauseOverlay
+          title={pausedTitle || 'En pausa'}
+          subtitle={pausedSubtitle || 'Presiona cualquier tecla para continuar'}
+          onResume={onResume}
+        />
+      )}
+
       {/* Progress Bar Line */}
       {!isEditingMode && (
         <div 

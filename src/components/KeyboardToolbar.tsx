@@ -24,7 +24,6 @@ function KeyboardToolbar({
       <div className="flex items-center gap-3 flex-wrap">
         <div className="flex items-center gap-1.5 text-foreground/90 font-bold">
           <Keyboard className="size-4 text-primary" />
-          <span>{label}</span>
         </div>
 
         {/* Keyboard Layout Language Selector */}
@@ -50,7 +49,7 @@ function KeyboardToolbar({
         {/* OS Mode Switcher */}
         <div className="flex bg-muted/80 border border-border/80 rounded-lg p-0.5 h-7 gap-0.5 shadow-2xs items-center ml-1">
           <Button
-            variant={osMode === 'mac' ? 'secondary' : 'ghost'}
+            variant={osMode === 'mac' ? 'default' : 'ghost'}
             size="xs"
             className="text-[10px] font-bold h-6 px-2.5 gap-1 rounded-md transition-all duration-150"
             onClick={() => onOsModeChange('mac')}
@@ -59,7 +58,7 @@ function KeyboardToolbar({
             <span>macOS</span>
           </Button>
           <Button
-            variant={osMode === 'windows' ? 'secondary' : 'ghost'}
+            variant={osMode === 'windows' ? 'default' : 'ghost'}
             size="xs"
             className="text-[10px] font-bold h-6 px-2.5 gap-1 rounded-md transition-all duration-150"
             onClick={() => onOsModeChange('windows')}

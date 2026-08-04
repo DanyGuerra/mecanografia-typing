@@ -30,6 +30,8 @@
     "newlineHint": "Salto de línea",
     "saveTextHint": "Guardar Texto",
     "gradeLabel": "Grado",
-    "defaultPhrase": "Comienza a escribir para practicar mecanografía."
+    "defaultPhrase": "Comienza a escribir para practicar mecanografía.",
+    "pausedTitle": "En pausa",
+    "pausedSubtitle": "Presiona cualquier tecla para continuar"
   }
 }

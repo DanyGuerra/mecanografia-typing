@@ -65,10 +65,12 @@ function Key({
 
   return (
     <div
-      className="relative select-none"
+      className="relative select-none shrink-0"
       style={{
         flexGrow: flexGrow,
+        flexShrink: flexGrow,
         flexBasis: `${nominalWidth}px`,
+        minWidth: `${Math.round(42 * widthUnit)}px`,
         height: `${nominalHeight}px`,
         maxWidth: code === 'Space' ? '380px' : 'none',
       }}

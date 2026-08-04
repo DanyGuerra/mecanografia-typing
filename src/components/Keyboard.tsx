@@ -205,9 +205,9 @@ function Keyboard({
   const isShiftActive = !!pressedKeys['ShiftLeft'] || !!pressedKeys['ShiftRight'];
 
   return (
-    <div className="keyboard-case">
+    <div className="keyboard-case overflow-x-auto">
       {/* Inner surface with key tray effect */}
-      <div className="keyboard-surface">
+      <div className="keyboard-surface min-w-[768px]">
         <div className="flex flex-col gap-[5px] w-full">
           {layout.map((row, rowIndex) => (
             <div key={rowIndex} className="flex gap-[4px] w-full justify-between">

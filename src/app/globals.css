@@ -83,80 +83,80 @@
 }
 
 .dark {
-  --panel-bg: #0f172a;
-  --panel-border: #1e293b;
-  --accent-color: #f8fafc;
-  --text-dim: #64748b;
+  --panel-bg: #18181b;
+  --panel-border: #27272a;
+  --accent-color: #f4f4f5;
+  --text-dim: #71717a;
   --text-correct: #ffffff;
   --text-wrong: #ca4754;
 
-  --btn-group-bg: #0f172a;
-  --btn-active-bg: #1e293b;
-  --btn-text-inactive: #64748b;
+  --btn-group-bg: #18181b;
+  --btn-active-bg: #27272a;
+  --btn-text-inactive: #71717a;
 
-  --key-normal-fill: #1e293b;
-  --key-normal-stroke: #334155;
-  --key-normal-text: #e2e8f0;
+  --key-normal-fill: #27272a;
+  --key-normal-stroke: #3f3f46;
+  --key-normal-text: #f4f4f5;
 
-  --key-special-fill: #0f172a;
-  --key-special-stroke: #1e293b;
-  --key-special-text: #94a3b8;
+  --key-special-fill: #18181b;
+  --key-special-stroke: #27272a;
+  --key-special-text: #a1a1aa;
 
   --key-pressed-fill: var(--primary);
   --key-pressed-stroke: var(--primary);
   --key-pressed-text: var(--primary-foreground);
 
-  --key-shadow-normal: #0f172a;
-  --key-shadow-special: #020617;
+  --key-shadow-normal: #121215;
+  --key-shadow-special: #09090b;
   --key-shadow-pressed: var(--primary);
 
   --key-shadow: rgba(0, 0, 0, 0.4);
-  --keyboard-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  --keyboard-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 
   --key-target-fill: #3b82f6;
   --key-target-stroke: #2563eb;
   --key-target-text: #ffffff;
   --key-target-glow: #3b82f6;
 
-  --keyboard-case-bg: #151b2b;
-  --keyboard-case-border: #1e293b;
-  --keyboard-surface-bg: #111827;
-  --keyboard-surface-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+  --keyboard-case-bg: #1c1c1f;
+  --keyboard-case-border: #27272a;
+  --keyboard-surface-bg: #141417;
+  --keyboard-surface-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
 
-  --overlay-bg: rgba(15, 23, 42, 0.85);
-  --overlay-completed-bg: rgba(15, 23, 42, 0.95);
+  --overlay-bg: rgba(24, 24, 27, 0.85);
+  --overlay-completed-bg: rgba(24, 24, 27, 0.95);
 
   --scrollbar-thumb: rgba(255, 255, 255, 0.08);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.15);
 
-  /* shadcn/ui dark mode color tokens */
-  --background: oklch(0.13 0.01 240);
+  /* shadcn/ui dark mode color tokens - neutral grays (chroma 0) */
+  --background: oklch(0.13 0 0);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.17 0.01 240);
+  --card: oklch(0.17 0 0);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.17 0.01 240);
+  --popover: oklch(0.17 0 0);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.985 0 0);
   --primary-foreground: oklch(0.145 0 0);
-  --secondary: oklch(0.24 0.01 240);
+  --secondary: oklch(0.24 0 0);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.24 0.01 240);
-  --muted-foreground: oklch(0.7 0.01 240);
-  --accent: oklch(0.24 0.01 240);
+  --muted: oklch(0.24 0 0);
+  --muted-foreground: oklch(0.7 0 0);
+  --accent: oklch(0.24 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.25 0.01 240);
-  --input: oklch(0.25 0.01 240);
-  --ring: oklch(0.6 0.01 240);
-  --sidebar: oklch(0.17 0.01 240);
+  --border: oklch(0.25 0 0);
+  --input: oklch(0.25 0 0);
+  --ring: oklch(0.6 0 0);
+  --sidebar: oklch(0.17 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.24 0.01 240);
+  --sidebar-primary: oklch(0.985 0 0);
+  --sidebar-primary-foreground: oklch(0.145 0 0);
+  --sidebar-accent: oklch(0.24 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.25 0.01 240);
-  --sidebar-ring: oklch(0.6 0.01 240);
+  --sidebar-border: oklch(0.25 0 0);
+  --sidebar-ring: oklch(0.6 0 0);
 }
 
 
