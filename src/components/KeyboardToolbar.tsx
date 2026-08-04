@@ -34,7 +34,7 @@ function KeyboardToolbar({
             className="text-[10px] font-bold h-6 px-2.5 rounded-md transition-all duration-150"
             onClick={() => onKeyboardLanguageChange('es')}
           >
-            ES PAÑOL
+            Español
           </Button>
           <Button
             variant={keyboardLanguage === 'en' ? 'default' : 'ghost'}
@@ -42,7 +42,7 @@ function KeyboardToolbar({
             className="text-[10px] font-bold h-6 px-2.5 rounded-md transition-all duration-150"
             onClick={() => onKeyboardLanguageChange('en')}
           >
-            ENGLISH
+            English
           </Button>
         </div>
 

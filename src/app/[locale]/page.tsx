@@ -8,7 +8,6 @@ import Footer from '@/components/Footer';
 import TypingArea from '@/components/TypingArea';
 import Keyboard from '@/components/Keyboard';
 import CompletedOverlay from '@/components/CompletedOverlay';
-import PauseOverlay from '@/components/PauseOverlay';
 import KeyboardToolbar from '@/components/KeyboardToolbar';
 
 import { useTypingTest } from '@/hooks/useTypingTest';
@@ -85,7 +84,7 @@ export default function Home({ params }: PageProps) {
           hasSuccess={hasSuccess}
           errorKey={errorKey}
           isEditingText={isEditingText}
-          isPaused={isPaused && !isCompleted}
+          isPaused={isPaused && !isCompleted && !isEditingText}
           onResume={handleResume}
           pausedTitle={t('pausedTitle')}
           pausedSubtitle={t('pausedSubtitle')}

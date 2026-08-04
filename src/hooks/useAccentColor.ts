@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback } from 'react';
 
 export type AccentColorKey = 'blue' | 'violet' | 'emerald' | 'amber' | 'cyan' | 'orange' | 'slate';
 
@@ -99,6 +99,16 @@ export const ACCENT_COLORS: AccentColor[] = [
 const STORAGE_KEY = 'mecanografia-accent-color';
 const DEFAULT_ACCENT: AccentColorKey = 'slate';
 
+function getSavedAccent(): AccentColorKey {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY) as AccentColorKey | null;
+    if (saved && ACCENT_COLORS.some((c) => c.key === saved)) {
+      return saved;
+    }
+  } catch { }
+  return DEFAULT_ACCENT;
+}
+
 function applyAccentColor(colorKey: AccentColorKey, isDark: boolean) {
   const color = ACCENT_COLORS.find((c) => c.key === colorKey) ?? ACCENT_COLORS[0];
   const root = document.documentElement;
@@ -107,14 +117,17 @@ function applyAccentColor(colorKey: AccentColorKey, isDark: boolean) {
   root.style.setProperty('--ring', isDark ? color.darkRing : color.lightRing);
 }
 
-function getSavedAccent(): AccentColorKey {
-  if (typeof window === 'undefined') return DEFAULT_ACCENT;
-  const saved = localStorage.getItem(STORAGE_KEY) as AccentColorKey | null;
-  return saved && ACCENT_COLORS.find((c) => c.key === saved) ? saved : DEFAULT_ACCENT;
-}
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 export function useAccentColor(isDark: boolean) {
-  const [accentColor, setAccentColorState] = useState<AccentColorKey>(getSavedAccent);
+  const [accentColor, setAccentColorState] = useState<AccentColorKey>(DEFAULT_ACCENT);
+
+  useIsomorphicLayoutEffect(() => {
+    const saved = getSavedAccent();
+    setAccentColorState(saved);
+    applyAccentColor(saved, isDark);
+
+  }, []);
 
   useEffect(() => {
     applyAccentColor(accentColor, isDark);
@@ -122,7 +135,9 @@ export function useAccentColor(isDark: boolean) {
 
   const setAccentColor = useCallback((key: AccentColorKey) => {
     setAccentColorState(key);
-    localStorage.setItem(STORAGE_KEY, key);
+    try {
+      localStorage.setItem(STORAGE_KEY, key);
+    } catch { }
   }, []);
 
   return { accentColor, setAccentColor, accentOptions: ACCENT_COLORS };
