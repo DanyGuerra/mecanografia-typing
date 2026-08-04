@@ -191,11 +191,13 @@ function TypingArea({
     <Card 
       ref={cardRef}
       className={`w-full bg-card border shadow-sm relative overflow-hidden transition-all duration-200 ${
-        hasError
-          ? 'border-destructive/60'
-          : hasSuccess
-            ? 'border-primary/60'
-            : 'border-border'
+        isEditingMode
+          ? 'border-primary/60'
+          : hasError
+            ? 'border-destructive/60'
+            : hasSuccess
+              ? 'border-primary/60'
+              : 'border-border'
       }`}
     >
       {/* Pause Overlay inside Typing Area Card */}
