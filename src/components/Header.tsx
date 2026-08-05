@@ -11,7 +11,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
-import { Globe, Volume2, VolumeX, Sun, Moon, Check, ChevronDown, Palette, Zap, Target } from 'lucide-react';
+import { Globe, Volume2, VolumeX, Sun, Moon, Check, ChevronDown, Palette, Zap, Target, MousePointer } from 'lucide-react';
 import KeyboardLogo from './KeyboardLogo';
 import { type AccentColorKey, ACCENT_COLORS } from '@/hooks/useAccentColor';
 
@@ -33,6 +33,7 @@ interface HeaderProps {
   onAccentColorChange: (key: AccentColorKey) => void;
   testModeTab?: string;
   practiceModeTab?: string;
+  mouseModeTab?: string;
 }
 
 function Header({
@@ -51,10 +52,13 @@ function Header({
   onAccentColorChange,
   testModeTab = 'Prueba de Velocidad',
   practiceModeTab = 'Práctica Libre',
+  mouseModeTab = 'Prueba de Mouse',
 }: HeaderProps) {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const isPracticeMode = pathname?.includes('/practice');
+  const isMouseMode = pathname?.includes('/mouse');
+  const isTestMode = !isPracticeMode && !isMouseMode;
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -65,7 +69,7 @@ function Header({
   const currentAccent = ACCENT_COLORS.find((c) => c.key === accentColor) ?? ACCENT_COLORS[0];
 
   return (
-    <header className="w-full flex justify-between items-center flex-wrap gap-4 border-b border-border pb-4 transition-all duration-200">
+    <header className="w-full flex justify-between items-center flex-wrap gap-4 border-b border-border transition-all duration-200 py-2 px-4">
       <div className="flex items-center gap-4 flex-wrap">
         <Link
           href={`/${appLanguage}`}
@@ -88,25 +92,33 @@ function Header({
         <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border">
           <Link
             href={`/${appLanguage}`}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
-              !isPracticeMode
-                ? 'bg-background text-foreground shadow-xs'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${isTestMode
+              ? 'bg-background text-foreground shadow-xs'
+              : 'text-muted-foreground hover:text-foreground'
+              }`}
           >
             <Zap className="size-3.5 text-primary" />
             <span>{testModeTab}</span>
           </Link>
           <Link
             href={`/${appLanguage}/practice`}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
-              isPracticeMode
-                ? 'bg-background text-primary shadow-xs'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${isPracticeMode
+              ? 'bg-background text-primary shadow-xs'
+              : 'text-muted-foreground hover:text-foreground'
+              }`}
           >
             <Target className="size-3.5 text-primary animate-pulse" />
             <span>{practiceModeTab}</span>
+          </Link>
+          <Link
+            href={`/${appLanguage}/mouse`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${isMouseMode
+              ? 'bg-background text-primary shadow-xs'
+              : 'text-muted-foreground hover:text-foreground'
+              }`}
+          >
+            <MousePointer className="size-3.5 text-primary" />
+            <span>{mouseModeTab}</span>
           </Link>
         </div>
       </div>

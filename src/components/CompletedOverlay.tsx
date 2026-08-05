@@ -44,7 +44,7 @@ function CompletedOverlay({
   timeLabel,
 }: CompletedOverlayProps) {
   return (
-    <div className="absolute inset-0 bg-background/85 backdrop-blur-md rounded-xl flex justify-center items-center z-30 p-4 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-md flex justify-center items-center z-50 p-4 animate-in fade-in zoom-in-95 duration-200">
       <Card className="w-full max-w-md border border-border bg-card shadow-2xl text-center flex flex-col items-center p-6 overflow-hidden relative">
         <div className="flex items-center gap-3 mb-2">
           <div className="size-14 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-xs">

@@ -102,5 +102,83 @@ export function useAudio() {
     }
   }, [initAudio]);
 
-  return { playClick };
+  const playMouseClick = useCallback((type: 'left' | 'right' | 'middle' | 'side' | 'scroll' = 'left') => {
+    try {
+      initAudio();
+      const ctx = audioCtxRef.current;
+      if (!ctx) return;
+
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gainOsc = ctx.createGain();
+      osc.connect(gainOsc);
+      gainOsc.connect(ctx.destination);
+
+      const noiseBuffer = ctx.createBuffer(1, Math.round(ctx.sampleRate * 0.03), ctx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < noiseBuffer.length; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      const noise = ctx.createBufferSource();
+      noise.buffer = noiseBuffer;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'highpass';
+      const gainNoise = ctx.createGain();
+
+      noise.connect(filter);
+      filter.connect(gainNoise);
+      gainNoise.connect(ctx.destination);
+
+      if (type === 'right') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1100, now);
+        osc.frequency.exponentialRampToValueAtTime(400, now + 0.03);
+        gainOsc.gain.setValueAtTime(0.2, now);
+        gainOsc.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+        filter.frequency.setValueAtTime(5000, now);
+        gainNoise.gain.setValueAtTime(0.1, now);
+        gainNoise.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+      } else if (type === 'middle') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(700, now);
+        osc.frequency.exponentialRampToValueAtTime(250, now + 0.04);
+        gainOsc.gain.setValueAtTime(0.25, now);
+        gainOsc.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+        filter.frequency.setValueAtTime(3000, now);
+        gainNoise.gain.setValueAtTime(0.08, now);
+        gainNoise.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+      } else if (type === 'scroll') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1400, now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.015);
+        gainOsc.gain.setValueAtTime(0.08, now);
+        gainOsc.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+
+        filter.frequency.setValueAtTime(6000, now);
+        gainNoise.gain.setValueAtTime(0.04, now);
+        gainNoise.gain.exponentialRampToValueAtTime(0.001, now + 0.01);
+      } else {
+        // Left or Side Click
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1250, now);
+        osc.frequency.exponentialRampToValueAtTime(450, now + 0.035);
+        gainOsc.gain.setValueAtTime(0.24, now);
+        gainOsc.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+
+        filter.frequency.setValueAtTime(4800, now);
+        gainNoise.gain.setValueAtTime(0.12, now);
+        gainNoise.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+      }
+
+      osc.start(now);
+      osc.stop(now + 0.04);
+      noise.start(now);
+      noise.stop(now + 0.02);
+    } catch { }
+  }, [initAudio]);
+
+  return { playClick, playMouseClick };
 }

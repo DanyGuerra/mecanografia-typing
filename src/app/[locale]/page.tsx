@@ -57,7 +57,7 @@ export default function Home({ params }: PageProps) {
   } = useTypingTest(locale, t('defaultPhrase'));
 
   return (
-    <div className="flex flex-col min-h-screen w-full max-w-5xl px-4 sm:px-6 py-6 sm:py-8 mx-auto gap-6" ref={containerRef}>
+    <div className="flex flex-col min-h-screen w-full" ref={containerRef}>
       <Header
         appLanguage={appLanguage}
         onAppLanguageChange={handleAppLanguageChange}
@@ -78,76 +78,78 @@ export default function Home({ params }: PageProps) {
         practiceModeTab={t('practiceModeTab')}
       />
 
-      <section className="relative w-full">
-        <TypingArea
-          text={currentPhrase}
-          userInput={userInput}
-          hasError={hasError}
-          hasSuccess={hasSuccess}
-          errorKey={errorKey}
-          isEditingText={isEditingText}
-          isPaused={isPaused && !isCompleted && !isEditingText}
-          onResume={handleResume}
-          pausedTitle={t('pausedTitle')}
-          pausedSubtitle={t('pausedSubtitle')}
-          defaultPhrase={t('defaultPhrase')}
-          onToggleEditing={setIsEditingText}
-          onApplyCustomText={(text) => {
-            setCustomPhrase(text);
-          }}
-          customTextPlaceholder={t('customTextPlaceholder')}
-          customTextApply={t('customTextApply')}
-          customTextCancel={t('customTextCancel')}
-          changeTextBtn={t('changeTextBtn')}
-          editTextTitle={t('editTextTitle')}
-          enterTextPrompt={t('enterTextPrompt')}
-          typingErrorAlert={t('typingErrorAlert')}
-          progressLabel={t('progressLabel')}
-          charCountLabel={t('charCountLabel')}
-          pressCtrlEnterHint={t('pressCtrlEnterHint')}
-        />
-
-        {isCompleted && (
-          <CompletedOverlay
-            wpm={wpm}
-            accuracy={accuracy}
-            elapsedTime={elapsedTime}
-            onRestart={handleReset}
-            onRestartWithCustomText={handleRestartWithCustomText}
-            title={t('completedTitle')}
-            body={t('completedBody', { wpm, accuracy })}
-            restartBtnLabel={t('restartBtn')}
-            tryWithCustomTextBtnLabel={t('tryWithCustomTextBtn')}
-            wpmLabel={t('wpmLabel')}
-            accuracyLabel={t('accuracyLabel')}
-            timeLabel={t('timeLabel')}
+      <div className="flex flex-col gap-8 w-full max-w-5xl mx-auto py-6 px-4">
+        <section className="relative w-full">
+          <TypingArea
+            text={currentPhrase}
+            userInput={userInput}
+            hasError={hasError}
+            hasSuccess={hasSuccess}
+            errorKey={errorKey}
+            isEditingText={isEditingText}
+            isPaused={isPaused && !isCompleted && !isEditingText}
+            onResume={handleResume}
+            pausedTitle={t('pausedTitle')}
+            pausedSubtitle={t('pausedSubtitle')}
+            defaultPhrase={t('defaultPhrase')}
+            onToggleEditing={setIsEditingText}
+            onApplyCustomText={(text) => {
+              setCustomPhrase(text);
+            }}
+            customTextPlaceholder={t('customTextPlaceholder')}
+            customTextApply={t('customTextApply')}
+            customTextCancel={t('customTextCancel')}
+            changeTextBtn={t('changeTextBtn')}
+            editTextTitle={t('editTextTitle')}
+            enterTextPrompt={t('enterTextPrompt')}
+            typingErrorAlert={t('typingErrorAlert')}
+            progressLabel={t('progressLabel')}
+            charCountLabel={t('charCountLabel')}
+            pressCtrlEnterHint={t('pressCtrlEnterHint')}
           />
-        )}
-      </section>
 
-      <section className="flex flex-col gap-2">
-        <KeyboardToolbar
-          label={t('keyboardLabel')}
-          keyboardLanguage={keyboardLanguage}
-          onKeyboardLanguageChange={handleKeyboardLanguageChange}
-          osMode={osMode}
-          onOsModeChange={handleOsModeChange}
-        />
-        <Keyboard
-          language={keyboardLanguage}
-          pressedKeys={pressedKeys}
-          capsLockActive={capsLockActive}
-          osMode={osMode}
-          nextKeyCode={nextKeyCode}
-          nextKeyNeedsShift={nextKeyNeedsShift}
-        />
-      </section>
+          {isCompleted && (
+            <CompletedOverlay
+              wpm={wpm}
+              accuracy={accuracy}
+              elapsedTime={elapsedTime}
+              onRestart={handleReset}
+              onRestartWithCustomText={handleRestartWithCustomText}
+              title={t('completedTitle')}
+              body={t('completedBody', { wpm, accuracy })}
+              restartBtnLabel={t('restartBtn')}
+              tryWithCustomTextBtnLabel={t('tryWithCustomTextBtn')}
+              wpmLabel={t('wpmLabel')}
+              accuracyLabel={t('accuracyLabel')}
+              timeLabel={t('timeLabel')}
+            />
+          )}
+        </section>
 
-      <Footer
-        text={t('footerText')}
-        newlineHint={t('newlineHint')}
-        saveTextHint={t('saveTextHint')}
-      />
+        <section className="flex flex-col gap-2">
+          <KeyboardToolbar
+            label={t('keyboardLabel')}
+            keyboardLanguage={keyboardLanguage}
+            onKeyboardLanguageChange={handleKeyboardLanguageChange}
+            osMode={osMode}
+            onOsModeChange={handleOsModeChange}
+          />
+          <Keyboard
+            language={keyboardLanguage}
+            pressedKeys={pressedKeys}
+            capsLockActive={capsLockActive}
+            osMode={osMode}
+            nextKeyCode={nextKeyCode}
+            nextKeyNeedsShift={nextKeyNeedsShift}
+          />
+        </section>
+
+        <Footer
+          text={t('footerText')}
+          newlineHint={t('newlineHint')}
+          saveTextHint={t('saveTextHint')}
+        />
+      </div>
     </div>
   );
 }
