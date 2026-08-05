@@ -582,10 +582,29 @@ export default function MouseAnimationCanvas({
   const handleCanvasMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
-    mousePosRef.current = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    };
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    mousePosRef.current = { x, y };
+
+    // Emit subtle glowing motion dust trail
+    if (Math.random() < 0.35) {
+      const color = accentHexRef.current;
+      particlesRef.current.push({
+        id: particleIdCounter.current++,
+        x: x + (Math.random() * 12 - 6),
+        y: y + (Math.random() * 12 - 6),
+        vx: (Math.random() - 0.5) * 0.8,
+        vy: (Math.random() - 0.5) * 0.8,
+        size: 1.5 + Math.random() * 2,
+        color,
+        alpha: 0.75,
+        maxLife: 0.3 + Math.random() * 0.25,
+        life: 0,
+        type: 'spark',
+      });
+    }
+
     onMouseMove(e);
   };
 
