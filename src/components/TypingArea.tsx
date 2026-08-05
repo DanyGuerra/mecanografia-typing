@@ -155,7 +155,9 @@ function TypingArea({
     if (cursorRef.current && textContainerRef.current) {
       const cursor = cursorRef.current;
       const container = textContainerRef.current;
-      const cursorTop = cursor.offsetTop;
+      const cursorTop = cursor.offsetParent === container 
+        ? cursor.offsetTop 
+        : cursor.offsetTop - container.offsetTop;
       const cursorHeight = cursor.offsetHeight;
       const containerHeight = container.clientHeight;
 
@@ -334,7 +336,7 @@ function TypingArea({
             ref={textContainerRef}
             onWheel={(e) => e.preventDefault()}
             onTouchMove={(e) => e.preventDefault()}
-            className="font-mono text-xl sm:text-2xl leading-[2.5rem] sm:leading-[2.8rem] tracking-wide break-words whitespace-pre-wrap select-text selection:bg-primary selection:text-primary-foreground max-h-[125px] sm:max-h-[145px] overflow-hidden pr-1"
+            className="relative font-mono text-xl sm:text-2xl leading-[2.5rem] sm:leading-[2.8rem] tracking-wide break-words whitespace-pre-wrap select-text selection:bg-primary selection:text-primary-foreground max-h-[125px] sm:max-h-[145px] overflow-hidden py-1 pr-1"
           >
             {text.split('').map((char, index) => {
               const isTyped = index < userInput.length;
