@@ -197,9 +197,7 @@ function TypingArea({
           ? 'border-primary/60'
           : hasError
             ? 'border-destructive/60'
-            : hasSuccess
-              ? 'border-primary/60'
-              : 'border-border'
+            : 'border-primary/50'
       }`}
     >
       {/* Pause Overlay inside Typing Area Card */}
