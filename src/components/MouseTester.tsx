@@ -310,7 +310,7 @@ export default function MouseTester({ soundEnabled, accentColor, onPlaySound, t 
             onClick={() => setActiveTab('cps')}
             className="rounded-xl font-bold gap-2 text-xs cursor-pointer"
           >
-            <Zap className="size-4 text-amber-400" />
+            <Zap className={`size-4 ${activeTab === 'cps' ? 'text-primary-foreground' : 'text-primary'}`} />
             <span>{t.cpsTestTab}</span>
           </Button>
         </div>
@@ -357,8 +357,8 @@ export default function MouseTester({ soundEnabled, accentColor, onPlaySound, t 
         <div className="w-full h-[460px] flex flex-col items-center justify-center p-6 bg-card rounded-none border-2 border-border shadow-xl relative overflow-hidden">
           {cpsTestState === 'idle' && (
             <div className="flex flex-col items-center gap-4 text-center">
-              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20">
-                <Timer className="size-12 text-amber-500" />
+              <div className="p-4 rounded-2xl bg-primary/10 border border-primary/20">
+                <Timer className="size-12 text-primary" />
               </div>
               <div>
                 <h3 className="text-2xl font-extrabold text-foreground">{t.cpsTestTitle}</h3>
@@ -367,7 +367,7 @@ export default function MouseTester({ soundEnabled, accentColor, onPlaySound, t 
               <Button
                 size="lg"
                 onClick={startCpsTest}
-                className="mt-2 rounded-xl font-bold gap-2 px-8 bg-amber-500 hover:bg-amber-600 text-white shadow-lg cursor-pointer"
+                className="mt-2 rounded-xl font-bold gap-2 px-8 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg cursor-pointer"
               >
                 <Zap className="size-5" />
                 <span>{t.startCpsTest}</span>
@@ -380,9 +380,9 @@ export default function MouseTester({ soundEnabled, accentColor, onPlaySound, t 
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
               onContextMenu={(e) => e.preventDefault()}
-              className="w-full h-full flex-1 flex flex-col items-center justify-center gap-4 p-8 bg-amber-500/5 rounded-2xl border-2 border-amber-500/50 cursor-pointer select-none"
+              className="w-full h-full flex-1 flex flex-col items-center justify-center gap-4 p-8 bg-primary/5 rounded-2xl border-2 border-primary/50 cursor-pointer select-none"
             >
-              <div className="text-7xl font-black text-amber-500 font-mono animate-pulse">
+              <div className="text-7xl font-black text-primary font-mono animate-pulse">
                 {cpsTimeLeft}s
               </div>
               <div className="text-4xl font-extrabold text-foreground">
