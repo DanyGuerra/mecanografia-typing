@@ -103,12 +103,17 @@ export function usePracticeTest(locale: string) {
   // Keyboard Event Handlers
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Toggle CapsLock tracking
-      if (e.key === 'CapsLock') {
-        setCapsLockActive(e.getModifierState('CapsLock'));
+      setPressedKeys((prev) => ({ ...prev, [e.code]: true }));
+      setCapsLockActive(e.getModifierState('CapsLock'));
+
+      const activeElement = document.activeElement;
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+        return;
       }
 
-      setPressedKeys((prev) => ({ ...prev, [e.code]: true }));
+      if (e.ctrlKey || e.metaKey || e.altKey) {
+        return;
+      }
 
       // Ignore modifier keys
       if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(e.key)) {
@@ -159,6 +164,7 @@ export function usePracticeTest(locale: string) {
         delete next[e.code];
         return next;
       });
+      setCapsLockActive(e.getModifierState('CapsLock'));
     };
 
     window.addEventListener('keydown', handleKeyDown);
