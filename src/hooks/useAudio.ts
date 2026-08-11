@@ -1,9 +1,76 @@
 'use client';
 
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
+
+const SOUND_FILES: Record<string, string[]> = {
+  standard: ['/sounds/key_a.wav', '/sounds/key_b.wav', '/sounds/key_c.wav'],
+  space: ['/sounds/key_space.wav'],
+  backspace: ['/sounds/key_backspace.wav'],
+  enter: ['/sounds/key_enter.wav'],
+  mouse_left: ['/sounds/click_left.wav'],
+  mouse_right: ['/sounds/click_rigth.wav'],
+  mouse_middle: ['/sounds/click_middle.wav'],
+  mouse_side: ['/sounds/click_left.wav'],
+  mouse_scroll: ['/sounds/scroll_down.wav', '/sounds/scroll_up.wav'],
+  mouse_scroll_up: ['/sounds/scroll_up.wav'],
+  mouse_scroll_down: ['/sounds/scroll_down.wav'],
+};
 
 export function useAudio() {
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const lastScrollTimeRef = useRef<number>(0);
+  const buffersRef = useRef<{ [key: string]: AudioBuffer[] }>({});
+  const isLoadingRef = useRef<boolean>(false);
+
+  const loadSounds = useCallback(async () => {
+    if (typeof window === 'undefined' || isLoadingRef.current) return;
+    isLoadingRef.current = true;
+
+    if (!audioCtxRef.current) {
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (AudioCtx) {
+        audioCtxRef.current = new AudioCtx();
+      }
+    }
+
+    const ctx = audioCtxRef.current;
+    if (!ctx) {
+      isLoadingRef.current = false;
+      return;
+    }
+
+    if (ctx.state === 'suspended') {
+      try {
+        await ctx.resume();
+      } catch {}
+    }
+
+    try {
+      const loadedBuffers: { [key: string]: AudioBuffer[] } = {};
+
+      for (const [type, urls] of Object.entries(SOUND_FILES)) {
+        const buffers = await Promise.all(
+          urls.map(async (url) => {
+            try {
+              const res = await fetch(url);
+              if (!res.ok) return null;
+              const arrayBuffer = await res.arrayBuffer();
+              return await ctx.decodeAudioData(arrayBuffer);
+            } catch {
+              return null;
+            }
+          })
+        );
+        loadedBuffers[type] = buffers.filter((b): b is AudioBuffer => b !== null);
+      }
+
+      buffersRef.current = loadedBuffers;
+    } catch (err) {
+      console.warn("Failed to load sound samples:", err);
+    } finally {
+      isLoadingRef.current = false;
+    }
+  }, []);
 
   const initAudio = useCallback(() => {
     if (typeof window === 'undefined') return;
@@ -14,171 +81,89 @@ export function useAudio() {
       }
     }
     if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
-      audioCtxRef.current.resume();
+      audioCtxRef.current.resume().catch(() => {});
     }
+
+    if (Object.keys(buffersRef.current).length === 0 && !isLoadingRef.current) {
+      loadSounds();
+    }
+  }, [loadSounds]);
+
+  useEffect(() => {
+    loadSounds();
+  }, [loadSounds]);
+
+  const playBufferOrFallback = useCallback((categoryKey: string) => {
+    const urls = SOUND_FILES[categoryKey] || SOUND_FILES.standard;
+    if (!urls || urls.length === 0) return;
+
+    const selectedUrl = urls[Math.floor(Math.random() * urls.length)];
+
+    // Try Web Audio API first for zero-latency playback
+    const ctx = audioCtxRef.current;
+    const typeBuffers = buffersRef.current[categoryKey];
+
+    if (ctx && ctx.state !== 'closed' && typeBuffers && typeBuffers.length > 0) {
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+      try {
+        const randomBuffer = typeBuffers[Math.floor(Math.random() * typeBuffers.length)];
+        const source = ctx.createBufferSource();
+        source.buffer = randomBuffer;
+        source.playbackRate.value = 1.0;
+
+        const gainNode = ctx.createGain();
+        gainNode.gain.value = 1.0;
+
+        source.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        source.start(0);
+        return;
+      } catch (err) {
+        console.warn("Web Audio playback error, falling back to HTML5 Audio:", err);
+      }
+    }
+
+    // HTML5 Audio fallback
+    try {
+      const audio = new Audio(selectedUrl);
+      audio.volume = 1.0;
+      audio.play().catch(() => {});
+    } catch {}
   }, []);
 
-  const playClick = useCallback((keyType: 'standard' | 'space' | 'backspace' = 'standard') => {
+  const playClick = useCallback((keyType: 'standard' | 'space' | 'backspace' | 'enter' = 'standard') => {
     try {
       initAudio();
-      const ctx = audioCtxRef.current;
-      if (!ctx) return;
-
-      const now = ctx.currentTime;
-
-      const osc = ctx.createOscillator();
-      const gainOsc = ctx.createGain();
-      osc.connect(gainOsc);
-      gainOsc.connect(ctx.destination);
-
-      const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
-      const output = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < noiseBuffer.length; i++) {
-        output[i] = Math.random() * 2 - 1;
-      }
-      
-      const noise = ctx.createBufferSource();
-      noise.buffer = noiseBuffer;
-      
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'highpass';
-      
-      const gainNoise = ctx.createGain();
-      noise.connect(filter);
-      filter.connect(gainNoise);
-      gainNoise.connect(ctx.destination);
-
-      if (keyType === 'space') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(140, now);
-        osc.frequency.exponentialRampToValueAtTime(70, now + 0.08);
-        
-        gainOsc.gain.setValueAtTime(0.18, now);
-        gainOsc.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-        
-        filter.frequency.setValueAtTime(800, now);
-        gainNoise.gain.setValueAtTime(0.06, now);
-        gainNoise.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-        
-        osc.start(now);
-        osc.stop(now + 0.09);
-        noise.start(now);
-        noise.stop(now + 0.05);
-      } else if (keyType === 'backspace') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(500, now);
-        osc.frequency.exponentialRampToValueAtTime(150, now + 0.05);
-        
-        gainOsc.gain.setValueAtTime(0.22, now);
-        gainOsc.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-        
-        filter.frequency.setValueAtTime(2500, now);
-        gainNoise.gain.setValueAtTime(0.08, now);
-        gainNoise.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
-        
-        osc.start(now);
-        osc.stop(now + 0.06);
-        noise.start(now);
-        noise.stop(now + 0.03);
-      } else {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(850, now);
-        osc.frequency.exponentialRampToValueAtTime(350, now + 0.04);
-        
-        gainOsc.gain.setValueAtTime(0.25, now);
-        gainOsc.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-        
-        filter.frequency.setValueAtTime(4500, now);
-        gainNoise.gain.setValueAtTime(0.12, now);
-        gainNoise.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
-        
-        osc.start(now);
-        osc.stop(now + 0.05);
-        noise.start(now);
-        noise.stop(now + 0.02);
-      }
+      playBufferOrFallback(keyType);
     } catch (error) {
-      console.warn("Failed to play synthesized click audio:", error);
+      console.warn("Failed to play click audio:", error);
     }
-  }, [initAudio]);
+  }, [initAudio, playBufferOrFallback]);
 
-  const playMouseClick = useCallback((type: 'left' | 'right' | 'middle' | 'side' | 'scroll' = 'left') => {
+  const playMouseClick = useCallback((type: 'left' | 'right' | 'middle' | 'side' | 'scroll' | 'scroll_up' | 'scroll_down' = 'left') => {
     try {
+      if (type.startsWith('scroll')) {
+        const nowMs = Date.now();
+        if (nowMs - lastScrollTimeRef.current < 100) {
+          return;
+        }
+        lastScrollTimeRef.current = nowMs;
+      }
+
       initAudio();
-      const ctx = audioCtxRef.current;
-      if (!ctx) return;
 
-      const now = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gainOsc = ctx.createGain();
-      osc.connect(gainOsc);
-      gainOsc.connect(ctx.destination);
-
-      const noiseBuffer = ctx.createBuffer(1, Math.round(ctx.sampleRate * 0.03), ctx.sampleRate);
-      const output = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < noiseBuffer.length; i++) {
-        output[i] = Math.random() * 2 - 1;
-      }
-
-      const noise = ctx.createBufferSource();
-      noise.buffer = noiseBuffer;
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'highpass';
-      const gainNoise = ctx.createGain();
-
-      noise.connect(filter);
-      filter.connect(gainNoise);
-      gainNoise.connect(ctx.destination);
-
-      if (type === 'right') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(1100, now);
-        osc.frequency.exponentialRampToValueAtTime(400, now + 0.03);
-        gainOsc.gain.setValueAtTime(0.2, now);
-        gainOsc.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
-
-        filter.frequency.setValueAtTime(5000, now);
-        gainNoise.gain.setValueAtTime(0.1, now);
-        gainNoise.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
-      } else if (type === 'middle') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(700, now);
-        osc.frequency.exponentialRampToValueAtTime(250, now + 0.04);
-        gainOsc.gain.setValueAtTime(0.25, now);
-        gainOsc.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-
-        filter.frequency.setValueAtTime(3000, now);
-        gainNoise.gain.setValueAtTime(0.08, now);
-        gainNoise.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
-      } else if (type === 'scroll') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(1400, now);
-        osc.frequency.exponentialRampToValueAtTime(800, now + 0.015);
-        gainOsc.gain.setValueAtTime(0.08, now);
-        gainOsc.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
-
-        filter.frequency.setValueAtTime(6000, now);
-        gainNoise.gain.setValueAtTime(0.04, now);
-        gainNoise.gain.exponentialRampToValueAtTime(0.001, now + 0.01);
-      } else {
-        // Left or Side Click
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(1250, now);
-        osc.frequency.exponentialRampToValueAtTime(450, now + 0.035);
-        gainOsc.gain.setValueAtTime(0.24, now);
-        gainOsc.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
-
-        filter.frequency.setValueAtTime(4800, now);
-        gainNoise.gain.setValueAtTime(0.12, now);
-        gainNoise.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
-      }
-
-      osc.start(now);
-      osc.stop(now + 0.04);
-      noise.start(now);
-      noise.stop(now + 0.02);
-    } catch { }
-  }, [initAudio]);
+      const bufferKey = `mouse_${type}`;
+      playBufferOrFallback(bufferKey);
+    } catch (error) {
+      console.warn("Failed to play mouse click audio:", error);
+    }
+  }, [initAudio, playBufferOrFallback]);
 
   return { playClick, playMouseClick };
 }
+
+
+
+

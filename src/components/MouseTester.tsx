@@ -18,7 +18,7 @@ import { type AccentColorKey } from '@/hooks/useAccentColor';
 interface MouseTesterProps {
   soundEnabled: boolean;
   accentColor?: AccentColorKey;
-  onPlaySound?: (type: 'left' | 'right' | 'middle' | 'side' | 'scroll') => void;
+  onPlaySound?: (type: 'left' | 'right' | 'middle' | 'side' | 'scroll' | 'scroll_up' | 'scroll_down') => void;
   t: {
     mouseTitle: string;
     mouseSubtitle: string;
@@ -145,7 +145,7 @@ export default function MouseTester({ soundEnabled, accentColor, onPlaySound, t 
 
   // Sound trigger
   const triggerSound = useCallback(
-    (type: 'left' | 'right' | 'middle' | 'side' | 'scroll') => {
+    (type: 'left' | 'right' | 'middle' | 'side' | 'scroll' | 'scroll_up' | 'scroll_down') => {
       if (soundEnabled && onPlaySound) {
         onPlaySound(type);
       }
@@ -246,7 +246,7 @@ export default function MouseTester({ soundEnabled, accentColor, onPlaySound, t 
       scrollDistance: prev.scrollDistance + 1,
     }));
 
-    triggerSound('scroll');
+    triggerSound(dir === 'up' ? 'scroll_up' : 'scroll_down');
 
     if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     scrollTimeoutRef.current = setTimeout(() => {
