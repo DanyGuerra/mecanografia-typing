@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useRef, useLayoutEffect, useEffect, memo } from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect, useCallback, memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PenLine, Play, CheckCircle2, AlertCircle, X, Text } from 'lucide-react';
+import { PenLine, Play, CheckCircle2, AlertCircle, X, Text, Keyboard } from 'lucide-react';
 import PauseOverlay from '@/components/PauseOverlay';
 
 interface TypingAreaProps {
@@ -133,12 +133,30 @@ function TypingArea({
   const cardRef = useRef<HTMLDivElement>(null);
   const textContainerRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLSpanElement>(null);
+  const hiddenInputRef = useRef<HTMLInputElement>(null);
 
   const isEditingMode = isEditingText || isEditing || text.length === 0;
 
   const totalChars = text.length;
   const typedChars = userInput.length;
   const progressPercent = totalChars > 0 ? Math.min(100, Math.round((typedChars / totalChars) * 100)) : 0;
+
+  // Helper to focus hidden input and trigger mobile keyboard
+  const focusHiddenInput = useCallback(() => {
+    if (!isEditingMode && !isPaused && hiddenInputRef.current) {
+      hiddenInputRef.current.focus();
+    }
+  }, [isEditingMode, isPaused]);
+
+  // Auto-focus hidden input when typing area is ready
+  useEffect(() => {
+    if (!isEditingMode && !isPaused) {
+      const timer = setTimeout(() => {
+        hiddenInputRef.current?.focus();
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isEditingMode, isPaused, text]);
 
   // Restart shake animation on mistake WITHOUT remounting component DOM
   useEffect(() => {
@@ -192,7 +210,8 @@ function TypingArea({
   return (
     <Card 
       ref={cardRef}
-      className={`w-full bg-card border shadow-sm relative overflow-hidden transition-all duration-200 ${
+      onClick={focusHiddenInput}
+      className={`w-full bg-card border shadow-sm relative overflow-hidden transition-all duration-200 cursor-text ${
         isEditingMode
           ? 'border-primary/60'
           : hasError
@@ -200,6 +219,25 @@ function TypingArea({
             : 'border-primary/50'
       }`}
     >
+      {/* Hidden input to trigger mobile soft keyboard */}
+      {!isEditingMode && (
+        <input
+          ref={hiddenInputRef}
+          data-mobile-typing-input="true"
+          type="text"
+          aria-label="Teclado para escribir"
+          autoCapitalize="none"
+          autoCorrect="off"
+          autoComplete="off"
+          spellCheck={false}
+          className="absolute opacity-0 w-0 h-0 pointer-events-none -z-10"
+          value=""
+          onChange={(e) => {
+            e.target.value = '';
+          }}
+        />
+      )}
+
       {/* Pause Overlay inside Typing Area Card */}
       {isPaused && (
         <PauseOverlay
@@ -244,6 +282,21 @@ function TypingArea({
         </div>
 
         <div className="flex items-center gap-2">
+          {!isEditingMode && (
+            <Button
+              variant="ghost"
+              size="xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                focusHiddenInput();
+              }}
+              className="sm:hidden flex items-center gap-1 text-[11px] font-semibold text-primary bg-primary/10 border border-primary/20 hover:bg-primary/20 cursor-pointer"
+            >
+              <Keyboard className="size-3.5" />
+              <span>Toca para escribir</span>
+            </Button>
+          )}
+
           {!isEditingMode ? (
             <Button
               variant="outline"
@@ -366,3 +419,4 @@ function TypingArea({
 }
 
 export default memo(TypingArea);
+

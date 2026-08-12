@@ -294,7 +294,11 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
       setCapsLockActive(e.getModifierState('CapsLock'));
 
       const activeElement = document.activeElement;
-      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+      if (
+        activeElement &&
+        (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') &&
+        activeElement.getAttribute('data-mobile-typing-input') !== 'true'
+      ) {
         return;
       }
 
