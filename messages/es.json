@@ -72,6 +72,19 @@
     "clickArenaPrompt": "Haz click o desplaza la rueda dentro del área interactiva para ver la animación 3D",
     "lastActionLabel": "Última Acción",
     "doubleClicks": "Doble Clicks",
-    "waitingClick": "Esperando click..."
+    "waitingClick": "Esperando click...",
+    "mobileMenuDescription": "Navegación y preferencias",
+    "gameModeSection": "Modo de Juego",
+    "preferencesSection": "Preferencias",
+    "languageLabel": "Idioma",
+    "accentColorLabel": "Énfasis",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "spanishLang": "Español",
+    "englishLang": "English",
+    "soundOn": "ON",
+    "soundOff": "OFF",
+    "themeDark": "Oscuro",
+    "themeLight": "Claro"
   }
 }

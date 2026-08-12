@@ -72,6 +72,19 @@
     "clickArenaPrompt": "Click or scroll inside the interactive area to see the 3D mouse animation",
     "lastActionLabel": "Last Action",
     "doubleClicks": "Double Clicks",
-    "waitingClick": "Waiting for click..."
+    "waitingClick": "Waiting for click...",
+    "mobileMenuDescription": "Navigation and preferences",
+    "gameModeSection": "Game Mode",
+    "preferencesSection": "Preferences",
+    "languageLabel": "Language",
+    "accentColorLabel": "Accent",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "spanishLang": "Spanish",
+    "englishLang": "English",
+    "soundOn": "ON",
+    "soundOff": "OFF",
+    "themeDark": "Dark",
+    "themeLight": "Light"
   }
 }

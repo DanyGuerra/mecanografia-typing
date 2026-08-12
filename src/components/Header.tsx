@@ -3,6 +3,7 @@
 import { useState, useEffect, memo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -77,6 +78,7 @@ function Header({
   practiceModeTab = 'Práctica Libre',
   mouseModeTab = 'Prueba de Mouse',
 }: HeaderProps) {
+  const t = useTranslations('HomePage');
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -124,30 +126,33 @@ function Header({
         <div className="hidden md:flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border">
           <Link
             href={`/${appLanguage}`}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${isTestMode
-              ? 'bg-background text-foreground shadow-xs'
-              : 'text-muted-foreground hover:text-foreground'
-              }`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+              isTestMode
+                ? 'bg-background text-foreground shadow-xs'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
             <Zap className="size-3.5 text-primary" />
             <span>{testModeTab}</span>
           </Link>
           <Link
             href={`/${appLanguage}/practice`}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${isPracticeMode
-              ? 'bg-background text-primary shadow-xs'
-              : 'text-muted-foreground hover:text-foreground'
-              }`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+              isPracticeMode
+                ? 'bg-background text-primary shadow-xs'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
             <Target className="size-3.5 text-primary animate-pulse" />
             <span>{practiceModeTab}</span>
           </Link>
           <Link
             href={`/${appLanguage}/mouse`}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${isMouseMode
-              ? 'bg-background text-primary shadow-xs'
-              : 'text-muted-foreground hover:text-foreground'
-              }`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+              isMouseMode
+                ? 'bg-background text-primary shadow-xs'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
             <MousePointer className="size-3.5 text-primary" />
             <span>{mouseModeTab}</span>
@@ -179,14 +184,14 @@ function Header({
                 onClick={() => onAppLanguageChange('es')}
                 className="justify-between cursor-pointer"
               >
-                <span>Español</span>
+                <span>{t('spanishLang')}</span>
                 {appLanguage === 'es' && <Check className="size-4 text-primary" />}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onAppLanguageChange('en')}
                 className="justify-between cursor-pointer"
               >
-                <span>English</span>
+                <span>{t('englishLang')}</span>
                 {appLanguage === 'en' && <Check className="size-4 text-primary" />}
               </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -201,8 +206,8 @@ function Header({
                 variant="outline"
                 size="sm"
                 className="h-9 rounded-lg gap-2 px-3 border border-border bg-background hover:bg-muted transition-colors cursor-pointer"
-                aria-label="Color de énfasis"
-                title="Color de énfasis"
+                aria-label={t('accentColorLabel')}
+                title={t('accentColorLabel')}
               >
                 <Palette className="size-4 text-muted-foreground" />
                 <span
@@ -280,7 +285,7 @@ function Header({
                 variant="outline"
                 size="icon"
                 className="size-9 rounded-lg border border-border transition-colors cursor-pointer"
-                aria-label="Abrir menú"
+                aria-label={mobileMenuOpen ? t('closeMenu') : t('openMenu')}
               >
                 <Menu className="size-5 text-foreground" />
               </Button>
@@ -303,23 +308,24 @@ function Header({
                   </div>
                 </div>
                 <SheetDescription className="text-xs text-muted-foreground mt-1">
-                  Navegación y preferencias
+                  {t('mobileMenuDescription')}
                 </SheetDescription>
               </SheetHeader>
 
               {/* Mode Switcher Section */}
               <div className="flex flex-col gap-2">
                 <span className="text-[11px] font-bold tracking-wider uppercase text-muted-foreground px-1">
-                  Modo de Juego
+                  {t('gameModeSection')}
                 </span>
                 <div className="flex flex-col gap-1.5 bg-muted/50 p-1.5 rounded-xl border border-border">
                   <Link
                     href={`/${appLanguage}`}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-lg transition-all ${isTestMode
-                      ? 'bg-background text-foreground shadow-xs'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
-                      }`}
+                    className={`flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-lg transition-all ${
+                      isTestMode
+                        ? 'bg-background text-foreground shadow-xs'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+                    }`}
                   >
                     <Zap className="size-4 text-primary" />
                     <span>{testModeTab}</span>
@@ -327,10 +333,11 @@ function Header({
                   <Link
                     href={`/${appLanguage}/practice`}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-lg transition-all ${isPracticeMode
-                      ? 'bg-background text-primary shadow-xs'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
-                      }`}
+                    className={`flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-lg transition-all ${
+                      isPracticeMode
+                        ? 'bg-background text-primary shadow-xs'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+                    }`}
                   >
                     <Target className="size-4 text-primary animate-pulse" />
                     <span>{practiceModeTab}</span>
@@ -338,10 +345,11 @@ function Header({
                   <Link
                     href={`/${appLanguage}/mouse`}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-lg transition-all ${isMouseMode
-                      ? 'bg-background text-primary shadow-xs'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
-                      }`}
+                    className={`flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-lg transition-all ${
+                      isMouseMode
+                        ? 'bg-background text-primary shadow-xs'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+                    }`}
                   >
                     <MousePointer className="size-4 text-primary" />
                     <span>{mouseModeTab}</span>
@@ -352,14 +360,14 @@ function Header({
               {/* Preferences Section */}
               <div className="flex flex-col gap-2">
                 <span className="text-[11px] font-bold tracking-wider uppercase text-muted-foreground px-1">
-                  Preferencias
+                  {t('preferencesSection')}
                 </span>
                 <div className="flex flex-col gap-2 p-3 rounded-xl bg-muted/40 border border-border">
                   {/* Language Row */}
                   <div className="flex items-center justify-between py-1">
                     <span className="text-xs font-medium text-muted-foreground flex items-center gap-2">
                       <Globe className="size-4" />
-                      Idioma
+                      {t('languageLabel')}
                     </span>
                     <DropdownMenu>
                       <DropdownMenuTrigger
@@ -380,14 +388,14 @@ function Header({
                             onClick={() => onAppLanguageChange('es')}
                             className="justify-between cursor-pointer"
                           >
-                            <span>Español</span>
+                            <span>{t('spanishLang')}</span>
                             {appLanguage === 'es' && <Check className="size-4 text-primary" />}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => onAppLanguageChange('en')}
                             className="justify-between cursor-pointer"
                           >
-                            <span>English</span>
+                            <span>{t('englishLang')}</span>
                             {appLanguage === 'en' && <Check className="size-4 text-primary" />}
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
@@ -399,7 +407,7 @@ function Header({
                   <div className="flex items-center justify-between py-1 border-t border-border/50">
                     <span className="text-xs font-medium text-muted-foreground flex items-center gap-2">
                       <Palette className="size-4" />
-                      Énfasis
+                      {t('accentColorLabel')}
                     </span>
                     <DropdownMenu>
                       <DropdownMenuTrigger
@@ -453,7 +461,7 @@ function Header({
                       className="h-8 px-3 rounded-lg border border-border transition-colors cursor-pointer text-xs font-semibold"
                       onClick={onSoundToggle}
                     >
-                      {soundEnabled ? 'ON' : 'OFF'}
+                      {soundEnabled ? t('soundOn') : t('soundOff')}
                     </Button>
                   </div>
 
@@ -474,7 +482,7 @@ function Header({
                       onClick={onThemeToggle}
                       disabled={!mounted}
                     >
-                      {mounted && theme === 'dark' ? 'Oscuro' : 'Claro'}
+                      {mounted && theme === 'dark' ? t('themeDark') : t('themeLight')}
                     </Button>
                   </div>
                 </div>
@@ -488,3 +496,4 @@ function Header({
 }
 
 export default memo(Header);
+
