@@ -20,10 +20,11 @@ function KeyboardToolbar({
   onOsModeChange,
 }: KeyboardToolbarProps) {
   return (
-    <div className="flex justify-between items-center px-1 text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground select-none">
+    <div aria-label={label} className="flex justify-between items-center px-1 text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground select-none">
       <div className="flex items-center gap-3 flex-wrap">
         <div className="flex items-center gap-1.5 text-foreground/90 font-bold">
           <Keyboard className="size-4 text-primary" />
+          <span className="hidden xs:inline text-[11px]">{label}</span>
         </div>
 
         {/* Keyboard Layout Language Selector */}
@@ -46,8 +47,8 @@ function KeyboardToolbar({
           </Button>
         </div>
 
-        {/* OS Mode Switcher */}
-        <div className="flex bg-muted/80 border border-border/80 rounded-lg p-0.5 h-7 gap-0.5 shadow-2xs items-center ml-1">
+        {/* OS Mode Switcher - Desktop only */}
+        <div className="hidden sm:flex bg-muted/80 border border-border/80 rounded-lg p-0.5 h-7 gap-0.5 shadow-2xs items-center ml-1">
           <Button
             variant={osMode === 'mac' ? 'default' : 'ghost'}
             size="xs"

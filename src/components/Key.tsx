@@ -69,7 +69,7 @@ function Key({
   const isSpecialKey = [
     'ShiftLeft', 'ShiftRight', 'Enter', 'Space', 'Backspace', 'Tab',
     'CapsLock', 'MetaLeft', 'MetaRight', 'ControlLeft', 'ControlRight',
-    'AltLeft', 'AltRight', 'ContextMenu',
+    'AltLeft', 'AltRight', 'ContextMenu', 'SymbolMode', 'SymbolPage2',
   ].includes(code);
 
   const hasHomingBar = ['KeyF', 'KeyJ'].includes(code);
@@ -132,7 +132,7 @@ function Key({
       onPointerUp={handlePointerUp}
       onPointerLeave={handlePointerCancel}
       onPointerCancel={handlePointerCancel}
-      className="relative select-none shrink-0 min-w-0 touch-manipulation cursor-pointer h-8 xs:h-9 sm:h-11 md:h-[52px]"
+      className="relative select-none shrink-0 min-w-0 touch-manipulation cursor-pointer h-10 xs:h-11 sm:h-11 md:h-[52px]"
       style={{
         flexGrow: flexGrow,
         flexShrink: flexGrow,
@@ -151,8 +151,8 @@ function Key({
           y={padding + shadowHeight}
           width={keyWidth}
           height={capHeight}
-          rx={5}
-          ry={5}
+          rx={6}
+          ry={6}
           fill={baseShadowFill}
         />
 
@@ -169,8 +169,8 @@ function Key({
             y={padding}
             width={keyWidth}
             height={capHeight}
-            rx={5}
-            ry={5}
+            rx={6}
+            ry={6}
             fill={keyFill}
             stroke={keyStroke}
             strokeWidth={isTarget ? 1.8 : 0.8}
@@ -183,8 +183,8 @@ function Key({
               y={padding + 1.5}
               width={keyWidth - 3}
               height={capHeight - 3}
-              rx={4}
-              ry={4}
+              rx={5}
+              ry={5}
               fill="none"
               stroke="var(--primary)"
               strokeWidth={1.5}
@@ -192,13 +192,14 @@ function Key({
             />
           )}
 
-          {/* Homing bar for F and J keys */}
+          {/* Homing bar for F and J keys (Desktop only) */}
           {hasHomingBar && (
             <line
               x1={padding + keyWidth / 2 - 6}
               y1={padding + capHeight - 7}
               x2={padding + keyWidth / 2 + 6}
               y2={padding + capHeight - 7}
+              className="hidden sm:block"
               stroke={
                 effectivePressed
                   ? 'var(--key-pressed-text)'
@@ -233,19 +234,21 @@ function Key({
           {/* Key labels */}
           {shiftLabel && !isSpecialKey ? (
             <>
+              {/* Superscript number hint (like Samsung keyboard) */}
               <text
                 x={padding + keyWidth / 2}
-                y={padding + 14}
-                className={`font-sans text-[11px] sm:text-[12px] font-medium fill-[var(--key-special-text)] pointer-events-none transition-colors duration-100 ${textColorClass}`}
+                y={padding + 11}
+                className={`font-sans text-[10px] sm:text-[11px] font-medium fill-[var(--key-special-text)] opacity-70 pointer-events-none transition-colors duration-100 ${textColorClass}`}
                 textAnchor="middle"
                 dominantBaseline="middle"
               >
                 {shiftLabel}
               </text>
+              {/* Main character label */}
               <text
                 x={padding + keyWidth / 2}
-                y={padding + capHeight - 13}
-                className={`font-sans text-[14px] sm:text-[17px] font-semibold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-100 ${textColorClass}`}
+                y={padding + capHeight - 14}
+                className={`font-sans text-[15px] sm:text-[17px] font-semibold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-100 ${textColorClass}`}
                 textAnchor="middle"
                 dominantBaseline="middle"
               >
@@ -254,7 +257,7 @@ function Key({
             </>
           ) : isSpecialKey && mobileLabel !== label ? (
             <>
-              {/* Full label on medium/large screens */}
+              {/* Full label on desktop */}
               <text
                 x={padding + keyWidth / 2}
                 y={padding + capHeight / 2 + 1}
@@ -264,7 +267,7 @@ function Key({
               >
                 {label}
               </text>
-              {/* Compact symbol/label on mobile screens */}
+              {/* Mobile compact symbol */}
               <text
                 x={padding + keyWidth / 2}
                 y={padding + capHeight / 2 + 1}
@@ -280,9 +283,11 @@ function Key({
               x={padding + keyWidth / 2}
               y={padding + capHeight / 2 + 1}
               className={`font-sans pointer-events-none transition-colors duration-100 ${
-                isSpecialKey
-                  ? 'text-[10px] sm:text-[11px] font-semibold fill-[var(--key-special-text)] tracking-wide'
-                  : 'text-[14px] sm:text-[18px] font-semibold fill-[var(--key-normal-text)]'
+                code === 'Space'
+                  ? 'text-[11px] sm:text-[13px] font-medium tracking-wider fill-[var(--key-special-text)] opacity-75'
+                  : isSpecialKey
+                  ? 'text-[11px] sm:text-[12px] font-bold fill-[var(--key-special-text)] tracking-wide'
+                  : 'text-[15px] sm:text-[18px] font-semibold fill-[var(--key-normal-text)]'
               } ${textColorClass}`}
               textAnchor="middle"
               dominantBaseline="middle"

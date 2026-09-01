@@ -3,7 +3,7 @@
 import React, { useRef, useLayoutEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Target, CheckCircle2, PenLine, Sparkles, CornerDownLeft } from 'lucide-react';
+import { RefreshCw, Target, CheckCircle2, PenLine, Sparkles } from 'lucide-react';
 import type { PracticeCategory } from '@/hooks/usePracticeTest';
 import CustomTextInput from './CustomTextInput';
 
