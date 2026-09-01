@@ -46,6 +46,7 @@ export default function Home({ params }: PageProps) {
     setIsEditingText,
     nextKeyCode,
     nextKeyNeedsShift,
+    handleKeyPress,
     handleReset,
     handleRestartWithCustomText,
     setCustomPhrase,
@@ -141,6 +142,7 @@ export default function Home({ params }: PageProps) {
             osMode={osMode}
             nextKeyCode={nextKeyCode}
             nextKeyNeedsShift={nextKeyNeedsShift}
+            onKeyPress={handleKeyPress}
           />
         </section>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { memo } from 'react';
+import React, { memo, useState, useCallback } from 'react';
 import Key from './Key';
 import { charToKeyCode } from '@/utils/keyboardMap';
 
@@ -20,6 +20,7 @@ interface KeyboardProps {
   nextKeyCode?: string | null;
   nextKeyNeedsShift?: boolean;
   targetChar?: string | null;
+  onKeyPress?: (key: string, code: string) => void;
 }
 
 const englishLayout: KeyConfig[][] = [
@@ -177,7 +178,11 @@ function Keyboard({
   nextKeyCode,
   nextKeyNeedsShift,
   targetChar,
+  onKeyPress,
 }: KeyboardProps) {
+  const [virtualShift, setVirtualShift] = useState(false);
+  const [virtualCapsLock, setVirtualCapsLock] = useState(false);
+
   let activeTargetCode = nextKeyCode;
   let activeTargetShift = nextKeyNeedsShift;
 
@@ -216,15 +221,80 @@ function Keyboard({
     }
   });
 
-  const isShiftActive = !!pressedKeys['ShiftLeft'] || !!pressedKeys['ShiftRight'];
+  const effectiveCapsLock = !!capsLockActive || virtualCapsLock;
+  const isPhysicalShift = !!pressedKeys['ShiftLeft'] || !!pressedKeys['ShiftRight'];
+  const isShiftActive = isPhysicalShift || virtualShift;
+
+  const handleKeyClick = useCallback(
+    (code: string, label: string, shiftLabel?: string) => {
+      if (code === 'ShiftLeft' || code === 'ShiftRight') {
+        setVirtualShift((prev) => !prev);
+        return;
+      }
+      if (code === 'CapsLock') {
+        setVirtualCapsLock((prev) => !prev);
+        return;
+      }
+      if (code === 'Backspace') {
+        onKeyPress?.('Backspace', 'Backspace');
+        return;
+      }
+      if (code === 'Enter') {
+        onKeyPress?.('Enter', 'Enter');
+        return;
+      }
+      if (code === 'Space') {
+        onKeyPress?.(' ', 'Space');
+        return;
+      }
+      if (code === 'Tab') {
+        onKeyPress?.('\t', 'Tab');
+        return;
+      }
+      if (
+        [
+          'ControlLeft',
+          'ControlRight',
+          'MetaLeft',
+          'MetaRight',
+          'AltLeft',
+          'AltRight',
+        ].includes(code)
+      ) {
+        return;
+      }
+
+      // Determine character to send
+      let charToSend = label;
+      const isLetter =
+        label.length === 1 && label.toLowerCase() !== label.toUpperCase();
+
+      if (isLetter) {
+        const isUpperCase =
+          (effectiveCapsLock && !isShiftActive) ||
+          (!effectiveCapsLock && isShiftActive);
+        charToSend = isUpperCase ? label.toUpperCase() : label.toLowerCase();
+      } else if (isShiftActive && shiftLabel) {
+        charToSend = shiftLabel;
+      }
+
+      onKeyPress?.(charToSend, code);
+
+      // Auto-reset virtual shift after one character press on mobile
+      if (virtualShift) {
+        setVirtualShift(false);
+      }
+    },
+    [effectiveCapsLock, isShiftActive, onKeyPress, virtualShift]
+  );
 
   return (
-    <div className="keyboard-case overflow-x-auto">
+    <div className="keyboard-case w-full overflow-hidden p-1.5 sm:p-2 md:p-3">
       {/* Inner surface with key tray effect */}
-      <div className="keyboard-surface min-w-[768px]">
-        <div className="flex flex-col gap-[5px] w-full">
+      <div className="keyboard-surface w-full p-1.5 sm:p-2 md:p-3">
+        <div className="flex flex-col gap-[3px] sm:gap-[4px] md:gap-[5px] w-full">
           {layout.map((row, rowIndex) => (
-            <div key={rowIndex} className="flex gap-[4px] w-full justify-between">
+            <div key={rowIndex} className="flex gap-[2px] sm:gap-[3px] md:gap-[4px] w-full justify-between">
               {row.map((key) => {
                 const isLetter =
                   key.label.length === 1 &&
@@ -234,8 +304,8 @@ function Keyboard({
 
                 if (isLetter) {
                   const isUpperCase =
-                    (capsLockActive && !isShiftActive) ||
-                    (!capsLockActive && isShiftActive);
+                    (effectiveCapsLock && !isShiftActive) ||
+                    (!effectiveCapsLock && isShiftActive);
                   displayLabel = isUpperCase
                     ? key.label.toUpperCase()
                     : key.label.toLowerCase();
@@ -246,6 +316,13 @@ function Keyboard({
                   key.code === activeTargetCode ||
                   (activeTargetShift && (key.code === 'ShiftLeft' || key.code === 'ShiftRight'));
 
+                const isKeyPressed =
+                  key.code === 'CapsLock'
+                    ? effectiveCapsLock
+                    : key.code === 'ShiftLeft' || key.code === 'ShiftRight'
+                    ? !!pressedKeys[key.code] || virtualShift
+                    : !!pressedKeys[key.code];
+
                 return (
                   <Key
                     key={key.code}
@@ -254,13 +331,10 @@ function Keyboard({
                     shiftLabel={displayShiftLabel}
                     widthUnit={key.widthUnit}
                     flexGrow={key.flexGrow}
-                    isPressed={
-                      key.code === 'CapsLock'
-                        ? !!capsLockActive
-                        : !!pressedKeys[key.code]
-                    }
-                    isCapsLockActive={capsLockActive && key.code === 'CapsLock'}
+                    isPressed={isKeyPressed}
+                    isCapsLockActive={effectiveCapsLock && key.code === 'CapsLock'}
                     isTarget={isTargetKey}
+                    onKeyClick={handleKeyClick}
                   />
                 );
               })}

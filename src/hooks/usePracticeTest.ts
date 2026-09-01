@@ -100,6 +100,54 @@ export function usePracticeTest(locale: string) {
     setIsCompleted(false);
   }, []);
 
+  const handleKeyPress = useCallback((key: string, code: string) => {
+    // Ignore modifier keys
+    if (['Shift', 'Control', 'Alt', 'Meta', 'Tab'].includes(key)) {
+      return;
+    }
+
+    if (code === 'CapsLock' || key === 'CapsLock') {
+      setCapsLockActive((prev) => !prev);
+      return;
+    }
+
+    // Handle Backspace
+    if (code === 'Backspace' || key === 'Backspace') {
+      if (soundEnabled) playClick('backspace');
+      setHasError(false);
+      setUserInput((prev) => prev.slice(0, -1));
+      setIsCompleted(false);
+      return;
+    }
+
+    // If already completed, ignore character input
+    if (isCompleted || userInput.length >= currentPhrase.length) return;
+
+    const expectedChar = currentPhrase[userInput.length];
+    let typedChar = key;
+    if (code === 'Enter' || key === 'Enter') {
+      typedChar = '\n';
+    } else if (code === 'Space' || key === ' ') {
+      typedChar = ' ';
+    }
+
+    if (typedChar === expectedChar) {
+      // Correct key pressed!
+      if (soundEnabled) playClick(typedChar === ' ' ? 'space' : 'standard');
+      setHasError(false);
+      const nextInput = userInput + typedChar;
+      setUserInput(nextInput);
+
+      if (nextInput.length === currentPhrase.length) {
+        setIsCompleted(true);
+      }
+    } else {
+      // Incorrect key pressed!
+      if (soundEnabled) playClick('standard');
+      setHasError(true);
+    }
+  }, [currentPhrase, isCompleted, playClick, soundEnabled, userInput]);
+
   // Keyboard Event Handlers
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -119,47 +167,12 @@ export function usePracticeTest(locale: string) {
         return;
       }
 
-      // Ignore modifier keys
-      if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(e.key)) {
-        return;
-      }
-
-      // Handle Backspace
-      if (e.key === 'Backspace') {
-        e.preventDefault();
-        if (soundEnabled) playClick('backspace');
-        setHasError(false);
-        setUserInput((prev) => prev.slice(0, -1));
-        setIsCompleted(false);
-        return;
-      }
-
-      // Prevent default scrolling for Space
-      if (e.key === ' ') {
+      // Prevent default scrolling for Space/Backspace
+      if (e.key === ' ' || e.key === 'Backspace') {
         e.preventDefault();
       }
 
-      // If already completed, ignore character input
-      if (isCompleted || userInput.length >= currentPhrase.length) return;
-
-      const expectedChar = currentPhrase[userInput.length];
-      const typedChar = e.key;
-
-      if (typedChar === expectedChar) {
-        // Correct key pressed!
-        if (soundEnabled) playClick(typedChar === ' ' ? 'space' : 'standard');
-        setHasError(false);
-        const nextInput = userInput + typedChar;
-        setUserInput(nextInput);
-
-        if (nextInput.length === currentPhrase.length) {
-          setIsCompleted(true);
-        }
-      } else {
-        // Incorrect key pressed!
-        if (soundEnabled) playClick('standard');
-        setHasError(true);
-      }
+      handleKeyPress(e.key, e.code);
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -178,7 +191,7 @@ export function usePracticeTest(locale: string) {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [userInput, currentPhrase, isCompleted, soundEnabled, playClick]);
+  }, [handleKeyPress]);
 
   return {
     language,
@@ -200,6 +213,7 @@ export function usePracticeTest(locale: string) {
     soundEnabled,
     setSoundEnabled,
     resetPractice,
+    handleKeyPress,
     keyboardLanguage,
     setKeyboardLanguage,
     theme: currentTheme,

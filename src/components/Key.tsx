@@ -1,6 +1,6 @@
 'use client';
 
-import React, { memo } from 'react';
+import React, { memo, useState, useCallback } from 'react';
 
 interface KeyProps {
   label: string;
@@ -11,6 +11,34 @@ interface KeyProps {
   widthUnit?: number;
   isCapsLockActive?: boolean;
   isTarget?: boolean;
+  onKeyClick?: (code: string, label: string, shiftLabel?: string) => void;
+}
+
+function getMobileLabel(code: string, defaultLabel: string): string {
+  switch (code) {
+    case 'Backspace':
+      return '⌫';
+    case 'Tab':
+      return '⇥';
+    case 'CapsLock':
+      return '⇪';
+    case 'Enter':
+      return '↵';
+    case 'ShiftLeft':
+    case 'ShiftRight':
+      return '⇧';
+    case 'ControlLeft':
+    case 'ControlRight':
+      return '⌃';
+    case 'MetaLeft':
+    case 'MetaRight':
+      return '⌘';
+    case 'AltLeft':
+    case 'AltRight':
+      return '⌥';
+    default:
+      return defaultLabel;
+  }
 }
 
 function Key({
@@ -22,7 +50,10 @@ function Key({
   widthUnit = 1,
   isCapsLockActive = false,
   isTarget = false,
+  onKeyClick,
 }: KeyProps) {
+  const [isLocallyPressed, setIsLocallyPressed] = useState(false);
+
   const baseWidth = 60;
   const padding = 2;
   const nominalWidth = Math.round(baseWidth * widthUnit);
@@ -31,7 +62,8 @@ function Key({
   const keyHeight = nominalHeight - padding * 2;
 
   const shadowHeight = 3;
-  const pressOffsetY = isPressed ? shadowHeight : 0;
+  const effectivePressed = isPressed || isLocallyPressed;
+  const pressOffsetY = effectivePressed ? shadowHeight : 0;
   const capHeight = keyHeight - shadowHeight;
 
   const isSpecialKey = [
@@ -41,9 +73,10 @@ function Key({
   ].includes(code);
 
   const hasHomingBar = ['KeyF', 'KeyJ'].includes(code);
+  const mobileLabel = getMobileLabel(code, label);
 
   // --- Color logic ---
-  const keyFill = isPressed
+  const keyFill = effectivePressed
     ? 'var(--primary)'
     : isTarget
     ? 'color-mix(in srgb, var(--primary) 28%, var(--key-normal-fill))'
@@ -51,13 +84,13 @@ function Key({
     ? 'var(--key-special-fill)'
     : 'var(--key-normal-fill)';
 
-  const keyStroke = isPressed || isTarget
+  const keyStroke = effectivePressed || isTarget
     ? 'var(--primary)'
     : isSpecialKey
     ? 'var(--key-special-stroke)'
     : 'var(--key-normal-stroke)';
 
-  const baseShadowFill = isPressed
+  const baseShadowFill = effectivePressed
     ? 'var(--primary)'
     : isTarget
     ? 'color-mix(in srgb, var(--primary) 40%, var(--key-shadow-normal))'
@@ -65,21 +98,45 @@ function Key({
     ? 'var(--key-shadow-special)'
     : 'var(--key-shadow-normal)';
 
-  const textColorClass = isPressed
+  const textColorClass = effectivePressed
     ? '!fill-[var(--primary-foreground)]'
     : isTarget
     ? '!fill-primary font-extrabold'
     : '';
 
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      e.preventDefault();
+      setIsLocallyPressed(true);
+      if (onKeyClick) {
+        onKeyClick(code, label, shiftLabel);
+      }
+    },
+    [code, label, shiftLabel, onKeyClick]
+  );
+
+  const handlePointerUp = useCallback(() => {
+    setIsLocallyPressed(false);
+  }, []);
+
+  const handlePointerCancel = useCallback(() => {
+    setIsLocallyPressed(false);
+  }, []);
+
   return (
     <div
-      className="relative select-none shrink-0"
+      role="button"
+      tabIndex={-1}
+      aria-label={label || code}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerCancel}
+      onPointerCancel={handlePointerCancel}
+      className="relative select-none shrink-0 min-w-0 touch-manipulation cursor-pointer h-8 xs:h-9 sm:h-11 md:h-[52px]"
       style={{
         flexGrow: flexGrow,
         flexShrink: flexGrow,
         flexBasis: `${nominalWidth}px`,
-        minWidth: `${Math.round(42 * widthUnit)}px`,
-        height: `${nominalHeight}px`,
         maxWidth: code === 'Space' ? '380px' : 'none',
       }}
     >
@@ -120,7 +177,7 @@ function Key({
           />
 
           {/* Target Key Pulsing Glow Ring */}
-          {isTarget && !isPressed && (
+          {isTarget && !effectivePressed && (
             <rect
               x={padding + 1.5}
               y={padding + 1.5}
@@ -143,7 +200,7 @@ function Key({
               x2={padding + keyWidth / 2 + 6}
               y2={padding + capHeight - 7}
               stroke={
-                isPressed
+                effectivePressed
                   ? 'var(--key-pressed-text)'
                   : 'var(--key-normal-text)'
               }
@@ -178,8 +235,8 @@ function Key({
             <>
               <text
                 x={padding + keyWidth / 2}
-                y={padding + 15}
-                className={`font-sans text-[12px] font-medium fill-[var(--key-special-text)] pointer-events-none transition-colors duration-100 ${textColorClass}`}
+                y={padding + 14}
+                className={`font-sans text-[11px] sm:text-[12px] font-medium fill-[var(--key-special-text)] pointer-events-none transition-colors duration-100 ${textColorClass}`}
                 textAnchor="middle"
                 dominantBaseline="middle"
               >
@@ -188,11 +245,34 @@ function Key({
               <text
                 x={padding + keyWidth / 2}
                 y={padding + capHeight - 13}
-                className={`font-sans text-[17px] font-semibold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-100 ${textColorClass}`}
+                className={`font-sans text-[14px] sm:text-[17px] font-semibold fill-[var(--key-normal-text)] pointer-events-none transition-colors duration-100 ${textColorClass}`}
                 textAnchor="middle"
                 dominantBaseline="middle"
               >
                 {label}
+              </text>
+            </>
+          ) : isSpecialKey && mobileLabel !== label ? (
+            <>
+              {/* Full label on medium/large screens */}
+              <text
+                x={padding + keyWidth / 2}
+                y={padding + capHeight / 2 + 1}
+                className={`hidden sm:block font-sans pointer-events-none transition-colors duration-100 text-[11px] font-semibold fill-[var(--key-special-text)] tracking-wide ${textColorClass}`}
+                textAnchor="middle"
+                dominantBaseline="middle"
+              >
+                {label}
+              </text>
+              {/* Compact symbol/label on mobile screens */}
+              <text
+                x={padding + keyWidth / 2}
+                y={padding + capHeight / 2 + 1}
+                className={`sm:hidden font-sans pointer-events-none transition-colors duration-100 text-[13px] font-bold fill-[var(--key-special-text)] ${textColorClass}`}
+                textAnchor="middle"
+                dominantBaseline="middle"
+              >
+                {mobileLabel}
               </text>
             </>
           ) : (
@@ -201,8 +281,8 @@ function Key({
               y={padding + capHeight / 2 + 1}
               className={`font-sans pointer-events-none transition-colors duration-100 ${
                 isSpecialKey
-                  ? 'text-[11px] font-semibold fill-[var(--key-special-text)] tracking-wide'
-                  : 'text-[19px] font-semibold fill-[var(--key-normal-text)]'
+                  ? 'text-[10px] sm:text-[11px] font-semibold fill-[var(--key-special-text)] tracking-wide'
+                  : 'text-[14px] sm:text-[18px] font-semibold fill-[var(--key-normal-text)]'
               } ${textColorClass}`}
               textAnchor="middle"
               dominantBaseline="middle"

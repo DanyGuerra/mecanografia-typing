@@ -357,6 +357,7 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
     setIsEditingText,
     nextKeyCode: nextKeyInfo?.code || null,
     nextKeyNeedsShift: nextKeyInfo?.needsShift || false,
+    handleKeyPress,
     handleReset,
     handleRestartWithCustomText,
     setCustomPhrase,

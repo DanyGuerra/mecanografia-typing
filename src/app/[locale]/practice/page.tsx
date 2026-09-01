@@ -36,6 +36,7 @@ export default function PracticePage({ params }: PracticePageProps) {
     soundEnabled,
     setSoundEnabled,
     resetPractice,
+    handleKeyPress,
     keyboardLanguage,
     setKeyboardLanguage,
     theme,
@@ -133,6 +134,7 @@ export default function PracticePage({ params }: PracticePageProps) {
               targetChar={targetChar}
               nextKeyCode={targetKeyCode}
               nextKeyNeedsShift={targetNeedsShift}
+              onKeyPress={handleKeyPress}
             />
           </div>
         </section>
