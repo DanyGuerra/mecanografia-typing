@@ -79,7 +79,7 @@ export default function Home({ params }: PageProps) {
         practiceModeTab={t('practiceModeTab')}
       />
 
-      <div className="flex flex-col gap-8 w-full max-w-5xl mx-auto py-6 px-4">
+      <div className="flex flex-col gap-8 w-full max-w-5xl mx-auto py-6 px-4 max-lg:pb-[290px] max-lg:px-2 max-lg:py-4">
         <section className="relative w-full">
           <TypingArea
             text={currentPhrase}
@@ -128,13 +128,15 @@ export default function Home({ params }: PageProps) {
         </section>
 
         <section className="flex flex-col gap-2">
-          <KeyboardToolbar
-            label={t('keyboardLabel')}
-            keyboardLanguage={keyboardLanguage}
-            onKeyboardLanguageChange={handleKeyboardLanguageChange}
-            osMode={osMode}
-            onOsModeChange={handleOsModeChange}
-          />
+          <div className="hidden lg:block">
+            <KeyboardToolbar
+              label={t('keyboardLabel')}
+              keyboardLanguage={keyboardLanguage}
+              onKeyboardLanguageChange={handleKeyboardLanguageChange}
+              osMode={osMode}
+              onOsModeChange={handleOsModeChange}
+            />
+          </div>
           <Keyboard
             language={keyboardLanguage}
             pressedKeys={pressedKeys}
@@ -143,6 +145,7 @@ export default function Home({ params }: PageProps) {
             nextKeyCode={nextKeyCode}
             nextKeyNeedsShift={nextKeyNeedsShift}
             onKeyPress={handleKeyPress}
+            onLanguageChange={handleKeyboardLanguageChange}
           />
         </section>
 

@@ -123,7 +123,7 @@ function Header({
         </Link>
 
         {/* Mode Switcher Tabs (Desktop) */}
-        <div className="hidden md:flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border">
+        <div className="hidden lg:flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border">
           <Link
             href={`/${appLanguage}`}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
@@ -161,7 +161,7 @@ function Header({
       </div>
 
       {/* Right Section: Desktop Controls */}
-      <div className="hidden md:flex items-center gap-2">
+      <div className="hidden lg:flex items-center gap-2">
         {/* Language Selector Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -276,8 +276,8 @@ function Header({
         </Button>
       </div>
 
-      {/* Mobile Hamburger Sheet (shadcn/ui Sheet) */}
-      <div className="flex md:hidden items-center">
+      {/* Mobile & Tablet Hamburger Sheet (shadcn/ui Sheet) */}
+      <div className="flex lg:hidden items-center">
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger
             render={

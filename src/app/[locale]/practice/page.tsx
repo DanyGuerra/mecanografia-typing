@@ -69,7 +69,7 @@ export default function PracticePage({ params }: PracticePageProps) {
         practiceModeTab={t('practiceModeTab')}
       />
 
-      <div className="flex flex-col w-full max-w-5xl px-4 py-6 mx-auto gap-3">
+      <div className="flex flex-col w-full max-w-5xl px-4 py-6 mx-auto gap-3 max-lg:pb-[290px] max-lg:px-2 max-lg:py-4">
         {/* Practice Header Info Banner */}
         <div className="flex flex-col gap-1 text-center sm:text-left">
           <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground flex items-center justify-center sm:justify-start gap-2">
@@ -117,13 +117,15 @@ export default function PracticePage({ params }: PracticePageProps) {
 
         {/* Keyboard Controls & 3D Interactive Keyboard */}
         <section className="w-full flex flex-col gap-3">
-          <KeyboardToolbar
-            label={t('keyboardLabel')}
-            keyboardLanguage={keyboardLanguage}
-            onKeyboardLanguageChange={setKeyboardLanguage}
-            osMode={osMode}
-            onOsModeChange={setOsMode}
-          />
+          <div className="hidden lg:block">
+            <KeyboardToolbar
+              label={t('keyboardLabel')}
+              keyboardLanguage={keyboardLanguage}
+              onKeyboardLanguageChange={setKeyboardLanguage}
+              osMode={osMode}
+              onOsModeChange={setOsMode}
+            />
+          </div>
 
           <div className="w-full flex justify-center">
             <Keyboard
@@ -135,6 +137,7 @@ export default function PracticePage({ params }: PracticePageProps) {
               nextKeyCode={targetKeyCode}
               nextKeyNeedsShift={targetNeedsShift}
               onKeyPress={handleKeyPress}
+              onLanguageChange={setKeyboardLanguage}
             />
           </div>
         </section>

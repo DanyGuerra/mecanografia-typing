@@ -1,4 +1,4 @@
-import { getMessages } from 'next-intl/server';
+import { getMessages, getTimeZone } from 'next-intl/server';
 import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import { AppProviders } from '@/components/AppProviders';
 import '../globals.css';
@@ -33,11 +33,12 @@ export async function generateMetadata({ params }: RootLayoutProps) {
 export default async function RootLayout({ children, params }: RootLayoutProps) {
   const { locale } = await params;
   const messages = await getMessages();
+  const timeZone = await getTimeZone();
 
   return (
     <html lang={locale || 'es'} className={`${plusJakartaSans.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased">
-        <AppProviders locale={locale} messages={messages}>
+        <AppProviders locale={locale} messages={messages} timeZone={timeZone}>
           {children}
         </AppProviders>
       </body>

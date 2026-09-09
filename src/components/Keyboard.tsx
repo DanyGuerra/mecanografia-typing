@@ -2,6 +2,7 @@
 
 import React, { memo, useState, useCallback } from 'react';
 import Key from './Key';
+import TouchKey from './TouchKey';
 import { charToKeyCode } from '@/utils/keyboardMap';
 
 interface KeyConfig {
@@ -21,6 +22,7 @@ interface KeyboardProps {
   nextKeyNeedsShift?: boolean;
   targetChar?: string | null;
   onKeyPress?: (key: string, code: string) => void;
+  onLanguageChange?: (lang: 'es' | 'en') => void;
 }
 
 /* =========================================================
@@ -365,6 +367,7 @@ function Keyboard({
   nextKeyNeedsShift,
   targetChar,
   onKeyPress,
+  onLanguageChange,
 }: KeyboardProps) {
   const [virtualShift, setVirtualShift] = useState(false);
   const [virtualCapsLock, setVirtualCapsLock] = useState(false);
@@ -517,114 +520,186 @@ function Keyboard({
   );
 
   return (
-    <div className="keyboard-case w-full overflow-hidden p-1.5 sm:p-2 md:p-3">
-      {/* Inner surface with key tray effect */}
-      <div className="keyboard-surface w-full p-1.5 sm:p-2 md:p-3">
-        {/* ── DESKTOP KEYBOARD (Visible on sm / md / lg screens) ── */}
-        <div className="hidden sm:flex flex-col gap-[4px] md:gap-[5px] w-full">
-          {desktopLayout.map((row, rowIndex) => (
-            <div key={rowIndex} className="flex gap-[3px] md:gap-[4px] w-full justify-between">
-              {row.map((key) => {
-                const isLetter =
-                  key.label.length === 1 &&
-                  key.label.toLowerCase() !== key.label.toUpperCase();
-                let displayLabel = key.label;
-                let displayShiftLabel = key.shiftLabel;
+    <>
+      {/* ── DESKTOP MECHANICAL KEYBOARD (Visible only on desktop >= 1024px) ── */}
+      <div className="hidden lg:block w-full">
+        <div className="keyboard-case w-full overflow-hidden p-2.5 xl:p-3.5">
+          <div className="keyboard-surface w-full p-2.5 xl:p-3.5">
+            <div className="flex flex-col gap-[5px] w-full">
+              {desktopLayout.map((row, rowIndex) => (
+                <div key={rowIndex} className="flex gap-[4px] w-full justify-between">
+                  {row.map((key) => {
+                    const isLetter =
+                      key.label.length === 1 &&
+                      key.label.toLowerCase() !== key.label.toUpperCase();
+                    let displayLabel = key.label;
+                    let displayShiftLabel = key.shiftLabel;
 
-                if (isLetter) {
-                  const isUpperCase =
-                    (effectiveCapsLock && !isShiftActive) ||
-                    (!effectiveCapsLock && isShiftActive);
-                  displayLabel = isUpperCase
-                    ? key.label.toUpperCase()
-                    : key.label.toLowerCase();
-                  displayShiftLabel = undefined;
-                }
+                    if (isLetter) {
+                      const isUpperCase =
+                        (effectiveCapsLock && !isShiftActive) ||
+                        (!effectiveCapsLock && isShiftActive);
+                      displayLabel = isUpperCase
+                        ? key.label.toUpperCase()
+                        : key.label.toLowerCase();
+                      displayShiftLabel = undefined;
+                    }
 
-                const isTargetKey =
-                  key.code === activeTargetCode ||
-                  (activeTargetShift && (key.code === 'ShiftLeft' || key.code === 'ShiftRight'));
+                    const isTargetKey =
+                      key.code === activeTargetCode ||
+                      (activeTargetShift && (key.code === 'ShiftLeft' || key.code === 'ShiftRight'));
 
-                const isKeyPressed =
-                  key.code === 'CapsLock'
-                    ? effectiveCapsLock
-                    : key.code === 'ShiftLeft' || key.code === 'ShiftRight'
-                      ? !!pressedKeys[key.code] || virtualShift
-                      : !!pressedKeys[key.code];
+                    const isKeyPressed =
+                      key.code === 'CapsLock'
+                        ? effectiveCapsLock
+                        : key.code === 'ShiftLeft' || key.code === 'ShiftRight'
+                          ? !!pressedKeys[key.code] || virtualShift
+                          : !!pressedKeys[key.code];
 
-                return (
-                  <Key
-                    key={key.code}
-                    code={key.code}
-                    label={displayLabel}
-                    shiftLabel={displayShiftLabel}
-                    widthUnit={key.widthUnit}
-                    flexGrow={key.flexGrow}
-                    isPressed={isKeyPressed}
-                    isCapsLockActive={effectiveCapsLock && key.code === 'CapsLock'}
-                    isTarget={isTargetKey}
-                    onKeyClick={handleKeyClick}
-                  />
-                );
-              })}
+                    return (
+                      <Key
+                        key={key.code}
+                        code={key.code}
+                        label={displayLabel}
+                        shiftLabel={displayShiftLabel}
+                        widthUnit={key.widthUnit}
+                        flexGrow={key.flexGrow}
+                        isPressed={isKeyPressed}
+                        isCapsLockActive={effectiveCapsLock && key.code === 'CapsLock'}
+                        isTarget={isTargetKey}
+                        onKeyClick={handleKeyClick}
+                      />
+                    );
+                  })}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-
-        {/* ── MOBILE KEYBOARD (Samsung / Gboard touch layout for phones < 640px) ── */}
-        <div className="flex sm:hidden flex-col gap-[3.5px] w-full">
-          {mobileLayout.map((row, rowIndex) => (
-            <div key={rowIndex} className="flex gap-[3px] w-full justify-between">
-              {row.map((key) => {
-                const isLetter =
-                  key.label.length === 1 &&
-                  key.label.toLowerCase() !== key.label.toUpperCase();
-                let displayLabel = key.label;
-                const displayShiftLabel = key.shiftLabel;
-
-                if (isLetter) {
-                  const isUpperCase =
-                    (effectiveCapsLock && !isShiftActive) ||
-                    (!effectiveCapsLock && isShiftActive);
-                  displayLabel = isUpperCase
-                    ? key.label.toUpperCase()
-                    : key.label.toLowerCase();
-                }
-
-                // In mobile letter mode, target key can match letter or superscript number
-                const isTargetKey =
-                  key.code === activeTargetCode ||
-                  (targetChar && key.label.toLowerCase() === targetChar.toLowerCase()) ||
-                  (targetChar && key.shiftLabel === targetChar) ||
-                  (activeTargetShift && key.code === 'ShiftLeft');
-
-                const isKeyPressed =
-                  key.code === 'ShiftLeft'
-                    ? !!pressedKeys['ShiftLeft'] || virtualShift
-                    : key.code === 'SymbolMode' && mobileSymbolMode !== 'abc'
-                      ? true
-                      : !!pressedKeys[key.code];
-
-                return (
-                  <Key
-                    key={key.code}
-                    code={key.code}
-                    label={displayLabel}
-                    shiftLabel={displayShiftLabel}
-                    widthUnit={key.widthUnit}
-                    flexGrow={key.flexGrow}
-                    isPressed={isKeyPressed}
-                    isCapsLockActive={effectiveCapsLock && key.code === 'ShiftLeft'}
-                    isTarget={isTargetKey}
-                    onKeyClick={handleKeyClick}
-                  />
-                );
-              })}
-            </div>
-          ))}
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* ── MOBILE & TABLET TOUCH VIRTUAL KEYBOARD (Docked to bottom edge, no padding) ── */}
+      <div className="flex lg:hidden fixed bottom-0 inset-x-0 w-full z-40 flex-col bg-[#d1d5db]/98 dark:bg-[#1c1c1e]/98 backdrop-blur-xl border-t border-black/15 dark:border-white/10 shadow-[0_-4px_24px_rgba(0,0,0,0.18)] select-none">
+        {/* Accessory / Suggestion Header Strip */}
+        <div className="flex items-center justify-between px-2 sm:px-4 py-1 border-b border-black/5 dark:border-white/5 text-[11px] text-zinc-600 dark:text-zinc-400">
+          <div className="flex items-center gap-2">
+            {/* Keyboard Layout Language Toggle */}
+            {onLanguageChange && (
+              <div className="flex bg-black/5 dark:bg-white/10 rounded-full p-0.5 text-[10px] font-bold">
+                <button
+                  type="button"
+                  onClick={() => onLanguageChange('es')}
+                  className={`px-2 py-0.5 rounded-full transition-all ${
+                    language === 'es'
+                      ? 'bg-white dark:bg-zinc-800 text-foreground shadow-xs'
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  ES
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onLanguageChange('en')}
+                  className={`px-2 py-0.5 rounded-full transition-all ${
+                    language === 'en'
+                      ? 'bg-white dark:bg-zinc-800 text-foreground shadow-xs'
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  EN
+                </button>
+              </div>
+            )}
+
+            {/* Quick Symbol Mode Switcher */}
+            <button
+              type="button"
+              onClick={() =>
+                setMobileSymbolMode((prev) => (prev === 'abc' ? 'symbols1' : 'abc'))
+              }
+              className="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-[10px] font-semibold hover:bg-black/10 dark:hover:bg-white/15 transition-colors"
+            >
+              {mobileSymbolMode === 'abc' ? '?123' : 'ABC'}
+            </button>
+          </div>
+
+          {/* Current Target Key Indicator */}
+          {targetChar && (
+            <div className="flex items-center gap-1.5 font-medium text-[11px]">
+              <span className="text-muted-foreground text-[10px] uppercase font-semibold">
+                {language === 'es' ? 'Toca:' : 'Tap:'}
+              </span>
+              <span className="px-1.5 py-0.2 rounded bg-primary text-primary-foreground font-bold font-mono text-[11px] shadow-2xs">
+                {targetChar === ' ' ? '␣ Espacio' : targetChar === '\n' ? '↵ Enter' : targetChar}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Touch Keys Tray */}
+        <div className="w-full max-w-4xl mx-auto px-1 sm:px-2 md:px-3 pt-1.5 pb-[max(6px,env(safe-area-inset-bottom))] flex flex-col gap-[5px] sm:gap-[7px]">
+          {mobileLayout.map((row, rowIndex) => {
+            const isEnglishLetterRow2 =
+              mobileSymbolMode === 'abc' && language === 'en' && rowIndex === 1 && row.length === 9;
+
+            return (
+              <div
+                key={rowIndex}
+                className={`flex gap-[3.5px] xs:gap-[4px] sm:gap-[6px] md:gap-[7px] w-full justify-between items-center ${
+                  isEnglishLetterRow2 ? 'px-[4%] sm:px-[4.5%]' : ''
+                }`}
+              >
+                {row.map((key) => {
+                  const isLetter =
+                    key.label.length === 1 &&
+                    key.label.toLowerCase() !== key.label.toUpperCase();
+                  let displayLabel = key.label;
+                  const displayShiftLabel = key.shiftLabel;
+
+                  if (isLetter) {
+                    const isUpperCase =
+                      (effectiveCapsLock && !isShiftActive) ||
+                      (!effectiveCapsLock && isShiftActive);
+                    displayLabel = isUpperCase
+                      ? key.label.toUpperCase()
+                      : key.label.toLowerCase();
+                  }
+
+                  // Target key can match letter or superscript number in touch mode
+                  const isTargetKey =
+                    key.code === activeTargetCode ||
+                    (targetChar && key.label.toLowerCase() === targetChar.toLowerCase()) ||
+                    (targetChar && key.shiftLabel === targetChar) ||
+                    (activeTargetShift && key.code === 'ShiftLeft');
+
+                  const isKeyPressed =
+                    key.code === 'ShiftLeft'
+                      ? !!pressedKeys['ShiftLeft'] || virtualShift
+                      : key.code === 'SymbolMode' && mobileSymbolMode !== 'abc'
+                        ? true
+                        : !!pressedKeys[key.code];
+
+                  return (
+                    <TouchKey
+                      key={key.code}
+                      code={key.code}
+                      label={displayLabel}
+                      shiftLabel={displayShiftLabel}
+                      widthUnit={key.widthUnit}
+                      flexGrow={key.flexGrow}
+                      isPressed={isKeyPressed}
+                      isTarget={isTargetKey}
+                      isShiftActive={isShiftActive}
+                      onKeyClick={handleKeyClick}
+                    />
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </>
   );
 }
 

@@ -7,10 +7,11 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 interface AppProvidersProps {
   locale: string;
   messages: AbstractIntlMessages;
+  timeZone?: string;
   children: React.ReactNode;
 }
 
-export function AppProviders({ locale, messages, children }: AppProvidersProps) {
+export function AppProviders({ locale, messages, timeZone, children }: AppProvidersProps) {
   return (
     <ThemeProvider
       attribute="class"
@@ -18,7 +19,7 @@ export function AppProviders({ locale, messages, children }: AppProvidersProps) 
       enableSystem
       disableTransitionOnChange
     >
-      <NextIntlClientProvider locale={locale} messages={messages}>
+      <NextIntlClientProvider locale={locale} messages={messages} timeZone={timeZone}>
         {children}
       </NextIntlClientProvider>
     </ThemeProvider>
