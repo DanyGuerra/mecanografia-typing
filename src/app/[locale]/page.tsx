@@ -55,6 +55,7 @@ export default function Home({ params }: PageProps) {
     handleOsModeChange,
     accentColor,
     setAccentColor,
+    targetChar,
   } = useTypingTest(locale, t('defaultPhrase'));
 
   return (
@@ -144,6 +145,7 @@ export default function Home({ params }: PageProps) {
             osMode={osMode}
             nextKeyCode={nextKeyCode}
             nextKeyNeedsShift={nextKeyNeedsShift}
+            targetChar={targetChar}
             onKeyPress={handleKeyPress}
             onLanguageChange={handleKeyboardLanguageChange}
           />

@@ -629,7 +629,7 @@ function Keyboard({
               <span className="text-muted-foreground text-[10px] uppercase font-semibold">
                 {language === 'es' ? 'Toca:' : 'Tap:'}
               </span>
-              <span className="px-1.5 py-0.2 rounded bg-primary text-primary-foreground font-bold font-mono text-[11px] shadow-2xs">
+              <span className="px-1.5 py-0.2 rounded bg-primary/15 border border-primary/30 text-primary font-bold font-mono text-[11px] shadow-2xs">
                 {targetChar === ' ' ? '␣ Espacio' : targetChar === '\n' ? '↵ Enter' : targetChar}
               </span>
             </div>

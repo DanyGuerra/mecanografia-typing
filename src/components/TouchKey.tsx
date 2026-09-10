@@ -66,7 +66,7 @@ function TouchKey({
     keyStyleClasses = '!bg-primary !text-primary-foreground !shadow-none translate-y-[1px]';
   } else if (isTarget) {
     keyStyleClasses =
-      'ring-2 ring-primary ring-offset-1 ring-offset-transparent font-bold !bg-primary/25 dark:!bg-primary/35 text-primary dark:text-primary-foreground animate-pulse';
+      'ring-2 ring-primary ring-offset-1 ring-offset-transparent font-bold !bg-primary/25 dark:!bg-primary/35 !text-primary animate-pulse';
   } else if (isShiftKey && isShiftActive) {
     keyStyleClasses =
       'bg-white dark:bg-zinc-100 text-zinc-900 dark:text-zinc-900 shadow-[0_1.5px_0_rgba(0,0,0,0.3)] ring-1 ring-primary/50';
@@ -150,7 +150,7 @@ function TouchKey({
           <path d="M20 4v7a4 4 0 0 1-4 4H4" />
         </svg>
       ) : code === 'Space' ? (
-        <span className="text-[11px] xs:text-[12px] sm:text-[14px] font-medium tracking-wide opacity-75 pointer-events-none">
+        <span className={`text-[11px] xs:text-[12px] sm:text-[14px] font-medium tracking-wide pointer-events-none ${isTarget ? 'opacity-100 font-bold' : 'opacity-75'}`}>
           {label}
         </span>
       ) : isSpecialKey ? (

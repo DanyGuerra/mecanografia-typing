@@ -367,5 +367,6 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
     handleOsModeChange,
     accentColor,
     setAccentColor,
+    targetChar: expectedChar,
   };
 }
