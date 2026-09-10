@@ -71,6 +71,7 @@ export default function CustomTextInput({
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
               rows={3}
+              inputMode="none"
               className="custom-text-area w-full p-3.5 rounded-xl bg-background/70 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-mono text-sm leading-relaxed resize-none transition-all duration-200"
               style={{ border: '1px solid color-mix(in srgb, var(--primary) 30%, transparent)' }}
             />

@@ -527,6 +527,71 @@ function Keyboard({
         setVirtualCapsLock((prev) => !prev);
         return;
       }
+      // If an input or textarea is currently focused (e.g. custom text editor), insert into it directly
+      const activeEl = typeof document !== 'undefined' ? document.activeElement : null;
+      const isInputFocused =
+        activeEl &&
+        (activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'INPUT');
+
+      if (isInputFocused) {
+        const inputEl = activeEl as HTMLInputElement | HTMLTextAreaElement;
+        const start = inputEl.selectionStart ?? inputEl.value.length;
+        const end = inputEl.selectionEnd ?? inputEl.value.length;
+
+        if (code === 'Backspace') {
+          if (start === end && start > 0) {
+            const nextVal = inputEl.value.slice(0, start - 1) + inputEl.value.slice(end);
+            inputEl.value = nextVal;
+            inputEl.setSelectionRange(start - 1, start - 1);
+          } else if (start !== end) {
+            const nextVal = inputEl.value.slice(0, start) + inputEl.value.slice(end);
+            inputEl.value = nextVal;
+            inputEl.setSelectionRange(start, start);
+          }
+          inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+          return;
+        }
+
+        if (code === 'Enter') {
+          const nextVal = inputEl.value.slice(0, start) + '\n' + inputEl.value.slice(end);
+          inputEl.value = nextVal;
+          inputEl.setSelectionRange(start + 1, start + 1);
+          inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+          return;
+        }
+
+        if (code === 'Space') {
+          const nextVal = inputEl.value.slice(0, start) + ' ' + inputEl.value.slice(end);
+          inputEl.value = nextVal;
+          inputEl.setSelectionRange(start + 1, start + 1);
+          inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+          return;
+        }
+
+        let charToInsert = label;
+        const isLetterChar =
+          label.length === 1 && label.toLowerCase() !== label.toUpperCase();
+
+        if (isLetterChar) {
+          const isUpper =
+            (effectiveCapsLock && !isShiftActive) ||
+            (!effectiveCapsLock && isShiftActive);
+          charToInsert = isUpper ? label.toUpperCase() : label.toLowerCase();
+        } else if (isShiftActive && shiftLabel) {
+          charToInsert = shiftLabel;
+        }
+
+        const nextVal = inputEl.value.slice(0, start) + charToInsert + inputEl.value.slice(end);
+        inputEl.value = nextVal;
+        inputEl.setSelectionRange(start + charToInsert.length, start + charToInsert.length);
+        inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+
+        if (virtualShift) {
+          setVirtualShift(false);
+        }
+        return;
+      }
+
       if (code === 'Backspace') {
         onKeyPress?.('Backspace', 'Backspace');
         return;
