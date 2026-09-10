@@ -358,6 +358,61 @@ const mobileSymbols2: KeyConfig[][] = [
   ],
 ];
 
+function getIsMobileTargetKey(
+  key: KeyConfig,
+  targetChar: string | null | undefined,
+  mobileSymbolMode: 'abc' | 'symbols1' | 'symbols2',
+  isShiftActive: boolean
+): boolean {
+  if (!targetChar) return false;
+
+  if (targetChar === ' ') {
+    return key.code === 'Space';
+  }
+  if (targetChar === '\n') {
+    return key.code === 'Enter';
+  }
+
+  const isDigit = /[0-9]/.test(targetChar);
+  const isPrimarySymbol = /[@#$%&+\-()/*"':;!?]/.test(targetChar);
+  const isAdvancedSymbol = /[~`|^_={}[\]<>¡¿ºª·€£¥\\§©®™«»]/.test(targetChar);
+  const isLetter = /[a-zA-ZáéíóúñÁÉÍÓÚÑ]/.test(targetChar);
+
+  if (isDigit || isPrimarySymbol) {
+    if (mobileSymbolMode === 'symbols1') {
+      return key.label === targetChar;
+    }
+    if (mobileSymbolMode === 'symbols2') {
+      return key.code === 'SymbolPage2';
+    }
+    return key.code === 'SymbolMode';
+  }
+
+  if (isAdvancedSymbol) {
+    if (mobileSymbolMode === 'symbols2') {
+      return key.label === targetChar;
+    }
+    if (mobileSymbolMode === 'symbols1') {
+      return key.code === 'SymbolPage2';
+    }
+    return key.code === 'SymbolMode';
+  }
+
+  if (isLetter) {
+    if (mobileSymbolMode !== 'abc') {
+      return key.code === 'SymbolMode';
+    }
+    const isUpper = targetChar !== targetChar.toLowerCase();
+    if (isUpper && !isShiftActive) {
+      return key.code === 'ShiftLeft';
+    }
+    return key.label.toLowerCase() === targetChar.toLowerCase();
+  }
+
+  // Punctuation like . or ,
+  return key.label === targetChar;
+}
+
 function Keyboard({
   language,
   pressedKeys,
@@ -372,9 +427,9 @@ function Keyboard({
   const [virtualShift, setVirtualShift] = useState(false);
   const [virtualCapsLock, setVirtualCapsLock] = useState(false);
   const [mobileSymbolMode, setMobileSymbolMode] = useState<'abc' | 'symbols1' | 'symbols2'>('abc');
-  const [prevTargetChar, setPrevTargetChar] = useState(targetChar);
+  const [prevTargetChar, setPrevTargetChar] = useState<string | null | undefined>(undefined);
 
-  // Auto-switch mobile keyboard page when target char changes
+  // Adjust mobile keyboard mode during render when targetChar changes (React recommended pattern)
   if (targetChar !== prevTargetChar) {
     setPrevTargetChar(targetChar);
     if (targetChar) {
@@ -383,11 +438,17 @@ function Keyboard({
       const isAdvancedSymbol = /[~`|^_={}[\]<>¡¿ºª·€£¥\\§©®™«»]/.test(targetChar);
 
       if (isDigit || isPrimarySymbol) {
-        if (mobileSymbolMode === 'symbols2') setMobileSymbolMode('symbols1');
+        if (mobileSymbolMode !== 'symbols1') {
+          setMobileSymbolMode('symbols1');
+        }
       } else if (isAdvancedSymbol) {
-        if (mobileSymbolMode !== 'symbols2') setMobileSymbolMode('symbols2');
-      } else if (/[a-zA-ZáéíóúñÁÉÍÓÚÑ\s\n]/.test(targetChar)) {
-        if (mobileSymbolMode !== 'abc') setMobileSymbolMode('abc');
+        if (mobileSymbolMode !== 'symbols2') {
+          setMobileSymbolMode('symbols2');
+        }
+      } else if (/[a-zA-ZáéíóúñÁÉÍÓÚÑ]/.test(targetChar)) {
+        if (mobileSymbolMode !== 'abc') {
+          setMobileSymbolMode('abc');
+        }
       }
     }
   }
@@ -632,6 +693,11 @@ function Keyboard({
               <span className="px-1.5 py-0.2 rounded bg-primary/15 border border-primary/30 text-primary font-bold font-mono text-[11px] shadow-2xs">
                 {targetChar === ' ' ? '␣ Espacio' : targetChar === '\n' ? '↵ Enter' : targetChar}
               </span>
+              {mobileSymbolMode !== 'abc' && (
+                <span className="text-[10px] px-1.5 py-0.2 rounded bg-black/5 dark:bg-white/10 text-muted-foreground font-mono">
+                  {mobileSymbolMode === 'symbols1' ? '1/2' : '2/2'}
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -665,12 +731,13 @@ function Keyboard({
                       : key.label.toLowerCase();
                   }
 
-                  // Target key can match letter or superscript number in touch mode
-                  const isTargetKey =
-                    key.code === activeTargetCode ||
-                    (targetChar && key.label.toLowerCase() === targetChar.toLowerCase()) ||
-                    (targetChar && key.shiftLabel === targetChar) ||
-                    (activeTargetShift && key.code === 'ShiftLeft');
+                  // Target key calculated cleanly for mobile touch layout
+                  const isTargetKey = getIsMobileTargetKey(
+                    key,
+                    targetChar,
+                    mobileSymbolMode,
+                    isShiftActive
+                  );
 
                   const isKeyPressed =
                     key.code === 'ShiftLeft'

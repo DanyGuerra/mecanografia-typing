@@ -88,8 +88,9 @@ export default function PracticeArea({
     if (!targetChar) return null;
     if (targetChar === ' ') return 'ESPACIO';
     if (targetChar === '\n') return 'ENTER ↵';
-    if (targetNeedsShift) return `Shift + ${targetChar.toUpperCase()}`;
-    return targetChar.toUpperCase();
+    const isLetter = /[a-zA-ZáéíóúñÁÉÍÓÚÑ]/.test(targetChar);
+    if (isLetter && targetNeedsShift) return `Shift + ${targetChar.toUpperCase()}`;
+    return targetChar;
   };
 
   return (
