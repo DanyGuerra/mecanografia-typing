@@ -64,7 +64,7 @@ function Key({
 }: KeyProps) {
   const [isLocallyPressed, setIsLocallyPressed] = useState(false);
 
-  const baseWidth = 60;
+  const baseWidth = 52;
   const padding = 2;
   const nominalWidth = Math.round(baseWidth * widthUnit);
   const nominalHeight = heightUnit === 2 ? 108 : 52;
@@ -80,6 +80,19 @@ function Key({
     'Insert', 'Delete', 'Home', 'End', 'PageUp', 'PageDown',
     'PrintScreen', 'ScrollLock', 'Pause',
     'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+  ].includes(code);
+
+  const isSquareNavKey = [
+    'ArrowUp',
+    'ArrowDown',
+    'ArrowLeft',
+    'ArrowRight',
+    'Delete',
+    'PageUp',
+    'PageDown',
+    'End',
+    'Insert',
+    'Home',
   ].includes(code);
 
   const isFunctionKey = code === 'Escape' || (code.startsWith('F') && code.length <= 3);
@@ -175,20 +188,24 @@ function Key({
       onPointerUp={isInteractive ? handlePointerUp : undefined}
       onPointerLeave={isInteractive ? handlePointerCancel : undefined}
       onPointerCancel={isInteractive ? handlePointerCancel : undefined}
-      className={`relative select-none shrink-0 min-w-0 ${
+      className={`relative select-none min-w-0 ${
         heightUnit === 2
           ? 'h-full min-h-[84px] xs:min-h-[92px] sm:min-h-[96px] md:min-h-[108px]'
           : 'h-10 xs:h-11 sm:h-11 md:h-[52px]'
+      } ${
+        isSquareNavKey
+          ? 'w-10 xs:w-11 sm:w-11 md:w-[52px] shrink-0 aspect-square'
+          : 'shrink-0'
       } ${
         isInteractive
           ? 'touch-manipulation cursor-pointer'
           : 'cursor-default pointer-events-none'
       }`}
       style={{
-        flexGrow: flexGrow,
-        flexShrink: flexGrow,
-        flexBasis: `${nominalWidth}px`,
-        maxWidth: code === 'Space' ? '380px' : 'none',
+        flexGrow: isSquareNavKey ? 0 : flexGrow,
+        flexShrink: isSquareNavKey ? 0 : flexGrow,
+        flexBasis: isSquareNavKey ? undefined : `${nominalWidth}px`,
+        maxWidth: code === 'Space' ? '420px' : isSquareNavKey ? '52px' : 'none',
         height: heightUnit === 2 ? '100%' : undefined,
       }}
     >
@@ -337,20 +354,9 @@ function Key({
                   ? '!text-[var(--primary-foreground)]'
                   : isTarget
                   ? '!text-primary'
-                  : 'text-[var(--key-special-text)]'
+                  : 'text-[var(--key-normal-text)]'
               }`}
             >
-              {/* Subtle keycap recess circle */}
-              <circle
-                cx={padding + keyWidth / 2}
-                cy={padding + capHeight / 2 + 0.5}
-                r={13}
-                className={`transition-all duration-100 ${
-                  effectivePressed || isTested
-                    ? 'fill-white/20'
-                    : 'fill-foreground/[0.04]'
-                }`}
-              />
               <svg
                 x={padding + keyWidth / 2 - 10}
                 y={padding + capHeight / 2 - 9.5}
