@@ -67,6 +67,8 @@ export default function PracticePage({ params }: PracticePageProps) {
         onAccentColorChange={setAccentColor}
         testModeTab={t('testModeTab')}
         practiceModeTab={t('practiceModeTab')}
+        mouseModeTab={t('mouseModeTab')}
+        keyboardTestTab={t('keyboardTestTab')}
       />
 
       <div className="flex flex-col w-full max-w-5xl px-4 py-6 mx-auto gap-3 max-lg:pb-[290px] max-lg:px-2 max-lg:py-4">

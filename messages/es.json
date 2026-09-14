@@ -85,6 +85,27 @@
     "soundOn": "ON",
     "soundOff": "OFF",
     "themeDark": "Oscuro",
-    "themeLight": "Claro"
+    "themeLight": "Claro",
+    "keyboardTestTab": "Test de Teclado",
+    "keyboardTestTitle": "Prueba de Teclado Interactiva",
+    "keyboardTestSubtitle": "Presiona cualquier tecla física en tu teclado para verificar su funcionamiento. Cada tecla probada se mantendrá pintada con tu color accent.",
+    "testedKeysLabel": "Teclas Probadas",
+    "simultaneousKeysLabel": "Simultáneas (Rollover)",
+    "maxRolloverLabel": "Pico NKRO",
+    "lastPressedLabel": "Última Tecla",
+    "resetKeyboardBtn": "Reiniciar Prueba",
+    "preventShortcutsLabel": "Bloquear atajos de navegador",
+    "historyLabel": "Historial de Teclas",
+    "layoutCompact": "Compacto (65%)",
+    "layoutCompact60": "Compacto (60%)",
+    "layoutTkl": "Tenkeyless (TKL)",
+    "layoutFull": "Completo (100%)",
+    "readyToTest": "Esperando pulsación...",
+    "allKeysTested": "¡Todas las teclas probadas con éxito!",
+    "keyboardTestHint": "Presiona múltiples teclas a la vez para probar el anti-ghosting (NKRO) de tu teclado.",
+    "activeKeySingle": "tecla activa",
+    "activeKeysMultiple": "teclas activas",
+    "keyboardLangEs": "Español (ISO)",
+    "keyboardLangEn": "English (ANSI)"
   }
 }

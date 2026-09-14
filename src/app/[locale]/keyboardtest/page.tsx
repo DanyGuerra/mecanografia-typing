@@ -5,22 +5,22 @@ import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import MouseTester from '@/components/MouseTester';
+import KeyboardTester from '@/components/KeyboardTester';
 import { useAudio } from '@/hooks/useAudio';
 import { useAccentColor } from '@/hooks/useAccentColor';
 
-interface MousePageProps {
+interface KeyboardTestPageProps {
   params: Promise<{ locale: string }>;
 }
 
-export default function MousePage({ params }: MousePageProps) {
+export default function KeyboardTestPage({ params }: KeyboardTestPageProps) {
   const { locale } = use(params);
   const t = useTranslations('HomePage');
 
   const appLanguage = (locale === 'en' ? 'en' : 'es') as 'es' | 'en';
 
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const { playMouseClick } = useAudio();
+  const { playClick } = useAudio();
 
   const { theme, setTheme, resolvedTheme } = useTheme();
   const currentTheme = (resolvedTheme as 'light' | 'dark') || (theme as 'light' | 'dark') || 'dark';
@@ -32,7 +32,7 @@ export default function MousePage({ params }: MousePageProps) {
   const { accentColor, setAccentColor } = useAccentColor(currentTheme === 'dark');
 
   const handleAppLanguageChange = (lang: 'es' | 'en') => {
-    window.location.href = `/${lang}/mouse`;
+    window.location.href = `/${lang}/keyboardtest`;
   };
 
   return (
@@ -59,48 +59,46 @@ export default function MousePage({ params }: MousePageProps) {
         keyboardTestTab={t('keyboardTestTab')}
       />
 
-      <div className="flex flex-col gap-8 w-full max-w-5xl mx-auto py-6 px-4">
-        {/* Page Title Banner */}
+      <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto py-6 px-4">
+        {/* Page Header Title */}
         <div className="flex flex-col gap-1 text-center sm:text-left">
           <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground flex items-center justify-center sm:justify-start gap-2">
-            <span>{t('mouseTitle')}</span>
+            <span>{t('keyboardTestTitle')}</span>
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            {t('mouseSubtitle')}
+            {t('keyboardTestSubtitle')}
           </p>
         </div>
 
-        {/* Main Mouse Testing Component */}
+        {/* Interactive Keyboard Testing Section */}
         <section className="relative w-full">
-          <MouseTester
-            accentColor={accentColor}
+          <KeyboardTester
+            initialLanguage={appLanguage}
             soundEnabled={soundEnabled}
-            onPlaySound={playMouseClick}
+            onSoundToggle={() => setSoundEnabled(!soundEnabled)}
+            onPlaySound={playClick}
+            accentColor={accentColor}
             t={{
-              mouseTitle: t('mouseTitle'),
-              mouseSubtitle: t('mouseSubtitle'),
-              leftClick: t('leftClick'),
-              rightClick: t('rightClick'),
-              middleClick: t('middleClick'),
-              sideBack: t('sideBack'),
-              sideForward: t('sideForward'),
-              scrollUp: t('scrollUp'),
-              scrollDown: t('scrollDown'),
-              totalClicks: t('totalClicks'),
-              cpsLabel: t('cpsLabel'),
-              peakCpsLabel: t('peakCpsLabel'),
-              latencyLabel: t('latencyLabel'),
-              scrollDistance: t('scrollDistance'),
-              resetStats: t('resetStats'),
-              freeTestTab: t('freeTestTab'),
-              cpsTestTab: t('cpsTestTab'),
-              startCpsTest: t('startCpsTest'),
-              cpsTestTitle: t('cpsTestTitle'),
-              cpsTestDesc: t('cpsTestDesc'),
-              clickArenaPrompt: t('clickArenaPrompt'),
-              lastActionLabel: t('lastActionLabel'),
-              doubleClicks: t('doubleClicks'),
-              waitingClick: t('waitingClick'),
+              keyboardTestTitle: t('keyboardTestTitle'),
+              keyboardTestSubtitle: t('keyboardTestSubtitle'),
+              testedKeysLabel: t('testedKeysLabel'),
+              simultaneousKeysLabel: t('simultaneousKeysLabel'),
+              maxRolloverLabel: t('maxRolloverLabel'),
+              lastPressedLabel: t('lastPressedLabel'),
+              resetKeyboardBtn: t('resetKeyboardBtn'),
+              preventShortcutsLabel: t('preventShortcutsLabel'),
+              historyLabel: t('historyLabel'),
+              layoutCompact: t('layoutCompact'),
+              layoutCompact60: t('layoutCompact60'),
+              layoutTkl: t('layoutTkl'),
+              layoutFull: t('layoutFull'),
+              readyToTest: t('readyToTest'),
+              allKeysTested: t('allKeysTested'),
+              keyboardTestHint: t('keyboardTestHint'),
+              activeKeySingle: t('activeKeySingle'),
+              activeKeysMultiple: t('activeKeysMultiple'),
+              keyboardLangEs: t('keyboardLangEs'),
+              keyboardLangEn: t('keyboardLangEn'),
             }}
           />
         </section>

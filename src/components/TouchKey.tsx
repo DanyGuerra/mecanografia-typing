@@ -9,6 +9,7 @@ interface TouchKeyProps {
   flexGrow?: number;
   widthUnit?: number;
   isPressed: boolean;
+  isTested?: boolean;
   isTarget?: boolean;
   isShiftActive?: boolean;
   onKeyClick?: (code: string, label: string, shiftLabel?: string) => void;
@@ -21,6 +22,7 @@ function TouchKey({
   flexGrow = 1,
   widthUnit = 1,
   isPressed,
+  isTested = false,
   isTarget = false,
   isShiftActive = false,
   onKeyClick,
@@ -64,6 +66,8 @@ function TouchKey({
 
   if (effectivePressed) {
     keyStyleClasses = '!bg-primary !text-primary-foreground !shadow-none translate-y-[1px]';
+  } else if (isTested) {
+    keyStyleClasses = '!bg-primary !text-primary-foreground font-bold shadow-xs';
   } else if (isTarget) {
     keyStyleClasses =
       'ring-2 ring-primary ring-offset-1 ring-offset-transparent font-bold !bg-primary/25 dark:!bg-primary/35 !text-primary animate-pulse';

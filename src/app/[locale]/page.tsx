@@ -78,6 +78,8 @@ export default function Home({ params }: PageProps) {
         onAccentColorChange={setAccentColor}
         testModeTab={t('testModeTab')}
         practiceModeTab={t('practiceModeTab')}
+        mouseModeTab={t('mouseModeTab')}
+        keyboardTestTab={t('keyboardTestTab')}
       />
 
       <div className="flex flex-col gap-8 w-full max-w-5xl mx-auto py-6 px-4 max-lg:pb-[290px] max-lg:px-2 max-lg:py-4">

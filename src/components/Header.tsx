@@ -32,6 +32,7 @@ import {
   Zap,
   Target,
   MousePointer,
+  Keyboard as KeyboardIcon,
   Menu,
 } from 'lucide-react';
 import KeyboardLogo from './KeyboardLogo';
@@ -56,6 +57,7 @@ interface HeaderProps {
   testModeTab?: string;
   practiceModeTab?: string;
   mouseModeTab?: string;
+  keyboardTestTab?: string;
 }
 
 function Header({
@@ -77,6 +79,7 @@ function Header({
   testModeTab = 'Prueba de Velocidad',
   practiceModeTab = 'Práctica Libre',
   mouseModeTab = 'Prueba de Mouse',
+  keyboardTestTab = 'Test de Teclado',
 }: HeaderProps) {
   const t = useTranslations('HomePage');
   const [mounted, setMounted] = useState(false);
@@ -91,7 +94,8 @@ function Header({
 
   const isPracticeMode = pathname?.includes('/practice');
   const isMouseMode = pathname?.includes('/mouse');
-  const isTestMode = !isPracticeMode && !isMouseMode;
+  const isKeyboardTestMode = pathname?.includes('/keyboardtest');
+  const isTestMode = !isPracticeMode && !isMouseMode && !isKeyboardTestMode;
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -156,6 +160,17 @@ function Header({
           >
             <MousePointer className="size-3.5 text-primary" />
             <span>{mouseModeTab}</span>
+          </Link>
+          <Link
+            href={`/${appLanguage}/keyboardtest`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+              isKeyboardTestMode
+                ? 'bg-background text-primary shadow-xs'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <KeyboardIcon className="size-3.5 text-primary" />
+            <span>{keyboardTestTab}</span>
           </Link>
         </div>
       </div>
@@ -353,6 +368,18 @@ function Header({
                   >
                     <MousePointer className="size-4 text-primary" />
                     <span>{mouseModeTab}</span>
+                  </Link>
+                  <Link
+                    href={`/${appLanguage}/keyboardtest`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-lg transition-all ${
+                      isKeyboardTestMode
+                        ? 'bg-background text-primary shadow-xs'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+                    }`}
+                  >
+                    <KeyboardIcon className="size-4 text-primary" />
+                    <span>{keyboardTestTab}</span>
                   </Link>
                 </div>
               </div>

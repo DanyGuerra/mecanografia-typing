@@ -85,6 +85,27 @@
     "soundOn": "ON",
     "soundOff": "OFF",
     "themeDark": "Dark",
-    "themeLight": "Light"
+    "themeLight": "Light",
+    "keyboardTestTab": "Keyboard Test",
+    "keyboardTestTitle": "Interactive Keyboard Test",
+    "keyboardTestSubtitle": "Press any physical key on your keyboard to verify its functionality. Every tested key will stay painted in your accent color.",
+    "testedKeysLabel": "Tested Keys",
+    "simultaneousKeysLabel": "Simultaneous (Rollover)",
+    "maxRolloverLabel": "Peak NKRO",
+    "lastPressedLabel": "Last Key",
+    "resetKeyboardBtn": "Reset Test",
+    "preventShortcutsLabel": "Block browser shortcuts",
+    "historyLabel": "Key History",
+    "layoutCompact": "Compact (65%)",
+    "layoutCompact60": "Compact (60%)",
+    "layoutTkl": "Tenkeyless (TKL)",
+    "layoutFull": "Full (100%)",
+    "readyToTest": "Waiting for keypress...",
+    "allKeysTested": "All layout keys tested successfully!",
+    "keyboardTestHint": "Press multiple keys simultaneously to test your keyboard anti-ghosting (NKRO).",
+    "activeKeySingle": "active key",
+    "activeKeysMultiple": "active keys",
+    "keyboardLangEs": "Spanish (ISO)",
+    "keyboardLangEn": "English (ANSI)"
   }
 }
