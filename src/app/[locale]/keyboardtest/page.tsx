@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import KeyboardTester from '@/components/KeyboardTester';
 import { useAudio } from '@/hooks/useAudio';
 import { useAccentColor } from '@/hooks/useAccentColor';
+import { setStoredAppLanguage } from '@/utils/languageStorage';
 
 interface KeyboardTestPageProps {
   params: Promise<{ locale: string }>;
@@ -32,6 +33,7 @@ export default function KeyboardTestPage({ params }: KeyboardTestPageProps) {
   const { accentColor, setAccentColor } = useAccentColor(currentTheme === 'dark');
 
   const handleAppLanguageChange = (lang: 'es' | 'en') => {
+    setStoredAppLanguage(lang);
     window.location.href = `/${lang}/keyboardtest`;
   };
 

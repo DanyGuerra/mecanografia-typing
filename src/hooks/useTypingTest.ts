@@ -4,12 +4,13 @@ import { useTheme } from 'next-themes';
 import { useAudio } from '@/hooks/useAudio';
 import { charToKeyCode } from '@/utils/keyboardMap';
 import { useAccentColor } from '@/hooks/useAccentColor';
+import { useStoredKeyboardLanguage, setStoredAppLanguage } from '@/utils/languageStorage';
 
 export function useTypingTest(locale: string, defaultPhraseText: string = '') {
   const router = useRouter();
   const appLanguage: 'es' | 'en' = locale === 'en' ? 'en' : 'es';
 
-  const [keyboardLanguage, setKeyboardLanguage] = useState<'es' | 'en'>(appLanguage);
+  const [keyboardLanguage, setStoredKeyboardLang] = useStoredKeyboardLanguage(appLanguage);
   const [customPhrase, setCustomPhraseState] = useState<string>(defaultPhraseText);
   const [userInput, setUserInput] = useState('');
   const [pressedKeys, setPressedKeys] = useState<Record<string, boolean>>({});
@@ -137,6 +138,7 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
   }, [startTime]);
 
   const handleAppLanguageChange = (lang: 'es' | 'en') => {
+    setStoredAppLanguage(lang);
     handleReset();
     setCustomPhraseState('');
     setIsEditingText(false);
@@ -144,8 +146,7 @@ export function useTypingTest(locale: string, defaultPhraseText: string = '') {
   };
 
   const handleKeyboardLanguageChange = (lang: 'es' | 'en') => {
-    setKeyboardLanguage(lang);
-    localStorage.setItem('keyboardLanguage', lang);
+    setStoredKeyboardLang(lang);
   };
 
   const handleOsModeChange = (mode: 'mac' | 'windows') => {

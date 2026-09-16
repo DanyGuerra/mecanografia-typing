@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import MouseTester from '@/components/MouseTester';
 import { useAudio } from '@/hooks/useAudio';
 import { useAccentColor } from '@/hooks/useAccentColor';
+import { setStoredAppLanguage } from '@/utils/languageStorage';
 
 interface MousePageProps {
   params: Promise<{ locale: string }>;
@@ -32,6 +33,7 @@ export default function MousePage({ params }: MousePageProps) {
   const { accentColor, setAccentColor } = useAccentColor(currentTheme === 'dark');
 
   const handleAppLanguageChange = (lang: 'es' | 'en') => {
+    setStoredAppLanguage(lang);
     window.location.href = `/${lang}/mouse`;
   };
 

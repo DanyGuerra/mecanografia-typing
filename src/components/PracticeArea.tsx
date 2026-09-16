@@ -3,7 +3,7 @@
 import React, { useRef, useLayoutEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Target, CheckCircle2, PenLine, Sparkles } from 'lucide-react';
+import { RefreshCw, Target, CheckCircle2, PenLine, Sparkles, ArrowRight } from 'lucide-react';
 import type { PracticeCategory } from '@/hooks/usePracticeTest';
 import CustomTextInput from './CustomTextInput';
 
@@ -16,7 +16,10 @@ interface PracticeAreaProps {
   targetKeyCode: string | null;
   targetNeedsShift: boolean;
   category: PracticeCategory;
+  exerciseIndex?: number;
+  totalExercises?: number;
   onSelectCategory: (cat: PracticeCategory) => void;
+  onNextExercise?: () => void;
   onApplyCustomText: (text: string) => void;
   onReset: () => void;
   t: {
@@ -36,6 +39,8 @@ interface PracticeAreaProps {
     customTextApply: string;
     customTextCancel: string;
     changeTextBtn: string;
+    nextExercise?: string;
+    spaceKey?: string;
   };
 }
 
@@ -47,7 +52,10 @@ export default function PracticeArea({
   targetChar,
   targetNeedsShift,
   category,
+  exerciseIndex = 0,
+  totalExercises = 1,
   onSelectCategory,
+  onNextExercise,
   onApplyCustomText,
   onReset,
   t,
@@ -86,7 +94,7 @@ export default function PracticeArea({
   // Helper label for the target key
   const formatTargetKeyDisplay = () => {
     if (!targetChar) return null;
-    if (targetChar === ' ') return 'ESPACIO';
+    if (targetChar === ' ') return t.spaceKey || 'ESPACIO';
     if (targetChar === '\n') return 'ENTER ↵';
     const isLetter = /[a-zA-ZáéíóúñÁÉÍÓÚÑ]/.test(targetChar);
     if (isLetter && targetNeedsShift) return `Shift + ${targetChar.toUpperCase()}`;
@@ -182,6 +190,12 @@ export default function PracticeArea({
                   <span>{t.practiceCompleted}</span>
                 </span>
               ) : null}
+
+              {totalExercises > 1 && (
+                <span className="text-[11px] font-mono font-bold text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-md border border-border/60">
+                  {exerciseIndex + 1}/{totalExercises}
+                </span>
+              )}
             </div>
 
             <Button
@@ -248,14 +262,27 @@ export default function PracticeArea({
                   <Sparkles className="size-5 text-primary animate-spin" />
                   <span>{t.practiceCompleted}</span>
                 </div>
-                <Button
-                  size="sm"
-                  onClick={onReset}
-                  className="font-bold text-xs rounded-lg px-4 cursor-pointer gap-2"
-                >
-                  <RefreshCw className="size-3.5" />
-                  <span>{t.restartBtn}</span>
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onReset}
+                    className="font-bold text-xs rounded-lg px-3.5 cursor-pointer gap-1.5"
+                  >
+                    <RefreshCw className="size-3.5" />
+                    <span>{t.restartBtn}</span>
+                  </Button>
+                  {onNextExercise && totalExercises > 1 && (
+                    <Button
+                      size="sm"
+                      onClick={onNextExercise}
+                      className="font-bold text-xs rounded-lg px-4 cursor-pointer gap-1.5"
+                    >
+                      <span>{t.nextExercise || 'Siguiente Ejercicio'}</span>
+                      <ArrowRight className="size-3.5" />
+                    </Button>
+                  )}
+                </div>
               </div>
             )}
           </CardContent>

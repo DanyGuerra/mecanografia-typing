@@ -5,32 +5,76 @@ import { useAudio } from '@/hooks/useAudio';
 import { useAccentColor } from '@/hooks/useAccentColor';
 import { useTheme } from 'next-themes';
 import { charToKeyCode } from '@/utils/keyboardMap';
+import { useStoredKeyboardLanguage } from '@/utils/languageStorage';
 
 export type PracticeCategory = 'homeRow' | 'topRow' | 'bottomRow' | 'commonWords' | 'numbers' | 'symbols' | 'custom';
 
-export const PRACTICE_EXERCISES: Record<'es' | 'en', Record<Exclude<PracticeCategory, 'custom'>, string>> = {
+export const PRACTICE_EXERCISES: Record<
+  'es' | 'en',
+  Record<Exclude<PracticeCategory, 'custom'>, string[]>
+> = {
   es: {
-    homeRow: 'asdf jklñ fdsa jklñ asdf jklñ fdsa jklñ',
-    topRow: 'qwer uiop rewq poiu qwer uiop rewq poiu',
-    bottomRow: 'zxcv bnm, vcxz ,mnb zxcv bnm, vcxz ,mnb',
-    commonWords: 'el la los las un una con por para sin sobre como cuando donde mas pero si ya todo este nada',
-    numbers: '123 456 789 012 345 678 901 234 567 890',
-    symbols: '!? @#$% &*() _+-= []{} <>:; .,\'"',
+    homeRow: [
+      'asdf jklñ fdsa jklñ asdf jklñ fdsa jklñ',
+      'asdfg hjklñ gfdsa ñlkjh asdfg hjklñ',
+      'la las sal ala faja falla jala gala fada',
+    ],
+    topRow: [
+      'qwer uiop rewq poiu qwer uiop rewq poiu',
+      'qwert yuiop trewq poiuy qwert yuiop',
+      'pero que por ti quiero otro puerto quieto',
+    ],
+    bottomRow: [
+      'zxcv bnm, vcxz ,mnb zxcv bnm, vcxz ,mnb',
+      'zxcvb nzm, cnbmv cxzb zxcvb mnbvc',
+    ],
+    commonWords: [
+      'el la los las un una con por para sin sobre como cuando donde mas pero si ya todo este nada',
+      'tiempo dia vida mano parte ojo cosa mundo casa pais trabajo camino caso noche agua',
+    ],
+    numbers: [
+      '123 456 789 012 345 678 901 234 567 890',
+      '102 394 587 601 482 739 501 284 395 720',
+    ],
+    symbols: [
+      '!? @#$% &*() _+-= []{} <>:; .,\'"',
+      '(hola) [mundo] {codigo} <texto> "comillas" \'simple\' ¡atencion! ¿pregunta?',
+    ],
   },
   en: {
-    homeRow: 'asdf jkl; fdsa jkl; asdf jkl; fdsa jkl;',
-    topRow: 'qwer uiop rewq poiu qwer uiop rewq poiu',
-    bottomRow: 'zxcv bnm, vcxz ,mnb zxcv bnm, vcxz ,mnb',
-    commonWords: 'the be to of and a in that have it for not on with as you do at this but by from give get make',
-    numbers: '123 456 789 012 345 678 901 234 567 890',
-    symbols: '!? @#$% &*() _+-= []{} <>:; .,\'" `~',
+    homeRow: [
+      'asdf jkl; fdsa jkl; asdf jkl; fdsa jkl;',
+      'asdfg hjkl; gfdsa ;lkjh asdfg hjkl;',
+      'all fall glad flask salad flag flash hall dash',
+    ],
+    topRow: [
+      'qwer uiop rewq poiu qwer uiop rewq poiu',
+      'qwert yuiop trewq poiuy qwert yuiop',
+      'write power tower quiet route prior quote report',
+    ],
+    bottomRow: [
+      'zxcv bnm, vcxz ,mnb zxcv bnm, vcxz ,mnb',
+      'zxcvb nm,./ bvcxz /.,mn zxcvb nm,./',
+    ],
+    commonWords: [
+      'the be to of and a in that have it for not on with as you do at this but by from give get make',
+      'time person year way day thing man world life hand part child eye woman place week case',
+    ],
+    numbers: [
+      '123 456 789 012 345 678 901 234 567 890',
+      '102 394 587 601 482 739 501 284 395 720',
+    ],
+    symbols: [
+      '!? @#$% &*() _+-= []{} <>:; .,\'" `~',
+      '(hello) [world] {code} <text> "quotes" \'single\' ?question! :colon;',
+    ],
   },
 };
 
 function getInitialOsMode(): 'mac' | 'windows' {
   if (typeof window !== 'undefined' && window.navigator) {
-    const platform = window.navigator.platform.toLowerCase();
-    const userAgent = window.navigator.userAgent.toLowerCase();
+    const platform = window.navigator.platform?.toLowerCase() || '';
+    const userAgent = window.navigator.userAgent?.toLowerCase() || '';
     if (platform.includes('win') || userAgent.includes('windows')) {
       return 'windows';
     }
@@ -42,6 +86,7 @@ export function usePracticeTest(locale: string) {
   const language = (locale === 'en' ? 'en' : 'es') as 'es' | 'en';
 
   const [category, setCategory] = useState<PracticeCategory>('homeRow');
+  const [exerciseIndex, setExerciseIndex] = useState(0);
   const [customText, setCustomText] = useState('');
   const [userInput, setUserInput] = useState('');
   const [hasError, setHasError] = useState(false);
@@ -50,6 +95,9 @@ export function usePracticeTest(locale: string) {
   const [capsLockActive, setCapsLockActive] = useState(false);
   const [osMode, setOsMode] = useState<'mac' | 'windows'>(getInitialOsMode);
   const [soundEnabled, setSoundEnabled] = useState(true);
+
+  // Keyboard language is independent from app language and persisted
+  const [keyboardLanguage, setStoredKeyboardLang] = useStoredKeyboardLanguage(language);
 
   const { playClick } = useAudio();
   const { theme, setTheme, resolvedTheme } = useTheme();
@@ -61,16 +109,16 @@ export function usePracticeTest(locale: string) {
 
   const { accentColor, setAccentColor } = useAccentColor(currentTheme === 'dark');
 
+  // Exercise adapts depending on keyboardLanguage (not full app language)
   const currentPhrase = useMemo(() => {
     if (category === 'custom') {
-      return customText || PRACTICE_EXERCISES[language].homeRow;
+      return customText || PRACTICE_EXERCISES[keyboardLanguage].homeRow[0];
     }
-    return PRACTICE_EXERCISES[language][category] || PRACTICE_EXERCISES[language].homeRow;
-  }, [category, customText, language]);
+    const exercises = PRACTICE_EXERCISES[keyboardLanguage]?.[category] || PRACTICE_EXERCISES[keyboardLanguage]?.homeRow;
+    return exercises[exerciseIndex % exercises.length];
+  }, [category, customText, keyboardLanguage, exerciseIndex]);
 
   const targetChar = userInput.length < currentPhrase.length ? currentPhrase[userInput.length] : null;
-
-  const [keyboardLanguage, setKeyboardLanguage] = useState<'es' | 'en'>(language);
 
   const targetKeyMap = useMemo(() => {
     if (!targetChar) return null;
@@ -83,18 +131,44 @@ export function usePracticeTest(locale: string) {
     setIsCompleted(false);
   }, []);
 
+  const handleKeyboardLanguageChange = useCallback((lang: 'es' | 'en') => {
+    setStoredKeyboardLang(lang);
+    setUserInput('');
+    setHasError(false);
+    setIsCompleted(false);
+    setExerciseIndex(0);
+  }, [setStoredKeyboardLang]);
+
   // Change category
   const selectCategory = useCallback((cat: PracticeCategory) => {
     setCategory(cat);
+    setExerciseIndex(0);
     setUserInput('');
     setHasError(false);
     setIsCompleted(false);
   }, []);
 
+  // Advance to next exercise in category
+  const nextExercise = useCallback(() => {
+    if (category === 'custom') return;
+    const exercises = PRACTICE_EXERCISES[keyboardLanguage]?.[category] || PRACTICE_EXERCISES[keyboardLanguage]?.homeRow;
+    setExerciseIndex((prev) => (prev + 1) % exercises.length);
+    setUserInput('');
+    setHasError(false);
+    setIsCompleted(false);
+  }, [category, keyboardLanguage]);
+
+  const totalExercises = useMemo(() => {
+    if (category === 'custom') return 1;
+    const exercises = PRACTICE_EXERCISES[keyboardLanguage]?.[category] || PRACTICE_EXERCISES[keyboardLanguage]?.homeRow;
+    return exercises.length;
+  }, [category, keyboardLanguage]);
+
   // Apply custom text
   const applyCustomText = useCallback((text: string) => {
     setCustomText(text);
     setCategory('custom');
+    setExerciseIndex(0);
     setUserInput('');
     setHasError(false);
     setIsCompleted(false);
@@ -196,7 +270,10 @@ export function usePracticeTest(locale: string) {
   return {
     language,
     category,
+    exerciseIndex,
+    totalExercises,
     selectCategory,
+    nextExercise,
     customText,
     applyCustomText,
     currentPhrase,
@@ -215,7 +292,8 @@ export function usePracticeTest(locale: string) {
     resetPractice,
     handleKeyPress,
     keyboardLanguage,
-    setKeyboardLanguage,
+    setKeyboardLanguage: handleKeyboardLanguageChange,
+    handleKeyboardLanguageChange,
     theme: currentTheme,
     toggleTheme,
     accentColor,

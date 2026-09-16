@@ -1,12 +1,14 @@
 'use client';
 
 import { use, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import Header from '@/components/Header';
 import PracticeArea from '@/components/PracticeArea';
 import Keyboard from '@/components/Keyboard';
 import KeyboardToolbar from '@/components/KeyboardToolbar';
 import { usePracticeTest } from '@/hooks/usePracticeTest';
+import { setStoredAppLanguage } from '@/utils/languageStorage';
 
 interface PracticePageProps {
   params: Promise<{ locale: string }>;
@@ -14,13 +16,17 @@ interface PracticePageProps {
 
 export default function PracticePage({ params }: PracticePageProps) {
   const { locale } = use(params);
+  const router = useRouter();
   const t = useTranslations('HomePage');
   const containerRef = useRef<HTMLDivElement>(null);
 
   const {
     language,
     category,
+    exerciseIndex,
+    totalExercises,
     selectCategory,
+    nextExercise,
     applyCustomText,
     currentPhrase,
     userInput,
@@ -45,13 +51,16 @@ export default function PracticePage({ params }: PracticePageProps) {
     setAccentColor,
   } = usePracticeTest(locale);
 
+  const handleAppLanguageChange = (lang: 'es' | 'en') => {
+    setStoredAppLanguage(lang);
+    router.push(`/${lang}/practice`);
+  };
+
   return (
     <div className="flex flex-col min-h-screen w-full" ref={containerRef}>
       <Header
         appLanguage={language}
-        onAppLanguageChange={(lang) => {
-          window.location.href = `/${lang}/practice`;
-        }}
+        onAppLanguageChange={handleAppLanguageChange}
         soundEnabled={soundEnabled}
         onSoundToggle={() => setSoundEnabled(!soundEnabled)}
         logoText={t('logoMain')}
@@ -82,7 +91,7 @@ export default function PracticePage({ params }: PracticePageProps) {
           </p>
         </div>
 
-        {/* Interactive Practice Area (No timers, no WPM, no accuracy pressure) */}
+        {/* Interactive Practice Area (Exercises adapt to keyboardLanguage) */}
         <section className="relative w-full">
           <PracticeArea
             text={currentPhrase}
@@ -93,7 +102,10 @@ export default function PracticePage({ params }: PracticePageProps) {
             targetKeyCode={targetKeyCode}
             targetNeedsShift={targetNeedsShift}
             category={category}
+            exerciseIndex={exerciseIndex}
+            totalExercises={totalExercises}
             onSelectCategory={selectCategory}
+            onNextExercise={nextExercise}
             onApplyCustomText={applyCustomText}
             onReset={resetPractice}
             t={{
@@ -113,6 +125,8 @@ export default function PracticePage({ params }: PracticePageProps) {
               customTextApply: t('customTextApply'),
               customTextCancel: t('customTextCancel'),
               changeTextBtn: t('changeTextBtn'),
+              nextExercise: t('nextExercise'),
+              spaceKey: t('spaceKey'),
             }}
           />
         </section>

@@ -39,6 +39,7 @@
     "practiceSubtitle": "Follow the highlighted target key on the 3D keyboard.",
     "nextKeyLabel": "Next key",
     "pressKeyInstruction": "Press the highlighted key on the 3D keyboard",
+    "spaceKey": "SPACE",
     "homeRowCategory": "Home Row",
     "topRowCategory": "Top Row",
     "bottomRowCategory": "Bottom Row",
